@@ -305,7 +305,7 @@ function attachFormSubmit() {
       if (dist && dist.km > window.TQ_CONFIG.SERVICE_RADIUS_KM) {
         alert(`That address looks like it's about ${dist.km.toFixed(0)}km from Townsville — outside our normal service area. Please call us on ${window.TQ_CONFIG.BUSINESS_PHONE} so we can chat about it.`);
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Continue to payment →';
+        submitBtn.textContent = 'Continue to payment';
         return;
       }
 
@@ -333,7 +333,7 @@ function attachFormSubmit() {
       console.error(err);
       alert('Something went wrong creating your booking. Please call us — we\'ll sort it out. ' + err.message);
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Continue to payment →';
+      submitBtn.textContent = 'Continue to payment';
     }
   });
 }

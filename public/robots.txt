@@ -1,0 +1,9 @@
+# TQ Pool Services — robots.txt
+# Replace tqpoolservices.com with your live domain before going live.
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /booking-success.html
+
+Sitemap: https://tqpoolservices.com/sitemap.xml
