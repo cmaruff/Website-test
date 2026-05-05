@@ -79,6 +79,19 @@
   </div>
 </div>
 
+<script src="/assets/js/supabase-config.js"></script>
 <script src="/assets/js/main.js"></script>
+<script>
+  // If we arrived via the demo flow, soften the copy.
+  if (new URLSearchParams(location.search).get('demo') === '1') {
+    const h = document.querySelector('.success-card h1');
+    if (h) h.textContent = 'Demo booking complete!';
+    const note = document.createElement('p');
+    note.style.cssText = 'font-size:var(--fs-sm); color:var(--coral-600); margin-top:-8px;';
+    note.innerHTML = '<em>This is a demo — no real booking was created and no payment was taken.</em>';
+    h.insertAdjacentElement('afterend', note);
+  }
+</script>
+<script src="/assets/js/demo-banner.js"></script>
 </body>
 </html>

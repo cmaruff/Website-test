@@ -2,6 +2,11 @@
 // SUPABASE CONFIG
 // Replace these placeholders with your project's values.
 // You can find them in: Supabase Dashboard → Project Settings → API
+//
+// While these placeholders are present the site runs in DEMO MODE:
+//   • booking flow uses a built-in service list and skips Stripe
+//   • contact form pretends to send
+//   • admin dashboard skips auth and uses seeded mock data
 // ============================================================
 
 window.TQ_CONFIG = {
@@ -27,11 +32,24 @@ window.TQ_CONFIG = {
   BUSINESS_EMAIL: 'hello@tqpoolservices.com',
 };
 
+// ============================================================
+// DEMO MODE detection
+// True while Supabase keys are still placeholders. Other scripts
+// branch on this to skip network calls and use local fallbacks.
+// ============================================================
+window.IS_DEMO = (
+  !window.TQ_CONFIG.SUPABASE_URL ||
+  window.TQ_CONFIG.SUPABASE_URL.includes('YOUR-PROJECT') ||
+  !window.TQ_CONFIG.SUPABASE_ANON_KEY ||
+  window.TQ_CONFIG.SUPABASE_ANON_KEY.includes('YOUR-')
+);
+
 // Helper: build full Supabase URL for an Edge Function
 window.fnUrl = (path) => `${window.TQ_CONFIG.SUPABASE_URL}${path}`;
 
 // Helper: standard fetch with anon key
 window.tqFetch = async (path, options = {}) => {
+  if (window.IS_DEMO) throw new Error('demo mode: network call suppressed');
   const url = path.startsWith('http') ? path : window.fnUrl(path);
   const res = await fetch(url, {
     ...options,

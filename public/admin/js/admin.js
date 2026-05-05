@@ -2,26 +2,36 @@
 // ADMIN DASHBOARD — router + views
 // ============================================================
 
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const supa = createClient(window.TQ_CONFIG.SUPABASE_URL, window.TQ_CONFIG.SUPABASE_ANON_KEY);
+let supa;
+if (window.IS_DEMO) {
+  // Demo mode: use the in-memory mock client and skip auth.
+  supa = window.createMockSupa();
+} else {
+  const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
+  supa = createClient(window.TQ_CONFIG.SUPABASE_URL, window.TQ_CONFIG.SUPABASE_ANON_KEY);
+}
 window.supa = supa;
 
 // ---------------- AUTH GATE ----------------
-const { data: { session } } = await supa.auth.getSession();
-if (!session) { location.href = "/admin/login.html"; throw new Error("not signed in"); }
+let session;
+if (window.IS_DEMO) {
+  session = { user: { id: "demo-user", email: "demo@tqpoolservices.com" } };
+} else {
+  ({ data: { session } } = await supa.auth.getSession());
+  if (!session) { location.href = "/admin/login.html"; throw new Error("not signed in"); }
 
-const { data: admin } = await supa.from("admins").select("user_id").eq("user_id", session.user.id).maybeSingle();
-if (!admin) {
-  await supa.auth.signOut();
-  location.href = "/admin/login.html";
-  throw new Error("not admin");
+  const { data: admin } = await supa.from("admins").select("user_id").eq("user_id", session.user.id).maybeSingle();
+  if (!admin) {
+    await supa.auth.signOut();
+    location.href = "/admin/login.html";
+    throw new Error("not admin");
+  }
 }
 
-document.getElementById("adminEmail").textContent = session.user.email;
+document.getElementById("adminEmail").textContent = session.user.email + (window.IS_DEMO ? "  (demo)" : "");
 document.getElementById("signOut").addEventListener("click", async () => {
   await supa.auth.signOut();
-  location.href = "/admin/login.html";
+  location.href = window.IS_DEMO ? "/admin/" : "/admin/login.html";
 });
 
 // ---------------- ROUTER ----------------
@@ -606,7 +616,7 @@ async function viewImages(view) {
     <div class="img-grid" id="imgGrid">
       ${SLOTS.map(s => {
         const r = map.get(s.slot);
-        const url = r ? `${window.TQ_CONFIG.SUPABASE_URL}/storage/v1/object/public/public-images/${r.storage_path}` : "";
+        const url = r ? imageUrl(r) : "";
         return `
           <div class="img-card" data-slot="${s.slot}">
             <div class="img-card__thumb" style="${url ? `background-image:url('${url}')` : ''}"></div>
@@ -649,19 +659,29 @@ async function uploadImage(slot, file, card) {
   const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
   const path = `${slot}-${Date.now()}.${ext}`;
 
-  const { error: upErr } = await supa.storage.from("public-images").upload(path, file, { upsert: true });
+  const { data: upData, error: upErr } = await supa.storage.from("public-images").upload(path, file, { upsert: true });
   if (upErr) return toast(upErr.message, "error");
 
+  const dataUrl = upData?.dataUrl || null;
   const { error: dbErr } = await supa.from("site_images").upsert({
     slot,
     storage_path: path,
+    data_url: dataUrl,
     alt_text: slot.replace(/_/g, " "),
   }, { onConflict: "slot" });
   if (dbErr) return toast(dbErr.message, "error");
 
-  const url = `${window.TQ_CONFIG.SUPABASE_URL}/storage/v1/object/public/public-images/${path}?t=${Date.now()}`;
+  const url = dataUrl || `${window.TQ_CONFIG.SUPABASE_URL}/storage/v1/object/public/public-images/${path}?t=${Date.now()}`;
   card.querySelector(".img-card__thumb").style.backgroundImage = `url('${url}')`;
   toast("Image updated", "success");
+}
+
+// Image URL helper: prefer the demo dataUrl, fall back to the real Supabase
+// public storage URL.
+function imageUrl(row) {
+  if (row?.data_url) return row.data_url;
+  if (!row?.storage_path) return "";
+  return `${window.TQ_CONFIG.SUPABASE_URL}/storage/v1/object/public/public-images/${row.storage_path}`;
 }
 
 // ============================================================

@@ -2,6 +2,13 @@
 
 Step-by-step from a fresh repo to a live site. Best run inside **Claude Code** so it can execute commands directly — but a human can follow the same steps.
 
+> **Demo mode:** Out of the box (placeholder keys in
+> `public/assets/js/supabase-config.js`) the site runs as a self-contained
+> demo — booking flow, contact form and admin dashboard all work with
+> seeded mock data. Steps 1–7 below are only needed when you're ready to
+> wire up the real backend. Step 9 is the SiteGround upload, which works
+> for both demo and live builds.
+
 ## 1. Create the Supabase project
 
 1. Sign in to [supabase.com](https://supabase.com) → New Project
@@ -118,24 +125,45 @@ Update phone, email, and any placeholder copy across the HTML files
 
 ## 9. Deploy the frontend
 
-### Option A — Vercel (recommended)
+### Option A — SiteGround (chosen host)
+
+Everything inside this repo's `public/` folder is the live site. SiteGround
+is plain Apache with cPanel, so the deploy is just a file copy.
+
+1. Log in to **Site Tools → Site → File Manager** (or use SFTP).
+2. Open `public_html/` for the domain (delete the default `index.php` /
+   placeholder files first — back them up if anything matters).
+3. Upload **the contents of `public/`** (not the folder itself):
+   - `index.html`, `services.html`, `contact.html`, `book.html`,
+     `booking-success.html`, `admin/`, `assets/`, `.htaccess`
+4. Make sure `.htaccess` made it across (toggle "Show hidden files" in
+   File Manager, or `ls -la` over SFTP). It enables HTTPS, clean URLs,
+   gzip, and caching.
+5. Visit your domain — the site should load. The bottom-of-page banner
+   that says "Demo mode" stays visible until you replace the placeholder
+   keys in `assets/js/supabase-config.js` with real ones.
+6. **Updates later:** edit files locally, re-upload the changed ones.
+   For ongoing work the easiest path is *Site Tools → Devs → Git*: add
+   this repository, point it at `public_html/`, and SiteGround will pull
+   on push.
+
+### Option B — Vercel
 
 ```bash
 npm install -g vercel
-cd tq-pools/public
+cd public
 vercel
 # Follow prompts; set as production with `vercel --prod`
 ```
 
-### Option B — Netlify
+### Option C — Netlify
 
 ```bash
 npm install -g netlify-cli
-cd tq-pools
 netlify deploy --dir=public --prod
 ```
 
-### Option C — Cloudflare Pages
+### Option D — Cloudflare Pages
 
 Connect the GitHub repo, set build output to `public/`, no build command needed.
 

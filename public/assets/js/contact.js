@@ -13,12 +13,15 @@ if (form) {
     const data = Object.fromEntries(fd.entries());
 
     try {
-      if (window.TQ_CONFIG && !window.TQ_CONFIG.SUPABASE_URL.includes('YOUR-PROJECT')) {
+      if (!window.IS_DEMO && window.TQ_CONFIG) {
         await window.tqFetch('/rest/v1/contact_submissions', {
           method: 'POST',
           headers: { 'Prefer': 'return=minimal' },
           body: JSON.stringify(data),
         });
+      } else {
+        // Brief delay so the "Sending…" state is visible.
+        await new Promise(r => setTimeout(r, 500));
       }
       form.hidden = true;
       success.hidden = false;

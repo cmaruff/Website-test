@@ -51,8 +51,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 // SERVICES (Supabase fetch, fallback to constant)
 // ============================================================
 async function loadServices() {
+  if (window.IS_DEMO) return;       // use FALLBACK_SERVICES
   try {
-    if (!window.TQ_CONFIG || window.TQ_CONFIG.SUPABASE_URL.includes('YOUR-PROJECT')) return;
     const data = await window.tqFetch('/rest/v1/services?select=*&active=eq.true&order=display_order');
     if (Array.isArray(data) && data.length) state.services = data;
   } catch (e) {
@@ -185,8 +185,14 @@ const SLOT_WINDOWS = [
 
 async function loadTakenSlots(date) {
   state.takenSlots.clear();
+  if (window.IS_DEMO) {
+    // Pre-mark a couple of slots as taken so the UX shows it.
+    const dow = new Date(date).getDay();
+    if (dow % 2 === 0) state.takenSlots.add(`${date}|10:00-12:00`);
+    if (dow === 3)     state.takenSlots.add(`${date}|14:00-16:00`);
+    return;
+  }
   try {
-    if (!window.TQ_CONFIG || window.TQ_CONFIG.SUPABASE_URL.includes('YOUR-PROJECT')) return;
     const rows = await window.tqFetch(
       `/rest/v1/bookings?select=slot&service_date=eq.${date}&status=in.(confirmed,paid,scheduled)`
     );
@@ -285,6 +291,14 @@ function attachFormSubmit() {
     submitBtn.disabled = true;
     submitBtn.textContent = 'Checking address…';
 
+    // Demo mode: simulate the whole flow and land on the success page.
+    if (window.IS_DEMO) {
+      submitBtn.textContent = 'Simulating payment…';
+      await new Promise(r => setTimeout(r, 700));
+      window.location.href = '/booking-success.html?demo=1';
+      return;
+    }
+
     try {
       // 1. Validate service area
       const dist = await checkDistance(state.customer.address);
@@ -325,8 +339,8 @@ function attachFormSubmit() {
 }
 
 async function checkDistance(address) {
+  if (window.IS_DEMO) return null;
   try {
-    if (!window.TQ_CONFIG || window.TQ_CONFIG.SUPABASE_URL.includes('YOUR-PROJECT')) return null;
     return await window.tqFetch('/functions/v1/distance-check', {
       method: 'POST',
       body: JSON.stringify({ address, type: 'service' })
