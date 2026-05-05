@@ -78,7 +78,7 @@ function renderEmail(b: any): string {
 <html><body style="font-family: -apple-system, Segoe UI, sans-serif; background:#FBF9F5; padding:24px; color:#08425A;">
   <div style="max-width:560px; margin:0 auto; background:white; border-radius:16px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.06);">
     <div style="background:linear-gradient(135deg,#1487B2,#0A5573); padding:32px; color:white;">
-      <h1 style="margin:0; font-size:28px;">You're booked in! 🌊</h1>
+      <h1 style="margin:0; font-size:28px;">You're booked in.</h1>
       <p style="margin:8px 0 0; opacity:.9;">TQ Pool Services has confirmed your appointment.</p>
     </div>
     <div style="padding:32px;">

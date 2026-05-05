@@ -3,16 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Contact TQ Pool Services Townsville | Mobile Pool Service</title>
-  <meta name="description" content="Get in touch with TQ Pool Services — Townsville's mobile pool service team. Phone, email, or send a message. Replies within one business day, Mon–Fri 7am–5pm.">
+  <title>Contact TQ Pool Services — Townsville Pool Service</title>
+  <meta name="description" content="Get in touch with TQ Pool Services, Townsville's mobile pool service team. Call us, email, or send a message — replies within one business day, Mon–Fri 7am–5pm.">
   <meta name="keywords" content="contact pool service Townsville, mobile pool service Townsville contact, TQ Pool Services">
 
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="canonical" href="https://tqpoolservices.com/contact">
   <meta name="google-site-verification" content="REPLACE_WITH_GSC_TOKEN">
 
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Contact TQ Pool Services Townsville">
-  <meta property="og:description" content="Townsville's mobile pool service team. Phone, email, or contact form.">
+  <meta property="og:title" content="Contact TQ Pool Services — Townsville Pool Service">
+  <meta property="og:description" content="Townsville's mobile pool service team. Phone, email, or contact form. Replies within one business day.">
   <meta property="og:url" content="https://tqpoolservices.com/contact">
   <meta property="og:locale" content="en_AU">
   <meta name="twitter:card" content="summary_large_image">
@@ -29,13 +30,14 @@
     <nav>
       <ul class="nav__links">
         <li><a href="/">Home</a></li>
-        <li><a href="/services.html">Services & Fees</a></li>
+        <li><a href="/services.html">Services &amp; prices</a></li>
+        <li><a href="/blog.html">Blog</a></li>
         <li><a href="/contact.html">Contact</a></li>
       </ul>
     </nav>
     <div class="nav__cta">
-      <a href="tel:+61400000000" class="btn btn-ghost">Call Now</a>
-      <a href="/book.html" class="btn btn-primary">Book Now</a>
+      <a data-tq-href="phone-tel" href="tel:+61400000000" class="btn btn-ghost">Call us</a>
+      <a href="/book.html" class="btn btn-primary">Book online</a>
     </div>
     <button class="nav__burger"><span></span><span></span><span></span></button>
   </div>
@@ -44,10 +46,10 @@
 <section class="page-head">
   <div class="container">
     <span class="eyebrow reveal">Get in touch</span>
-    <h1 class="reveal" style="transition-delay:.1s">Contact TQ Pool Services Townsville.</h1>
+    <h1 class="reveal" style="transition-delay:.1s">Talk to your Townsville pool team.</h1>
     <p class="page-head__lede reveal" style="transition-delay:.2s">
-      Quick questions, custom quotes, or anything else about your Townsville pool service —
-      we get back to every enquiry within one business day.
+      Quick questions, custom quotes, or anything else about your pool — we get
+      back to every enquiry within one business day.
     </p>
   </div>
 </section>
@@ -58,18 +60,18 @@
     <div class="contact__info reveal">
       <h2>The fastest ways to reach us.</h2>
 
-      <a href="tel:+61400000000" class="contact__method">
+      <a data-tq-href="phone-tel" href="tel:+61400000000" class="contact__method">
         <div>
           <strong>Phone</strong>
-          <span>(07) XXXX XXXX</span>
-          <small>Mon–Fri 7am–5pm</small>
+          <span data-tq="phone-display">(07) XXXX XXXX</span>
+          <small data-tq="hours">Mon–Fri 7am–5pm</small>
         </div>
       </a>
 
-      <a href="mailto:hello@tqpoolservices.com" class="contact__method">
+      <a data-tq-href="email-mailto" href="mailto:hello@tqpoolservices.com" class="contact__method">
         <div>
           <strong>Email</strong>
-          <span>hello@tqpoolservices.com</span>
+          <span data-tq="email">hello@tqpoolservices.com</span>
           <small>Replies within 1 business day</small>
         </div>
       </a>
@@ -149,27 +151,29 @@
     <div>
       <h4>Company</h4>
       <a href="/">Home</a>
-      <a href="/services.html">Services & Fees</a>
+      <a href="/services.html">Services &amp; prices</a>
+      <a href="/blog.html">Blog</a>
       <a href="/contact.html">Contact</a>
     </div>
     <div>
       <h4>Contact</h4>
-      <a href="tel:+61400000000">(07) XXXX XXXX</a>
-      <a href="mailto:hello@tqpoolservices.com">hello@tqpoolservices.com</a>
+      <a data-tq-href="phone-tel" href="tel:+61400000000"><span data-tq="phone-display">(07) XXXX XXXX</span></a>
+      <a data-tq-href="email-mailto" href="mailto:hello@tqpoolservices.com"><span data-tq="email">hello@tqpoolservices.com</span></a>
     </div>
   </div>
   <div class="container footer__bottom">
-    <span>© <span id="year"></span> TQ Pool Services.</span>
+    <span>© <span id="year"></span> <span data-tq="business-name">TQ Pool Services</span>.</span>
     <span>Built locally · Townsville, QLD</span>
   </div>
 </footer>
 
 <div class="callbar">
-  <a href="tel:+61400000000" class="call">Call us</a>
+  <a data-tq-href="phone-tel" href="tel:+61400000000" class="call">Call us</a>
   <a href="/book.html" class="book">Book online</a>
 </div>
 
 <script src="/assets/js/supabase-config.js"></script>
+<script src="/assets/js/business-info.js"></script>
 <script src="/assets/js/main.js"></script>
 <script src="/assets/js/contact.js"></script>
 <script src="/assets/js/demo-banner.js"></script>

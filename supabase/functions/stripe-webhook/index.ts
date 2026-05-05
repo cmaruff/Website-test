@@ -58,7 +58,7 @@ Deno.serve(async (req) => {
         if (!bookingId) break;
 
         // Idempotent update — only flip if still pending
-        await supabase
+        const { data: updated } = await supabase
           .from("bookings")
           .update({
             status: "confirmed",
@@ -66,10 +66,21 @@ Deno.serve(async (req) => {
             stripe_payment_intent: session.payment_intent,
           })
           .eq("id", bookingId)
-          .eq("status", "pending");
+          .eq("status", "pending")
+          .select("id");
 
-        // TODO: trigger send-confirmation function async
-        // (could use pg_net or another fetch here)
+        // Fire-and-forget the confirmation email if we just flipped a booking.
+        // We don't await — Stripe expects a 2xx fast.
+        if (updated && updated.length) {
+          fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-confirmation`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!}`,
+            },
+            body: JSON.stringify({ booking_id: bookingId }),
+          }).catch((e) => console.error("send-confirmation invoke failed:", e));
+        }
         break;
       }
 
