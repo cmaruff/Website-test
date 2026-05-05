@@ -173,7 +173,72 @@ Point `tqpoolservices.com` (or whichever) to your hosting provider:
 - Vercel/Netlify/Cloudflare give specific A or CNAME records
 - Add the domain in their dashboard, validate, enable HTTPS (auto)
 
-## 11. Smoke test
+## 11. SEO: Google Search Console + sitemap
+
+Once the site is reachable on the production domain over HTTPS:
+
+### a. Update placeholder URLs
+
+The repo ships with `https://tqpoolservices.com` baked into the SEO files.
+If your live domain is different, do a global find-and-replace before
+deploy:
+
+```
+public/sitemap.xml
+public/robots.txt
+public/index.html         (canonical, og:url, JSON-LD @id/url)
+public/services.html      (canonical, og:url)
+public/contact.html       (canonical, og:url)
+public/book.html          (canonical, og:url)
+```
+
+### b. Verify the site in Google Search Console
+
+1. Open <https://search.google.com/search-console> → **Add property**
+2. Choose **URL prefix** (simpler than Domain — no DNS edit needed)
+3. Enter your full domain, e.g. `https://tqpoolservices.com`
+4. In the verification options, expand **HTML tag**. Google gives you a
+   single-line `<meta name="google-site-verification" content="abc123…">`
+5. Copy the `content="..."` value (just the token, not the whole tag).
+6. In the repo, replace **every** `REPLACE_WITH_GSC_TOKEN` with your token:
+
+   ```bash
+   grep -rl REPLACE_WITH_GSC_TOKEN public/ \
+     | xargs sed -i '' "s/REPLACE_WITH_GSC_TOKEN/YOUR-TOKEN-HERE/g"   # mac
+   # Linux: drop the '' after -i
+   ```
+7. Re-upload the changed HTML files to SiteGround.
+8. Back in Search Console, click **Verify**. It should turn green.
+
+### c. Submit the sitemap
+
+1. In Search Console, left sidebar → **Sitemaps**
+2. Enter `sitemap.xml` (Google prefixes the domain)
+3. Click **Submit**. Status should flip to **Success** within a day.
+
+### d. Set up Google Business Profile (separate but essential for local)
+
+Search Console gets you in regular search results; the local "map pack"
+(those three businesses with stars under a map) is driven by **Google
+Business Profile**:
+
+1. <https://business.google.com> → Add your business
+2. Use the same name, phone, email and address as the JSON-LD on the site
+3. Verify (postcard or video — Google picks)
+4. Add photos, services, hours, service area suburbs
+
+Consistency between the JSON-LD on the site and your GBP listing is what
+unlocks the local pack.
+
+### e. Once live, check it
+
+- Test JSON-LD: <https://search.google.com/test/rich-results> — paste your
+  homepage URL. You should see `LocalBusiness` (and `FAQPage` for `/services`).
+- Test mobile-friendliness: Chrome DevTools → Lighthouse → Mobile
+- After ~1 week in Search Console, check **Performance** for impressions
+  on "mobile pool service townsville" / "townsville pool service"
+
+## 12. Smoke test
 
 - Visit `/` — site loads
 - Visit `/book.html` — services pre-populate from DB (check console for fetch errors)
@@ -182,7 +247,7 @@ Point `tqpoolservices.com` (or whichever) to your hosting provider:
 - Confirmation email lands
 - Sign in at `/admin/login.html` — see the booking in the dashboard
 
-## Common issues
+## 13. Common issues
 
 | Symptom                                | Fix                                                                |
 |----------------------------------------|--------------------------------------------------------------------|
