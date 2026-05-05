@@ -26,10 +26,18 @@ window.TQ_CONFIG = {
   SERVICE_RADIUS_KM: 50,                              // for service jobs
   PRODUCT_DELIVERY_RADIUS_KM: 100,                    // for product delivery
 
-  // Business
-  BUSINESS_NAME: 'TQ Pool Services',
-  BUSINESS_PHONE: '+61400000000',
-  BUSINESS_EMAIL: 'hello@tqpoolservices.com',
+  // Business — single source of truth. Updated values flow through every
+  // page automatically (see public/assets/js/business-info.js).
+  BUSINESS_NAME:    'TQ Pool Services',
+  BUSINESS_PHONE:   '+61400000000',          // tel: link target (no spaces, +61 form)
+  BUSINESS_PHONE_DISPLAY: '(07) XXXX XXXX',  // human-readable form
+  BUSINESS_EMAIL:   'hello@tqpoolservices.com',
+  BUSINESS_ABN:     '00 000 000 000',
+  BUSINESS_HOURS:   'Mon–Fri 7am–5pm',
+  BUSINESS_ADDRESS_LOCALITY: 'Townsville',
+  BUSINESS_ADDRESS_REGION:   'QLD',
+  BUSINESS_ADDRESS_POSTCODE: '4810',
+  BUSINESS_FACEBOOK: 'https://facebook.com/',
 };
 
 // ============================================================

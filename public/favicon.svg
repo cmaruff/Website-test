@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="TQ Pool Services">
+  <defs>
+    <linearGradient id="tqg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1487B2"/>
+      <stop offset="1" stop-color="#0E6E94"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#tqg)"/>
+  <!-- Stylised TQ in white -->
+  <text x="50%" y="58%" text-anchor="middle"
+        font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+        font-weight="800" font-size="30" fill="#FFFFFF" letter-spacing="-1">TQ</text>
+  <!-- Water line -->
+  <path d="M8 50 Q 16 46, 24 50 T 40 50 T 56 50 V58 H8 Z" fill="#A8DBEA" opacity="0.85"/>
+</svg>

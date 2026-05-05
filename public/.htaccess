@@ -9,16 +9,19 @@ RewriteCond %{HTTPS} !=on
 RewriteCond %{HTTP:X-Forwarded-Proto} !=https
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-# ---- Optional: drop the .html so /services works as well as /services.html ----
-# Skip rewrite for files / dirs that exist
+# ---- Pretty URLs for blog posts: /blog/<slug> -> /blog.html?slug=<slug> ----
+RewriteRule ^blog/([a-z0-9-]+)/?$ /blog.html?slug=$1 [L,QSA]
+
+# ---- Drop .html so /services works as well as /services.html ----
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-# Try adding .html; if the file exists, rewrite internally.
 RewriteCond %{DOCUMENT_ROOT}/$1.html -f
 RewriteRule ^([^/]+)/?$ /$1.html [L]
 
-# Redirect /foo.html -> /foo (canonical)
+# Canonical: redirect /foo.html -> /foo (skip blog.html so the slug query
+# doesn't get clobbered)
 RewriteCond %{THE_REQUEST} \s/+([^?\s]+?)\.html[?\s]
+RewriteCond %1 !=blog
 RewriteRule ^([^/]+)\.html$ /$1 [R=301,L]
 
 # ---- Custom 404 ----

@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mobile Pool Service Townsville | TQ Pool Services</title>
-  <meta name="description" content="Mobile pool service across Townsville. Weekly, fortnightly, 4-weekly and one-off cleans, plus green pool recovery. Locally owned. Photo and chemical report every visit. Book online.">
+  <title>TQ Pool Services — Townsville's Mobile Pool Service</title>
+  <meta name="description" content="Townsville's mobile pool service. Weekly, fortnightly, 4-weekly and one-off cleans, plus green pool recovery. Locally owned, photo and chemical report every visit. Book online in 90 seconds.">
   <meta name="keywords" content="mobile pool service Townsville, Townsville pool service, pool cleaning Townsville, pool maintenance Townsville, green pool recovery Townsville">
   <meta name="theme-color" content="#0E6E94">
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 
   <!-- Canonical -->
   <link rel="canonical" href="https://tqpoolservices.com/">
@@ -16,8 +18,8 @@
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Mobile Pool Service Townsville | TQ Pool Services">
-  <meta property="og:description" content="Townsville's mobile pool service team. Weekly, fortnightly, one-off cleans and green pool recovery. Photo report every visit. Book online.">
+  <meta property="og:title" content="TQ Pool Services — Townsville's Mobile Pool Service">
+  <meta property="og:description" content="Townsville's mobile pool service team. Weekly through one-off, plus green pool recovery. Photo and chemical report every visit.">
   <meta property="og:url" content="https://tqpoolservices.com/">
   <meta property="og:locale" content="en_AU">
   <meta property="og:site_name" content="TQ Pool Services">
@@ -98,13 +100,14 @@
     <nav>
       <ul class="nav__links">
         <li><a href="/">Home</a></li>
-        <li><a href="/services.html">Services & Fees</a></li>
+        <li><a href="/services.html">Services &amp; prices</a></li>
+        <li><a href="/blog.html">Blog</a></li>
         <li><a href="/contact.html">Contact</a></li>
       </ul>
     </nav>
     <div class="nav__cta">
-      <a href="tel:+61400000000" class="btn btn-ghost">Call Now</a>
-      <a href="/book.html" class="btn btn-primary">Book Now</a>
+      <a data-tq-href="phone-tel" href="tel:+61400000000" class="btn btn-ghost">Call us</a>
+      <a href="/book.html" class="btn btn-primary">Book online</a>
     </div>
     <button class="nav__burger" aria-label="Menu">
       <span></span><span></span><span></span>
@@ -275,7 +278,7 @@
       <p>Book online in under two minutes — or call us if you'd rather chat.</p>
       <div class="hero__cta">
         <a href="/book.html" class="btn btn-accent btn-lg">Book online</a>
-        <a href="tel:+61400000000" class="btn btn-ghost btn-lg">Call (07) XXXX XXXX</a>
+        <a data-tq-href="phone-tel" href="tel:+61400000000" class="btn btn-ghost btn-lg">Call <span data-tq="phone-display">(07) XXXX XXXX</span></a>
       </div>
     </div>
   </div>
@@ -285,31 +288,32 @@
 <footer class="footer">
   <div class="container footer__grid">
     <div>
-      <h4>TQ Pool Services</h4>
+      <h4 data-tq="business-name">TQ Pool Services</h4>
       <p style="color:var(--sand-300); margin-bottom:var(--sp-4)">
         Mobile pool cleaning and servicing across Townsville and North Queensland.
       </p>
-      <p style="color:var(--sand-300); font-size:var(--fs-sm)">ABN: XX XXX XXX XXX</p>
+      <p style="color:var(--sand-300); font-size:var(--fs-sm)">ABN: <span data-tq="abn">XX XXX XXX XXX</span></p>
     </div>
     <div>
       <h4>Services</h4>
       <a href="/services.html">Regular servicing</a>
       <a href="/services.html">One-off cleans</a>
       <a href="/services.html">Green pool recovery</a>
-      <a href="/services.html">Test & balance</a>
+      <a href="/services.html">Test &amp; balance</a>
     </div>
     <div>
       <h4>Company</h4>
       <a href="/">Home</a>
-      <a href="/services.html">Services & Fees</a>
+      <a href="/services.html">Services &amp; prices</a>
+      <a href="/blog.html">Blog</a>
       <a href="/contact.html">Contact</a>
       <a href="/book.html">Book online</a>
     </div>
     <div>
       <h4>Get in touch</h4>
-      <a href="tel:+61400000000">(07) XXXX XXXX</a>
-      <a href="mailto:hello@tqpoolservices.com">hello@tqpoolservices.com</a>
-      <a href="https://facebook.com/">Facebook</a>
+      <a data-tq-href="phone-tel" href="tel:+61400000000"><span data-tq="phone-display">(07) XXXX XXXX</span></a>
+      <a data-tq-href="email-mailto" href="mailto:hello@tqpoolservices.com"><span data-tq="email">hello@tqpoolservices.com</span></a>
+      <a data-tq-href="facebook" href="https://facebook.com/">Facebook</a>
     </div>
   </div>
   <div class="container footer__bottom">
@@ -320,11 +324,12 @@
 
 <!-- Sticky mobile call bar -->
 <div class="callbar">
-  <a href="tel:+61400000000" class="call">Call us</a>
+  <a data-tq-href="phone-tel" href="tel:+61400000000" class="call">Call us</a>
   <a href="/book.html" class="book">Book online</a>
 </div>
 
 <script src="/assets/js/supabase-config.js"></script>
+<script src="/assets/js/business-info.js"></script>
 <script src="/assets/js/main.js"></script>
 <script src="/assets/js/demo-banner.js"></script>
 </body>

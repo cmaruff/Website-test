@@ -3,15 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Townsville Pool Service Prices | TQ Pool Services</title>
-  <meta name="description" content="Honest prices for Townsville pool service. Weekly $58, fortnightly $68, 4-weekly $81.50, one-off cleans, green pool recovery, water testing. GST included. Mobile across Townsville.">
+  <title>Pool Service Prices in Townsville — TQ Pool Services</title>
+  <meta name="description" content="Honest, GST-inclusive prices for our Townsville pool service: weekly $58, fortnightly $68, 4-weekly $81.50, plus one-off cleans, green pool recovery and water testing. Mobile across Townsville.">
   <meta name="keywords" content="Townsville pool service, mobile pool service Townsville, pool cleaning prices Townsville, pool servicing Townsville, green pool recovery Townsville">
 
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="canonical" href="https://tqpoolservices.com/services">
   <meta name="google-site-verification" content="REPLACE_WITH_GSC_TOKEN">
 
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Townsville Pool Service Prices | TQ Pool Services">
+  <meta property="og:title" content="Pool Service Prices in Townsville — TQ Pool Services">
   <meta property="og:description" content="Honest, GST-inclusive prices for weekly, fortnightly, 4-weekly and one-off Townsville pool service.">
   <meta property="og:url" content="https://tqpoolservices.com/services">
   <meta property="og:locale" content="en_AU">
@@ -63,13 +64,14 @@
     <nav>
       <ul class="nav__links">
         <li><a href="/">Home</a></li>
-        <li><a href="/services.html">Services & Fees</a></li>
+        <li><a href="/services.html">Services &amp; prices</a></li>
+        <li><a href="/blog.html">Blog</a></li>
         <li><a href="/contact.html">Contact</a></li>
       </ul>
     </nav>
     <div class="nav__cta">
-      <a href="tel:+61400000000" class="btn btn-ghost">Call Now</a>
-      <a href="/book.html" class="btn btn-primary">Book Now</a>
+      <a data-tq-href="phone-tel" href="tel:+61400000000" class="btn btn-ghost">Call us</a>
+      <a href="/book.html" class="btn btn-primary">Book online</a>
     </div>
     <button class="nav__burger"><span></span><span></span><span></span></button>
   </div>
@@ -80,12 +82,12 @@
   <div class="container">
     <span class="eyebrow reveal">Services &amp; prices</span>
     <h1 class="reveal" style="transition-delay:.1s">
-      Townsville pool service<br>
-      <span class="hero__accent">prices, no surprises.</span>
+      Pool service prices<br>
+      <span class="hero__accent">across Townsville.</span>
     </h1>
     <p class="page-head__lede reveal" style="transition-delay:.2s">
-      Every TQ Pool Services visit includes the full checklist below. Pricing is per
-      visit, GST included. Choose the cadence that suits your pool — and your budget.
+      Every visit includes the full checklist below. Prices are per visit, GST
+      included. Pick the cadence that suits your pool and your budget.
     </p>
   </div>
 </section>
@@ -121,62 +123,62 @@
       <p>Prices include GST. With-report option emails you a full PDF after each visit.</p>
     </div>
 
-    <div class="pricing__table reveal">
+    <div class="pricing__table reveal" id="pricingTable">
       <div class="pricing__row pricing__row--head">
         <div>Service</div>
-        <div>With Report</div>
-        <div>Without Report</div>
+        <div>With report</div>
+        <div>Without report</div>
         <div></div>
       </div>
 
-      <div class="pricing__row">
+      <div class="pricing__row" data-svc="weekly">
         <div>
-          <strong>Weekly</strong>
-          <span>Regular cleaning & servicing</span>
+          <strong data-svc-name>Weekly</strong>
+          <span data-svc-desc>Regular cleaning &amp; servicing</span>
         </div>
-        <div class="pricing__price">$61</div>
-        <div class="pricing__price pricing__price--alt">$58</div>
+        <div class="pricing__price" data-price-with>$61</div>
+        <div class="pricing__price pricing__price--alt" data-price-without>$58</div>
         <div><a href="/book.html?service=weekly" class="btn btn-primary">Book this service</a></div>
       </div>
 
-      <div class="pricing__row pricing__row--featured">
+      <div class="pricing__row pricing__row--featured" data-svc="fortnightly">
         <div>
-          <strong>Fortnightly</strong>
-          <span>Most popular — regular service</span>
+          <strong data-svc-name>Fortnightly</strong>
+          <span data-svc-desc>Most popular — regular service</span>
           <span class="pricing__tag">Most popular</span>
         </div>
-        <div class="pricing__price">$71</div>
-        <div class="pricing__price pricing__price--alt">$68</div>
+        <div class="pricing__price" data-price-with>$71</div>
+        <div class="pricing__price pricing__price--alt" data-price-without>$68</div>
         <div><a href="/book.html?service=fortnightly" class="btn btn-primary">Book this service</a></div>
       </div>
 
-      <div class="pricing__row">
+      <div class="pricing__row" data-svc="4weekly">
         <div>
-          <strong>4-Weekly</strong>
-          <span>Regular cleaning & servicing</span>
+          <strong data-svc-name>4-weekly</strong>
+          <span data-svc-desc>Regular cleaning &amp; servicing</span>
         </div>
-        <div class="pricing__price">$84.50</div>
-        <div class="pricing__price pricing__price--alt">$81.50</div>
+        <div class="pricing__price" data-price-with>$84.50</div>
+        <div class="pricing__price pricing__price--alt" data-price-without>$81.50</div>
         <div><a href="/book.html?service=4weekly" class="btn btn-primary">Book this service</a></div>
       </div>
 
-      <div class="pricing__row">
+      <div class="pricing__row" data-svc="oneoff">
         <div>
-          <strong>One-Off Full Service</strong>
-          <span>Casual clean — no contract</span>
+          <strong data-svc-name>One-off full service</strong>
+          <span data-svc-desc>Casual clean — no contract</span>
         </div>
-        <div class="pricing__price">$132</div>
-        <div class="pricing__price pricing__price--alt">$130</div>
+        <div class="pricing__price" data-price-with>$132</div>
+        <div class="pricing__price pricing__price--alt" data-price-without>$130</div>
         <div><a href="/book.html?service=oneoff" class="btn btn-primary">Book this service</a></div>
       </div>
 
-      <div class="pricing__row">
+      <div class="pricing__row" data-svc="test">
         <div>
-          <strong>Test & Balance</strong>
-          <span>Chemical check only</span>
+          <strong data-svc-name>Test &amp; balance</strong>
+          <span data-svc-desc>Chemical check only</span>
         </div>
-        <div class="pricing__price">$57</div>
-        <div class="pricing__price pricing__price--alt">$54</div>
+        <div class="pricing__price" data-price-with>$57</div>
+        <div class="pricing__price pricing__price--alt" data-price-without>$54</div>
         <div><a href="/book.html?service=test" class="btn btn-primary">Book this service</a></div>
       </div>
     </div>
@@ -278,7 +280,7 @@
       <p>Pick a service, pick a slot, done. Takes about 90 seconds.</p>
       <div class="hero__cta">
         <a href="/book.html" class="btn btn-accent btn-lg">Book pool service online</a>
-        <a href="tel:+61400000000" class="btn btn-ghost btn-lg">Call (07) XXXX XXXX</a>
+        <a data-tq-href="phone-tel" href="tel:+61400000000" class="btn btn-ghost btn-lg">Call <span data-tq="phone-display">(07) XXXX XXXX</span></a>
       </div>
     </div>
   </div>
@@ -300,27 +302,30 @@
     <div>
       <h4>Company</h4>
       <a href="/">Home</a>
-      <a href="/services.html">Services & Fees</a>
+      <a href="/services.html">Services &amp; prices</a>
+      <a href="/blog.html">Blog</a>
       <a href="/contact.html">Contact</a>
     </div>
     <div>
       <h4>Contact</h4>
-      <a href="tel:+61400000000">(07) XXXX XXXX</a>
-      <a href="mailto:hello@tqpoolservices.com">hello@tqpoolservices.com</a>
+      <a data-tq-href="phone-tel" href="tel:+61400000000"><span data-tq="phone-display">(07) XXXX XXXX</span></a>
+      <a data-tq-href="email-mailto" href="mailto:hello@tqpoolservices.com"><span data-tq="email">hello@tqpoolservices.com</span></a>
     </div>
   </div>
   <div class="container footer__bottom">
-    <span>© <span id="year"></span> TQ Pool Services.</span>
+    <span>© <span id="year"></span> <span data-tq="business-name">TQ Pool Services</span>.</span>
     <span>Built locally · Townsville, QLD</span>
   </div>
 </footer>
 
 <div class="callbar">
-  <a href="tel:+61400000000" class="call">Call us</a>
+  <a data-tq-href="phone-tel" href="tel:+61400000000" class="call">Call us</a>
   <a href="/book.html" class="book">Book online</a>
 </div>
 
 <script src="/assets/js/supabase-config.js"></script>
+<script src="/assets/js/business-info.js"></script>
+<script src="/assets/js/services-page.js"></script>
 <script src="/assets/js/main.js"></script>
 <script src="/assets/js/demo-banner.js"></script>
 </body>
