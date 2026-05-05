@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin · TQ Pools</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="/assets/css/tokens.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/admin/css/admin.css">
+</head>
+<body class="admin">
+
+<aside class="adm-side">
+  <a href="/" class="adm-side__logo">
+    <span class="nav__logo-mark"></span>
+    <strong>TQ Pools</strong>
+  </a>
+  <nav class="adm-nav">
+    <a href="#/" data-route="dashboard" class="active">📊 Dashboard</a>
+    <a href="#/bookings" data-route="bookings">📅 Bookings</a>
+    <a href="#/customers" data-route="customers">👥 Customers</a>
+    <a href="#/services" data-route="services">🧰 Services</a>
+    <a href="#/products" data-route="products">📦 Products</a>
+    <a href="#/posts" data-route="posts">✍️ SEO Posts</a>
+    <a href="#/images" data-route="images">🖼️ Images</a>
+    <a href="#/contacts" data-route="contacts">💬 Enquiries</a>
+    <a href="#/settings" data-route="settings">⚙️ Settings</a>
+  </nav>
+  <div class="adm-side__foot">
+    <span id="adminEmail">…</span>
+    <button id="signOut" class="btn btn-ghost" style="width:100%; margin-top:8px;">Sign out</button>
+  </div>
+</aside>
+
+<main class="adm-main">
+  <header class="adm-bar">
+    <h1 id="pageTitle">Dashboard</h1>
+    <div class="adm-bar__right">
+      <a href="/" target="_blank" class="btn btn-ghost">View site ↗</a>
+    </div>
+  </header>
+
+  <div id="view" class="adm-view">
+    <div class="adm-loading">Loading…</div>
+  </div>
+</main>
+
+<!-- Toast container -->
+<div id="toast" class="toast" hidden></div>
+
+<script src="/assets/js/supabase-config.js"></script>
+<script src="/assets/js/mock-supabase.js"></script>
+<script type="module" src="/admin/js/admin.js"></script>
+</body>
+</html>

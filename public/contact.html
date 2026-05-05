@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contact | TQ Pool Services Townsville</title>
+  <meta name="description" content="Get in touch with TQ Pool Services. Mobile pool servicing across Townsville and North Queensland.">
+  <link rel="stylesheet" href="/assets/css/tokens.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/contact.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="container nav__inner">
+    <a href="/" class="nav__logo"><span class="nav__logo-mark"></span>TQ Pools</a>
+    <nav>
+      <ul class="nav__links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/services.html">Services & Fees</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="nav__cta">
+      <a href="tel:+61400000000" class="btn btn-ghost">Call Now</a>
+      <a href="/book.html" class="btn btn-primary">Book Now</a>
+    </div>
+    <button class="nav__burger"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<section class="page-head">
+  <div class="container">
+    <span class="eyebrow reveal">Get in touch</span>
+    <h1 class="reveal" style="transition-delay:.1s">Let's talk pools.</h1>
+    <p class="page-head__lede reveal" style="transition-delay:.2s">
+      Quick questions, custom quotes, or anything else — we get back to all enquiries within one business day.
+    </p>
+  </div>
+</section>
+
+<section class="contact">
+  <div class="container contact__grid">
+
+    <div class="contact__info reveal">
+      <h2>The fastest ways to reach us.</h2>
+
+      <a href="tel:+61400000000" class="contact__method">
+        <span class="contact__icon">📞</span>
+        <div>
+          <strong>Phone</strong>
+          <span>(07) XXXX XXXX</span>
+          <small>Mon–Fri 7am–5pm</small>
+        </div>
+      </a>
+
+      <a href="mailto:hello@tqpoolservices.com" class="contact__method">
+        <span class="contact__icon">✉️</span>
+        <div>
+          <strong>Email</strong>
+          <span>hello@tqpoolservices.com</span>
+          <small>Replies within 1 business day</small>
+        </div>
+      </a>
+
+      <a href="/book.html" class="contact__method">
+        <span class="contact__icon">📅</span>
+        <div>
+          <strong>Book online</strong>
+          <span>Skip the back-and-forth</span>
+          <small>Live availability, instant booking</small>
+        </div>
+      </a>
+
+      <div class="contact__service-area">
+        <h3>Service area</h3>
+        <p>Townsville · Kirwan · Annandale · Hyde Park · Idalia · North Ward · Mundingburra · Aitkenvale · Hermit Park · Mt Louisa · Bushland Beach</p>
+      </div>
+    </div>
+
+    <form class="contact__form reveal" id="contactForm" style="transition-delay:.15s">
+      <h2>Send us a message</h2>
+
+      <div class="field">
+        <label for="name">Your name *</label>
+        <input id="name" name="name" type="text" required>
+      </div>
+
+      <div class="field">
+        <label for="email">Email *</label>
+        <input id="email" name="email" type="email" required>
+      </div>
+
+      <div class="field">
+        <label for="phone">Phone</label>
+        <input id="phone" name="phone" type="tel">
+      </div>
+
+      <div class="field">
+        <label for="service">I'm interested in...</label>
+        <select id="service" name="service">
+          <option value="">Select an option</option>
+          <option>Regular servicing (weekly / fortnightly / 4-weekly)</option>
+          <option>One-off pool clean</option>
+          <option>Green pool recovery</option>
+          <option>Equipment replacement</option>
+          <option>Corporate / body corporate</option>
+          <option>Pool safety inspection</option>
+          <option>Something else</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="message">Message *</label>
+        <textarea id="message" name="message" required placeholder="Tell us a bit about your pool — size, current condition, any issues..."></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-lg" style="width:100%">Send message →</button>
+      <p class="contact__success" id="contactSuccess" hidden>
+        ✓ Thanks — we'll be in touch within one business day.
+      </p>
+    </form>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container footer__grid">
+    <div>
+      <h4>TQ Pool Services</h4>
+      <p style="color:var(--sand-300)">Mobile pool cleaning across Townsville.</p>
+    </div>
+    <div>
+      <h4>Services</h4>
+      <a href="/services.html">Regular servicing</a>
+      <a href="/services.html">One-off cleans</a>
+      <a href="/services.html">Green pool recovery</a>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <a href="/">Home</a>
+      <a href="/services.html">Services & Fees</a>
+      <a href="/contact.html">Contact</a>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <a href="tel:+61400000000">(07) XXXX XXXX</a>
+      <a href="mailto:hello@tqpoolservices.com">hello@tqpoolservices.com</a>
+    </div>
+  </div>
+  <div class="container footer__bottom">
+    <span>© <span id="year"></span> TQ Pool Services.</span>
+    <span>Built locally · Townsville, QLD</span>
+  </div>
+</footer>
+
+<div class="callbar">
+  <a href="tel:+61400000000" class="call">📞 Call Now</a>
+  <a href="/book.html" class="book">Book Now</a>
+</div>
+
+<script src="/assets/js/supabase-config.js"></script>
+<script src="/assets/js/main.js"></script>
+<script src="/assets/js/contact.js"></script>
+<script src="/assets/js/demo-banner.js"></script>
+</body>
+</html>
