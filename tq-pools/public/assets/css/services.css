@@ -1,0 +1,229 @@
+/* ============================================================
+   SERVICES & FEES PAGE
+   ============================================================ */
+
+.page-head {
+  padding: calc(var(--nav-height) + var(--sp-8)) 0 var(--sp-7);
+  background: linear-gradient(180deg, var(--sand-50), var(--blue-50));
+  text-align: center;
+}
+.page-head .eyebrow { justify-content: center; margin-bottom: var(--sp-3); }
+.page-head h1 { margin-bottom: var(--sp-4); }
+.page-head__lede {
+  margin: 0 auto;
+  max-width: 56ch;
+  font-size: var(--fs-lg);
+  color: var(--sand-700);
+}
+
+/* ---------- CHECKLIST ---------- */
+.checklist { background: var(--white); }
+.checklist__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--sp-3) var(--sp-6);
+  max-width: 880px;
+  margin: 0 auto;
+}
+@media (max-width: 600px) { .checklist__grid { grid-template-columns: 1fr; } }
+
+.checklist__item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-3) 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--fs-base);
+}
+.checklist__item span {
+  flex-shrink: 0;
+  width: 28px; height: 28px;
+  background: var(--blue-50);
+  color: var(--blue-700);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+.checklist__item strong { color: var(--blue-900); margin-right: 0.25em; }
+
+/* ---------- PRICING TABLE ---------- */
+.pricing { background: var(--sand-50); }
+
+.pricing__table {
+  background: var(--white);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--sh-md);
+  border: 1px solid var(--color-border);
+}
+
+.pricing__row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: var(--sp-4);
+  padding: var(--sp-5) var(--sp-6);
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  transition: background var(--dur-fast);
+}
+.pricing__row:last-child { border-bottom: none; }
+.pricing__row:hover:not(.pricing__row--head) { background: var(--blue-50); }
+
+.pricing__row--head {
+  background: var(--blue-900);
+  color: var(--sand-50);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+  padding: var(--sp-4) var(--sp-6);
+}
+
+.pricing__row--featured {
+  position: relative;
+  background: linear-gradient(90deg, rgba(244, 180, 26, 0.08), transparent 50%);
+}
+.pricing__row--featured::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: var(--sun-500);
+}
+
+.pricing__row strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  color: var(--blue-900);
+  margin-bottom: 2px;
+}
+.pricing__row span {
+  display: block;
+  font-size: var(--fs-sm);
+  color: var(--sand-500);
+}
+
+.pricing__tag {
+  display: inline-block !important;
+  margin-top: 6px;
+  background: var(--sun-500);
+  color: var(--blue-900);
+  font-weight: 600;
+  font-size: var(--fs-xs) !important;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+}
+
+.pricing__price {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-2xl);
+  color: var(--blue-700);
+}
+.pricing__price--alt { color: var(--sand-400); font-size: var(--fs-xl); }
+
+.pricing__row .btn { width: 100%; justify-content: center; }
+
+@media (max-width: 760px) {
+  .pricing__row, .pricing__row--head {
+    grid-template-columns: 1fr;
+    gap: var(--sp-2);
+    padding: var(--sp-5);
+  }
+  .pricing__row--head { display: none; }
+  .pricing__price::before { content: attr(data-label) " "; color: var(--sand-500); font-size: var(--fs-sm); font-weight: 400; }
+}
+
+.pricing__note {
+  margin: var(--sp-6) auto 0;
+  max-width: 720px;
+  background: var(--blue-50);
+  border-left: 4px solid var(--blue-500);
+  padding: var(--sp-4) var(--sp-5);
+  border-radius: var(--r-md);
+  color: var(--blue-900);
+}
+
+/* ---------- EXTRAS ---------- */
+.extras { background: var(--white); }
+.extras__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--sp-5);
+}
+@media (max-width: 720px) { .extras__grid { grid-template-columns: 1fr; } }
+
+.extra-card {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  background: var(--white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  transition: all var(--dur-med);
+}
+.extra-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--sh-lg);
+  border-color: var(--blue-200);
+}
+.extra-card__media {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3rem;
+  color: var(--white);
+}
+.extra-card__body { padding: var(--sp-5); }
+.extra-card h3 { margin-bottom: var(--sp-2); }
+.extra-card p { margin-bottom: var(--sp-4); }
+
+@media (max-width: 480px) {
+  .extra-card { grid-template-columns: 1fr; }
+  .extra-card__media { padding: var(--sp-7); }
+}
+
+/* ---------- FAQ ---------- */
+.faq { background: var(--blue-50); }
+.faq__list {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex; flex-direction: column;
+  gap: var(--sp-3);
+}
+.faq__list details {
+  background: var(--white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--r-lg);
+  padding: var(--sp-4) var(--sp-5);
+  transition: all var(--dur-fast);
+}
+.faq__list details[open] {
+  border-color: var(--blue-300);
+  box-shadow: var(--sh-md);
+}
+.faq__list summary {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--fs-lg);
+  color: var(--blue-900);
+  cursor: pointer;
+  list-style: none;
+  position: relative;
+  padding-right: var(--sp-6);
+}
+.faq__list summary::-webkit-details-marker { display: none; }
+.faq__list summary::after {
+  content: "+";
+  position: absolute;
+  right: 0; top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  color: var(--blue-500);
+  transition: transform var(--dur-fast);
+}
+.faq__list details[open] summary::after { content: "−"; }
+.faq__list p { margin-top: var(--sp-3); padding-top: var(--sp-3); border-top: 1px solid var(--color-border); }

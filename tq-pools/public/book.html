@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Book a Service | TQ Pool Services</title>
+  <meta name="description" content="Book a pool service online. Pick a service, pick a slot, pay your deposit.">
+  <link rel="stylesheet" href="/assets/css/tokens.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/book.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="container nav__inner">
+    <a href="/" class="nav__logo"><span class="nav__logo-mark"></span>TQ Pools</a>
+    <nav>
+      <ul class="nav__links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/services.html">Services & Fees</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="nav__cta">
+      <a href="tel:+61400000000" class="btn btn-ghost">Call Now</a>
+    </div>
+    <button class="nav__burger"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<section class="page-head">
+  <div class="container">
+    <span class="eyebrow reveal">Book online</span>
+    <h1 class="reveal" style="transition-delay:.1s">Three steps. About 90 seconds.</h1>
+  </div>
+</section>
+
+<section class="book">
+  <div class="container">
+    <div class="book__layout">
+
+      <!-- ============ FORM SIDE ============ -->
+      <div class="book__main">
+
+        <!-- Step indicator -->
+        <ol class="book__steps">
+          <li class="active" data-step="1"><span>1</span>Service</li>
+          <li data-step="2"><span>2</span>Date & time</li>
+          <li data-step="3"><span>3</span>Your details</li>
+        </ol>
+
+        <!-- ===== STEP 1: SERVICE ===== -->
+        <div class="book__step active" data-step="1">
+          <h2>What service would you like?</h2>
+          <p>Pick the option that suits — you can change it later if needed.</p>
+
+          <div class="book__services" id="serviceGrid">
+            <!-- Populated by JS from services list -->
+          </div>
+
+          <div class="book__nav">
+            <span></span>
+            <button class="btn btn-primary btn-lg" id="toStep2" disabled>Next: pick a time →</button>
+          </div>
+        </div>
+
+        <!-- ===== STEP 2: DATE & TIME ===== -->
+        <div class="book__step" data-step="2">
+          <h2>When suits you?</h2>
+          <p>We service Mon–Fri. Pick a date, then a window.</p>
+
+          <div class="book__calendar" id="calendar"></div>
+
+          <div class="book__slots" id="slots" hidden>
+            <h3>Available windows</h3>
+            <div class="book__slot-grid" id="slotGrid"></div>
+          </div>
+
+          <div class="book__nav">
+            <button class="btn btn-ghost" data-back="1">← Back</button>
+            <button class="btn btn-primary btn-lg" id="toStep3" disabled>Next: your details →</button>
+          </div>
+        </div>
+
+        <!-- ===== STEP 3: DETAILS ===== -->
+        <div class="book__step" data-step="3">
+          <h2>Your details</h2>
+          <p>We'll send a confirmation email and SMS the day before your service.</p>
+
+          <form id="bookingForm">
+            <div class="book__form-grid">
+              <div class="field">
+                <label for="bk_name">Full name *</label>
+                <input id="bk_name" name="name" type="text" required>
+              </div>
+              <div class="field">
+                <label for="bk_email">Email *</label>
+                <input id="bk_email" name="email" type="email" required>
+              </div>
+              <div class="field">
+                <label for="bk_phone">Mobile *</label>
+                <input id="bk_phone" name="phone" type="tel" required placeholder="04XX XXX XXX">
+              </div>
+              <div class="field">
+                <label for="bk_address">Service address *</label>
+                <input id="bk_address" name="address" type="text" required placeholder="Street address, Townsville">
+              </div>
+              <div class="field" style="grid-column: 1 / -1;">
+                <label for="bk_pool">Pool details (optional)</label>
+                <textarea id="bk_pool" name="pool_notes" rows="3" placeholder="Approximate size, current condition, anything we should know..."></textarea>
+              </div>
+              <div class="field" style="grid-column: 1 / -1;">
+                <label for="bk_access">Access notes (optional)</label>
+                <input id="bk_access" name="access_notes" type="text" placeholder="Side gate code, dog name, where to park...">
+              </div>
+            </div>
+
+            <label class="book__check">
+              <input type="checkbox" id="bk_report" checked>
+              <span>Email me a full PDF report after each service ($3 / visit)</span>
+            </label>
+
+            <div class="book__nav">
+              <button type="button" class="btn btn-ghost" data-back="2">← Back</button>
+              <button type="submit" class="btn btn-accent btn-lg">Continue to payment →</button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- ============ SUMMARY SIDE ============ -->
+      <aside class="book__summary" id="summary">
+        <h3>Your booking</h3>
+        <dl>
+          <dt>Service</dt>
+          <dd id="sumService">—</dd>
+          <dt>Date</dt>
+          <dd id="sumDate">—</dd>
+          <dt>Window</dt>
+          <dd id="sumSlot">—</dd>
+          <dt>Report</dt>
+          <dd id="sumReport">Included</dd>
+        </dl>
+        <div class="book__total">
+          <span>Total today</span>
+          <strong id="sumTotal">$0.00</strong>
+        </div>
+        <p class="book__small">Secured by Stripe. You'll only be charged after confirming on the next page.</p>
+      </aside>
+
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container footer__grid">
+    <div>
+      <h4>TQ Pool Services</h4>
+      <p style="color:var(--sand-300)">Mobile pool cleaning across Townsville.</p>
+    </div>
+    <div>
+      <h4>Services</h4>
+      <a href="/services.html">View all services</a>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <a href="/">Home</a>
+      <a href="/contact.html">Contact</a>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <a href="tel:+61400000000">(07) XXXX XXXX</a>
+      <a href="mailto:hello@tqpoolservices.com">hello@tqpoolservices.com</a>
+    </div>
+  </div>
+  <div class="container footer__bottom">
+    <span>© <span id="year"></span> TQ Pool Services.</span>
+  </div>
+</footer>
+
+<script src="/assets/js/main.js"></script>
+<script src="/assets/js/supabase-config.js"></script>
+<script src="/assets/js/booking.js"></script>
+</body>
+</html>

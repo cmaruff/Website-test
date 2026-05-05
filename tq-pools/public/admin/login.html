@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Login | TQ Pools</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="/assets/css/tokens.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/admin/css/admin.css">
+</head>
+<body class="admin-login">
+
+<div class="login-wrap">
+  <div class="login-card">
+    <a href="/" class="login-logo">
+      <span class="nav__logo-mark"></span>
+      <strong>TQ Pools</strong>
+    </a>
+    <h1>Admin sign in</h1>
+    <p>Authorised users only.</p>
+
+    <form id="loginForm">
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" autocomplete="email" required>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg" style="width:100%">Sign in →</button>
+      <p id="loginError" class="login-error" hidden></p>
+    </form>
+
+    <p class="login-hint">
+      Forgot password? Contact your administrator.
+    </p>
+  </div>
+</div>
+
+<script src="/assets/js/supabase-config.js"></script>
+<script src="https://esm.sh/@supabase/supabase-js@2" type="module"></script>
+<script type="module">
+  import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+  const supa = createClient(window.TQ_CONFIG.SUPABASE_URL, window.TQ_CONFIG.SUPABASE_ANON_KEY);
+  window.supa = supa;
+
+  // If already signed in & is admin → redirect
+  const { data: { session } } = await supa.auth.getSession();
+  if (session) {
+    const { data: admin } = await supa.from('admins').select('user_id').eq('user_id', session.user.id).maybeSingle();
+    if (admin) location.href = '/admin/';
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const err = document.getElementById('loginError');
+    err.hidden = true;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    const { data, error } = await supa.auth.signInWithPassword({ email, password });
+    if (error) { err.textContent = error.message; err.hidden = false; return; }
+
+    // Verify admin
+    const { data: admin } = await supa.from('admins').select('user_id').eq('user_id', data.user.id).maybeSingle();
+    if (!admin) {
+      await supa.auth.signOut();
+      err.textContent = 'This account does not have admin access.';
+      err.hidden = false;
+      return;
+    }
+    location.href = '/admin/';
+  });
+</script>
+</body>
+</html>

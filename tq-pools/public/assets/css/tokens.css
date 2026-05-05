@@ -1,0 +1,152 @@
+/* ============================================================
+   TQ POOL SERVICES — DESIGN TOKENS
+   Three-layer architecture: primitive → semantic → component
+   Edit primitives only; semantic + component layers cascade.
+   ============================================================ */
+
+:root {
+  /* ---------- PRIMITIVE: raw values ---------- */
+
+  /* Pool blues — confident, water-clean */
+  --blue-50:  #EEF8FB;
+  --blue-100: #D5EEF6;
+  --blue-200: #A8DBEA;
+  --blue-300: #6FC2DC;
+  --blue-400: #38A8CD;
+  --blue-500: #1487B2;
+  --blue-600: #0E6E94;
+  --blue-700: #0A5573;
+  --blue-800: #08425A;
+  --blue-900: #062E3F;
+
+  /* Sun — warm CTA accent */
+  --sun-400: #FFD057;
+  --sun-500: #F4B41A;
+  --sun-600: #D49808;
+
+  /* Coral — emergency/secondary accent */
+  --coral-500: #F26D5B;
+  --coral-600: #D85541;
+
+  /* Neutrals — sand-toned warm greys */
+  --sand-50:  #FBF9F5;
+  --sand-100: #F4F0E8;
+  --sand-200: #E5DECF;
+  --sand-300: #C9BFA8;
+  --sand-400: #968B73;
+  --sand-500: #6A6151;
+  --sand-700: #3A352C;
+  --sand-900: #1A1814;
+
+  /* Semantic neutrals */
+  --white: #FFFFFF;
+  --black: #0A0A0A;
+
+  /* Type scale (modular 1.25) */
+  --fs-xs:   0.75rem;   /* 12 */
+  --fs-sm:   0.875rem;  /* 14 */
+  --fs-base: 1rem;      /* 16 */
+  --fs-lg:   1.125rem;  /* 18 */
+  --fs-xl:   1.375rem;  /* 22 */
+  --fs-2xl:  1.75rem;   /* 28 */
+  --fs-3xl:  2.25rem;   /* 36 */
+  --fs-4xl:  3rem;      /* 48 */
+  --fs-5xl:  4rem;      /* 64 */
+  --fs-6xl:  5.25rem;   /* 84 */
+
+  /* Spacing (4px base) */
+  --sp-1:  0.25rem;
+  --sp-2:  0.5rem;
+  --sp-3:  0.75rem;
+  --sp-4:  1rem;
+  --sp-5:  1.5rem;
+  --sp-6:  2rem;
+  --sp-7:  3rem;
+  --sp-8:  4rem;
+  --sp-9:  6rem;
+  --sp-10: 8rem;
+
+  /* Radii */
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 16px;
+  --r-xl: 24px;
+  --r-pill: 999px;
+
+  /* Shadows */
+  --sh-sm: 0 1px 2px rgba(8, 66, 90, 0.08);
+  --sh-md: 0 6px 16px rgba(8, 66, 90, 0.10);
+  --sh-lg: 0 18px 40px rgba(8, 66, 90, 0.14);
+  --sh-glow: 0 0 0 4px rgba(56, 168, 205, 0.25);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 160ms;
+  --dur-med: 280ms;
+  --dur-slow: 520ms;
+
+  /* ---------- SEMANTIC: purpose aliases ---------- */
+  --color-bg:           var(--sand-50);
+  --color-bg-alt:       var(--white);
+  --color-bg-deep:      var(--blue-900);
+  --color-surface:      var(--white);
+  --color-surface-alt:  var(--blue-50);
+
+  --color-fg:           var(--blue-900);
+  --color-fg-muted:     var(--sand-500);
+  --color-fg-on-deep:   var(--sand-50);
+
+  --color-primary:      var(--blue-600);
+  --color-primary-hover:var(--blue-700);
+  --color-primary-fg:   var(--white);
+
+  --color-accent:       var(--sun-500);
+  --color-accent-hover: var(--sun-600);
+  --color-accent-fg:    var(--blue-900);
+
+  --color-danger:       var(--coral-500);
+  --color-danger-fg:    var(--white);
+
+  --color-border:       var(--sand-200);
+  --color-border-strong:var(--blue-200);
+
+  --color-success:      #2E8C5A;
+  --color-warning:      #D49808;
+
+  /* Typography roles */
+  --font-display: "Fraunces", "Times New Roman", Georgia, serif;
+  --font-body:    "Inter Tight", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, "Cascadia Code", monospace;
+
+  /* ---------- COMPONENT: per-component ---------- */
+  --btn-primary-bg:       var(--color-primary);
+  --btn-primary-bg-hover: var(--color-primary-hover);
+  --btn-primary-fg:       var(--color-primary-fg);
+  --btn-radius:           var(--r-pill);
+  --btn-pad-y:            0.95rem;
+  --btn-pad-x:            1.75rem;
+
+  --card-bg:     var(--color-surface);
+  --card-border: 1px solid var(--color-border);
+  --card-radius: var(--r-lg);
+  --card-shadow: var(--sh-md);
+
+  --nav-bg:     rgba(255, 255, 255, 0.85);
+  --nav-blur:   saturate(180%) blur(14px);
+  --nav-height: 76px;
+
+  --hero-overlay: linear-gradient(180deg, rgba(8,66,90,0.10) 0%, rgba(8,66,90,0.55) 100%);
+}
+
+/* Optional dark theme — flip semantic layer only */
+[data-theme="dark"] {
+  --color-bg:          var(--blue-900);
+  --color-bg-alt:      var(--blue-800);
+  --color-surface:     var(--blue-800);
+  --color-surface-alt: var(--blue-700);
+  --color-fg:          var(--sand-50);
+  --color-fg-muted:    var(--sand-300);
+  --color-border:      rgba(255,255,255,0.08);
+  --nav-bg:            rgba(8, 66, 90, 0.85);
+}
