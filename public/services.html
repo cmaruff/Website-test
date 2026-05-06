@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="/assets/css/tokens.css">
   <link rel="stylesheet" href="/assets/css/base.css">
   <link rel="stylesheet" href="/assets/css/services.css">
+  <link rel="stylesheet" href="/assets/css/drop.css">
 
   <script type="application/ld+json">
   {
@@ -118,6 +119,171 @@
         what was done. If chemistry is drifting we flag it on the report and
         act before it turns into a green pool.
       </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INTERACTIVE POOL DIAGRAM ============ -->
+<section class="pool-diagram">
+  <div class="container">
+    <div class="section-head section-head--start reveal">
+      <span class="eyebrow">What gets serviced</span>
+      <h2>Tap any part of the pool.</h2>
+      <p>A normal residential pool, top to bottom — every dot below is something we touch on a regular service. Have a click around.</p>
+    </div>
+    <div class="pool-stage reveal">
+      <svg class="pool-svg" viewBox="0 0 900 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Interactive cross-section of a pool showing serviced components">
+        <defs>
+          <linearGradient id="poolWater" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0"  stop-color="#A8DBEA"/>
+            <stop offset=".4" stop-color="#6FC2DC"/>
+            <stop offset="1"  stop-color="#0E6E94"/>
+          </linearGradient>
+          <linearGradient id="poolDeck" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#F4F0E8"/>
+            <stop offset="1" stop-color="#E5DECF"/>
+          </linearGradient>
+          <linearGradient id="poolWall" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#0A5573"/>
+            <stop offset="1" stop-color="#08425A"/>
+          </linearGradient>
+          <pattern id="caustics" width="60" height="60" patternUnits="userSpaceOnUse">
+            <path d="M0 30 Q 15 22, 30 30 T 60 30" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1.4"/>
+          </pattern>
+        </defs>
+
+        <!-- Sky / yard background -->
+        <rect width="900" height="170" fill="#EEF8FB"/>
+
+        <!-- Sun -->
+        <circle cx="780" cy="70" r="32" fill="#FFD057" opacity=".75"/>
+
+        <!-- Distant palm silhouettes -->
+        <g opacity=".25" fill="#0A5573">
+          <path d="M 70 170 Q 65 130, 55 110 Q 75 120, 80 100 Q 85 130, 95 145 Q 90 130, 110 120 Q 95 145, 95 170 Z"/>
+          <path d="M 830 170 Q 826 140, 818 122 Q 836 130, 842 112 Q 846 138, 854 152 Q 850 140, 866 130 Q 853 152, 855 170 Z"/>
+        </g>
+
+        <!-- Ground / deck -->
+        <rect y="170" width="900" height="40" fill="url(#poolDeck)"/>
+
+        <!-- Equipment shed (pump + filter + chlorinator on left) -->
+        <g class="pool-shed">
+          <rect x="60" y="138" width="140" height="72" fill="#FBF9F5" stroke="#C9BFA8" stroke-width="1.4" rx="4"/>
+          <rect x="60" y="138" width="140" height="14" fill="#0A5573"/>
+          <text x="130" y="148" text-anchor="middle" font-size="9" fill="#FFFFFF" letter-spacing=".15em">EQUIPMENT</text>
+          <!-- Pump -->
+          <circle cx="92" cy="180" r="14" fill="#1487B2" stroke="#0A5573" stroke-width="1.5"/>
+          <circle cx="92" cy="180" r="5" fill="#FBF9F5"/>
+          <!-- Filter (vertical cylinder) -->
+          <rect x="124" y="158" width="22" height="44" fill="#0A5573" rx="3"/>
+          <circle cx="135" cy="166" r="3" fill="#FFD057"/>
+          <!-- Chlorinator -->
+          <rect x="158" y="164" width="32" height="38" fill="#08425A" rx="3"/>
+          <rect x="162" y="170" width="24" height="6" fill="#1487B2"/>
+          <rect x="162" y="180" width="24" height="3" fill="#1487B2" opacity=".7"/>
+          <rect x="162" y="186" width="24" height="3" fill="#1487B2" opacity=".5"/>
+          <!-- Pipe to pool -->
+          <path d="M 200 200 L 250 200 L 250 240" fill="none" stroke="#0A5573" stroke-width="6" stroke-linecap="round"/>
+        </g>
+
+        <!-- Pool walls + floor -->
+        <path d="M 250 210 L 250 410 Q 460 450, 700 410 L 700 210 Z" fill="url(#poolWall)"/>
+
+        <!-- Water -->
+        <path d="M 256 218 L 256 405 Q 460 440, 694 405 L 694 218 Z" fill="url(#poolWater)"/>
+        <!-- Caustic overlay -->
+        <path d="M 256 218 L 256 405 Q 460 440, 694 405 L 694 218 Z" fill="url(#caustics)" opacity=".7"/>
+        <!-- Water surface line -->
+        <line x1="256" y1="222" x2="694" y2="222" stroke="#FFFFFF" stroke-width="2" opacity=".85"/>
+
+        <!-- Tile band at waterline -->
+        <rect x="250" y="210" width="450" height="14" fill="#1487B2"/>
+        <g opacity=".25" stroke="#FFFFFF" stroke-width="1">
+          <line x1="280" y1="210" x2="280" y2="224"/><line x1="320" y1="210" x2="320" y2="224"/>
+          <line x1="360" y1="210" x2="360" y2="224"/><line x1="400" y1="210" x2="400" y2="224"/>
+          <line x1="440" y1="210" x2="440" y2="224"/><line x1="480" y1="210" x2="480" y2="224"/>
+          <line x1="520" y1="210" x2="520" y2="224"/><line x1="560" y1="210" x2="560" y2="224"/>
+          <line x1="600" y1="210" x2="600" y2="224"/><line x1="640" y1="210" x2="640" y2="224"/>
+          <line x1="680" y1="210" x2="680" y2="224"/>
+        </g>
+
+        <!-- Skimmer mouth on left wall -->
+        <rect x="246" y="226" width="14" height="16" fill="#08425A" rx="1"/>
+        <rect x="248" y="228" width="10" height="3" fill="#0E6E94"/>
+
+        <!-- Return jet on right wall -->
+        <rect x="690" y="260" width="12" height="10" fill="#08425A" rx="1"/>
+        <g class="jet-stream" opacity=".7">
+          <path d="M 686 265 Q 670 263, 658 268" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <path d="M 685 268 Q 668 270, 654 275" stroke="#FFFFFF" stroke-width="1.4" fill="none" stroke-linecap="round" opacity=".6"/>
+        </g>
+
+        <!-- A drifting leaf -->
+        <g transform="translate(420 234) rotate(20)">
+          <path d="M 0 0 Q 8 -6, 16 0 Q 8 6, 0 0 Z" fill="#5DCAA5"/>
+          <line x1="0" y1="0" x2="16" y2="0" stroke="#1A5A38" stroke-width="0.6"/>
+        </g>
+
+        <!-- Vacuum head on floor -->
+        <g class="pool-vac">
+          <ellipse cx="380" cy="416" rx="28" ry="6" fill="#08425A"/>
+          <rect x="370" y="396" width="20" height="16" fill="#1487B2" rx="2"/>
+          <path d="M 380 396 Q 360 340, 280 224" stroke="#0A5573" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="6 4"/>
+        </g>
+
+        <!-- ===== HOTSPOTS ===== -->
+        <g class="pool-hot" tabindex="0" role="button" aria-label="Skimmer"
+           data-key="skimmer">
+          <circle cx="253" cy="234" r="14" class="hot-pulse"/>
+          <circle cx="253" cy="234" r="9"  class="hot-dot"/>
+          <text x="253" y="238" text-anchor="middle" class="hot-num">1</text>
+        </g>
+        <g class="pool-hot" tabindex="0" role="button" aria-label="Pump"
+           data-key="pump">
+          <circle cx="92" cy="180" r="14" class="hot-pulse"/>
+          <circle cx="92" cy="180" r="9"  class="hot-dot"/>
+          <text x="92" y="184" text-anchor="middle" class="hot-num">2</text>
+        </g>
+        <g class="pool-hot" tabindex="0" role="button" aria-label="Filter"
+           data-key="filter">
+          <circle cx="135" cy="180" r="14" class="hot-pulse"/>
+          <circle cx="135" cy="180" r="9"  class="hot-dot"/>
+          <text x="135" y="184" text-anchor="middle" class="hot-num">3</text>
+        </g>
+        <g class="pool-hot" tabindex="0" role="button" aria-label="Chlorinator"
+           data-key="chlorinator">
+          <circle cx="174" cy="180" r="14" class="hot-pulse"/>
+          <circle cx="174" cy="180" r="9"  class="hot-dot"/>
+          <text x="174" y="184" text-anchor="middle" class="hot-num">4</text>
+        </g>
+        <g class="pool-hot" tabindex="0" role="button" aria-label="Return jet"
+           data-key="return">
+          <circle cx="696" cy="265" r="14" class="hot-pulse"/>
+          <circle cx="696" cy="265" r="9"  class="hot-dot"/>
+          <text x="696" y="269" text-anchor="middle" class="hot-num">5</text>
+        </g>
+        <g class="pool-hot" tabindex="0" role="button" aria-label="Tiles and surrounds"
+           data-key="tiles">
+          <circle cx="475" cy="217" r="14" class="hot-pulse"/>
+          <circle cx="475" cy="217" r="9"  class="hot-dot"/>
+          <text x="475" y="221" text-anchor="middle" class="hot-num">6</text>
+        </g>
+        <g class="pool-hot" tabindex="0" role="button" aria-label="Vacuum and floor"
+           data-key="vacuum">
+          <circle cx="380" cy="404" r="14" class="hot-pulse"/>
+          <circle cx="380" cy="404" r="9"  class="hot-dot"/>
+          <text x="380" y="408" text-anchor="middle" class="hot-num">7</text>
+        </g>
+      </svg>
+
+      <!-- Caption panel -->
+      <aside class="pool-caption" id="poolCaption">
+        <span class="pool-caption__num">1</span>
+        <h3 class="pool-caption__title">Skimmer</h3>
+        <p class="pool-caption__body">The mouth on the side of the pool that pulls in floating debris before it sinks. We empty the basket every visit and check the throat for cracks — it's the first thing to fail in a leaf-heavy pool.</p>
+        <span class="pool-caption__hint">Click a numbered dot above to switch.</span>
+      </aside>
     </div>
   </div>
 </section>
@@ -348,7 +514,9 @@
 <script src="/assets/js/supabase-config.js"></script>
 <script src="/assets/js/business-info.js"></script>
 <script src="/assets/js/services-page.js"></script>
+<script src="/assets/js/services-pool.js"></script>
 <script src="/assets/js/main.js"></script>
+<script src="/assets/js/drop.js"></script>
 <script src="/assets/js/demo-banner.js"></script>
 </body>
 </html>

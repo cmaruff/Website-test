@@ -23,6 +23,26 @@
     radial-gradient(circle at 50% 80%, rgba(168, 219, 234, 0.35) 0, transparent 7%);
   animation: drift 18s ease-in-out infinite;
 }
+/* Cursor-driven ripple — soft halo that follows where you look */
+.hero {
+  --m-x: 70%;
+  --m-y: 30%;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at var(--m-x) var(--m-y),
+      rgba(255, 208, 87, 0.20) 0%,
+      rgba(56, 168, 205, 0.14) 18%,
+      transparent 42%);
+  transition: background-position 80ms linear;
+  mix-blend-mode: screen;
+  z-index: 0;
+}
+.hero__inner { z-index: 1; }
 @keyframes drift {
   0%, 100% { transform: translate3d(0,0,0); }
   50%      { transform: translate3d(20px,-15px,0); }
