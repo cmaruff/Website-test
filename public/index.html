@@ -125,13 +125,13 @@
     <div class="hero__content reveal">
       <span class="badge">Mobile pool service · Townsville</span>
       <h1>
-        Townsville's mobile<br>
-        <span class="hero__accent">pool service.</span>
+        Sparkling pools,<br>
+        <span class="hero__accent">zero hassle.</span>
       </h1>
       <p class="hero__lede">
-        Sparkling pools, zero hassle. We come to you across Townsville and North
-        Queensland — weekly, fortnightly, 4-weekly, or one-off — with a photo and
-        chemical report after every visit.
+        TQ Pool Services is Townsville's mobile pool team. Weekly, fortnightly,
+        4-weekly or one-off — we come to you, with a photo and chemical report
+        after every visit.
       </p>
       <div class="hero__cta">
         <a href="/book.html" class="btn btn-accent btn-lg">Book a pool service</a>
@@ -189,7 +189,7 @@
   <div class="container">
     <div class="section-head reveal">
       <span class="eyebrow">What we do</span>
-      <h2>Townsville pool service, on a schedule that suits you.</h2>
+      <h2>On a schedule that suits you.</h2>
     </div>
     <div class="services-grid">
       <article class="service-card reveal">
@@ -271,11 +271,11 @@
   <div class="container split">
     <div class="reveal">
       <span class="eyebrow">Service area</span>
-      <h2>Pool service<br>across Townsville<br>&amp; the suburbs.</h2>
+      <h2>Where we go.</h2>
       <p class="mb-4">
-        TQ Pool Services covers residential and corporate pools right across Townsville
-        and the surrounding region. Outside the radius? Drop us a line — we'll see what
-        we can do.
+        We cover residential and corporate pools across Townsville and the
+        surrounding suburbs. Outside the 50&nbsp;km radius? Get in touch — we
+        often travel further for corporate jobs.
       </p>
       <ul class="suburb-list">
         <li>Kirwan</li><li>Annandale</li><li>Hyde Park</li><li>Idalia</li>
@@ -285,43 +285,79 @@
       <a href="/contact.html" class="btn btn-primary">Get in touch</a>
     </div>
     <div class="reveal map-wrap" style="transition-delay:.15s">
-      <svg class="coast-map" viewBox="0 0 520 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Service area map of Townsville and suburbs">
+      <svg class="coast-map" viewBox="0 0 520 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Map of TQ Pool Services Townsville service area">
         <defs>
-          <radialGradient id="mwater" cx="0.35" cy="0.55" r="0.7">
+          <linearGradient id="mwater" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0" stop-color="#D5EEF6"/>
             <stop offset="1" stop-color="#A8DBEA"/>
-          </radialGradient>
+          </linearGradient>
           <linearGradient id="mland" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stop-color="#FBF9F5"/>
             <stop offset="1" stop-color="#F4F0E8"/>
           </linearGradient>
         </defs>
+
+        <!-- Background ocean (Coral Sea, east) -->
         <rect width="520" height="480" fill="url(#mwater)"/>
-        <!-- Cleveland Bay coastline (stylised) -->
-        <path d="M520 80 C 380 110, 330 180, 290 220 S 240 320, 320 360 S 460 380, 520 360 Z" fill="url(#mland)" stroke="#E5DECF" stroke-width="1"/>
-        <path d="M-20 0 C 80 30, 140 70, 220 90 S 320 140, 360 220 S 380 320, 360 400 S 280 480, 0 480 L -20 480 Z" fill="url(#mland)" stroke="#E5DECF" stroke-width="1"/>
-        <!-- Magnetic Island -->
-        <ellipse cx="80" cy="80" rx="44" ry="22" fill="url(#mland)" stroke="#E5DECF"/>
-        <text x="80" y="84" text-anchor="middle" font-size="9" fill="#6A6151" letter-spacing="0.1em">MAGNETIC IS.</text>
-        <!-- Service radius -->
-        <circle cx="245" cy="265" r="120" fill="rgba(56,168,205,0.08)" stroke="#1487B2" stroke-width="1.2" stroke-dasharray="4 4"/>
-        <text x="160" y="155" font-size="10" fill="#0E6E94" letter-spacing="0.12em">50 KM SERVICE RADIUS</text>
-        <!-- Suburb pins -->
-        <g class="pin" transform="translate(245,265)">
-          <circle r="7" fill="#0E6E94"/><circle r="3" fill="#FFFFFF"/>
-          <text x="12" y="4" font-size="11" font-weight="700" fill="#062E3F">Townsville CBD</text>
+
+        <!-- Mainland: NQ coast runs roughly N-S, Townsville on the bay.
+             Land occupies the western 65 % of the canvas with a soft
+             coastline curving in around Cleveland Bay. -->
+        <path d="
+          M 0 0
+          L 360 0
+          C 350 60, 340 100, 360 150
+          C 380 200, 365 240, 340 270
+          C 320 295, 315 330, 340 360
+          C 360 390, 360 430, 330 480
+          L 0 480 Z
+        " fill="url(#mland)" stroke="#E5DECF" stroke-width="1"/>
+
+        <!-- Ross River — winds from Mt Stuart area to the bay -->
+        <path d="M 90 410 Q 200 380, 250 340 T 320 295" fill="none" stroke="#A8DBEA" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+
+        <!-- Magnetic Island (offshore NE) -->
+        <ellipse cx="450" cy="100" rx="38" ry="22" fill="url(#mland)" stroke="#E5DECF"/>
+        <text x="450" y="140" text-anchor="middle" font-size="10" fill="#6A6151" letter-spacing="0.1em">MAGNETIC IS.</text>
+
+        <!-- Compass -->
+        <g transform="translate(40,40)" fill="#0A5573" opacity="0.6">
+          <circle r="14" fill="none" stroke="#0A5573" stroke-width="0.8"/>
+          <path d="M 0 -10 L 3 0 L 0 10 L -3 0 Z" fill="#0E6E94"/>
+          <text y="-18" text-anchor="middle" font-size="9" font-weight="700">N</text>
         </g>
-        <g class="pin" transform="translate(195,295)"><circle r="5" fill="#1487B2"/><text x="9" y="4" font-size="10" fill="#08425A">Kirwan</text></g>
-        <g class="pin" transform="translate(225,235)"><circle r="5" fill="#1487B2"/><text x="9" y="4" font-size="10" fill="#08425A">North Ward</text></g>
-        <g class="pin" transform="translate(265,310)"><circle r="5" fill="#1487B2"/><text x="9" y="4" font-size="10" fill="#08425A">Annandale</text></g>
-        <g class="pin" transform="translate(285,260)"><circle r="5" fill="#1487B2"/><text x="9" y="4" font-size="10" fill="#08425A">Hyde Park</text></g>
-        <g class="pin" transform="translate(295,330)"><circle r="5" fill="#1487B2"/><text x="9" y="4" font-size="10" fill="#08425A">Idalia</text></g>
-        <g class="pin" transform="translate(220,335)"><circle r="5" fill="#1487B2"/><text x="9" y="4" font-size="10" fill="#08425A">Mundingburra</text></g>
-        <g class="pin" transform="translate(195,355)"><circle r="5" fill="#1487B2"/><text x="9" y="4" font-size="10" fill="#08425A">Aitkenvale</text></g>
-        <g class="pin" transform="translate(255,295)"><circle r="5" fill="#1487B2"/><text x="9" y="4" font-size="10" fill="#08425A">Hermit Park</text></g>
-        <g class="pin" transform="translate(165,235)"><circle r="5" fill="#1487B2"/><text x="9" y="4" font-size="10" fill="#08425A">Mt Louisa</text></g>
-        <g class="pin" transform="translate(140,180)"><circle r="5" fill="#1487B2"/><text x="9" y="4" font-size="10" fill="#08425A">Bushland Bch</text></g>
+
+        <!-- 50 km service radius around Townsville CBD -->
+        <circle cx="310" cy="245" r="135" fill="rgba(20,135,178,0.10)" stroke="#1487B2" stroke-width="1.2" stroke-dasharray="4 4"/>
+        <text x="310" y="100" text-anchor="middle" font-size="10" fill="#0E6E94" letter-spacing="0.14em">50 KM SERVICE RADIUS</text>
+
+        <!-- Numbered pins (correct relative positions) -->
+        <g class="pin pin--cbd"><circle cx="310" cy="245" r="9" fill="#0E6E94"/><text x="310" y="249" text-anchor="middle" font-size="11" font-weight="800" fill="#FFFFFF">1</text></g>
+
+        <g class="pin"><circle cx="318" cy="218" r="8" fill="#1487B2"/><text x="318" y="222" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">2</text></g>
+        <g class="pin"><circle cx="280" cy="245" r="8" fill="#1487B2"/><text x="280" y="249" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">3</text></g>
+        <g class="pin"><circle cx="295" cy="278" r="8" fill="#1487B2"/><text x="295" y="282" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">4</text></g>
+        <g class="pin"><circle cx="305" cy="310" r="8" fill="#1487B2"/><text x="305" y="314" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">5</text></g>
+        <g class="pin"><circle cx="345" cy="288" r="8" fill="#1487B2"/><text x="345" y="292" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">6</text></g>
+        <g class="pin"><circle cx="262" cy="270" r="8" fill="#1487B2"/><text x="262" y="274" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">7</text></g>
+        <g class="pin"><circle cx="240" cy="298" r="8" fill="#1487B2"/><text x="240" y="302" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">8</text></g>
+        <g class="pin"><circle cx="240" cy="200" r="8" fill="#1487B2"/><text x="240" y="204" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">9</text></g>
+        <g class="pin"><circle cx="180" cy="335" r="8" fill="#1487B2"/><text x="180" y="339" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">10</text></g>
+        <g class="pin"><circle cx="220" cy="100" r="8" fill="#1487B2"/><text x="220" y="104" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">11</text></g>
       </svg>
+      <ol class="map-key">
+        <li><span>1</span>Townsville CBD</li>
+        <li><span>2</span>North Ward</li>
+        <li><span>3</span>Hyde Park</li>
+        <li><span>4</span>Hermit Park</li>
+        <li><span>5</span>Annandale</li>
+        <li><span>6</span>Idalia</li>
+        <li><span>7</span>Mundingburra</li>
+        <li><span>8</span>Aitkenvale</li>
+        <li><span>9</span>Mt Louisa</li>
+        <li><span>10</span>Kirwan</li>
+        <li><span>11</span>Bushland Beach</li>
+      </ol>
     </div>
   </div>
 </section>
@@ -356,8 +392,8 @@
   <div class="container">
     <div class="section-head section-head--start reveal">
       <span class="eyebrow">Recent visits</span>
-      <h2>What a service<br>actually looks like.</h2>
-      <p>Real before/after from a Townsville fortnight rotation. Photos go in your inbox after every visit so you know exactly what was done.</p>
+      <h2>What a service actually looks like.</h2>
+      <p>Real before/after from a fortnight rotation. Photos land in your inbox after every visit so you know exactly what was done.</p>
     </div>
     <div class="work__grid">
       <figure class="work__tile reveal" data-shade="1">
@@ -386,7 +422,7 @@
   <div class="container">
     <div class="section-head section-head--start reveal">
       <span class="eyebrow">What clients say</span>
-      <h2>Townsville pool owners,<br>in their own words.</h2>
+      <h2>In their own words.</h2>
     </div>
     <div class="reviews__grid">
       <figure class="quote reveal">
@@ -419,7 +455,7 @@
 <section class="cta-final">
   <div class="container">
     <div class="cta-final__card reveal">
-      <h2>Ready to book a Townsville pool service?</h2>
+      <h2>Ready when you are.</h2>
       <p>Book online in under two minutes — or call us if you'd rather chat.</p>
       <div class="hero__cta">
         <a href="/book.html" class="btn btn-accent btn-lg">Book online</a>
