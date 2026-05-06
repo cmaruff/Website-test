@@ -193,21 +193,41 @@
     </div>
     <div class="services-grid">
       <article class="service-card reveal">
+        <span class="service-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7h18M3 12h18M3 17h18"/><circle cx="7" cy="7" r="1.3"/><circle cx="13" cy="12" r="1.3"/><circle cx="9" cy="17" r="1.3"/>
+          </svg>
+        </span>
         <h3>Regular pool servicing</h3>
         <p>Weekly, fortnightly or 4-weekly visits. Full clean, chemical balance, equipment check, photo report.</p>
         <span class="service-card__price">From $58</span>
       </article>
       <article class="service-card reveal" style="transition-delay:.1s">
+        <span class="service-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/>
+          </svg>
+        </span>
         <h3>One-off pool clean</h3>
         <p>Pool needs a refresh before guests arrive? We'll get it sparkling — no contract required.</p>
         <span class="service-card__price">From $130</span>
       </article>
       <article class="service-card reveal" style="transition-delay:.2s">
+        <span class="service-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3c4 4 6 7 6 11a6 6 0 1 1-12 0c0-4 2-7 6-11z"/><path d="M9 14a3 3 0 0 0 3 3"/>
+          </svg>
+        </span>
         <h3>Green pool recovery</h3>
         <p>Algae taken over? We'll bring your pool back to crystal clear with a tailored recovery plan.</p>
         <span class="service-card__price">Quote on site</span>
       </article>
       <article class="service-card reveal" style="transition-delay:.3s">
+        <span class="service-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 3h6v5l4 8a3 3 0 0 1-3 4H8a3 3 0 0 1-3-4l4-8z"/><path d="M7 14h10"/>
+          </svg>
+        </span>
         <h3>Pool water testing &amp; balancing</h3>
         <p>Just need a chemical check? Quick visit, full water analysis, dosing recommendations.</p>
         <span class="service-card__price">From $54</span>
@@ -246,28 +266,152 @@
   </div>
 </section>
 
-<!-- ============ AREAS / TRUST ============ -->
+<!-- ============ AREAS / MAP ============ -->
 <section class="trust">
   <div class="container split">
     <div class="reveal">
       <span class="eyebrow">Service area</span>
-      <h2>Pool service across Townsville &amp; suburbs.</h2>
+      <h2>Pool service<br>across Townsville<br>&amp; the suburbs.</h2>
       <p class="mb-4">
         TQ Pool Services covers residential and corporate pools right across Townsville
-        and the surrounding region — Kirwan, Annandale, Hyde Park, Idalia, North Ward,
-        Mundingburra, Aitkenvale, Hermit Park, Mt Louisa, and out to Bushland Beach.
-        Outside that radius? Drop us a line — we'll see what we can do.
+        and the surrounding region. Outside the radius? Drop us a line — we'll see what
+        we can do.
       </p>
+      <ul class="suburb-list">
+        <li>Kirwan</li><li>Annandale</li><li>Hyde Park</li><li>Idalia</li>
+        <li>North Ward</li><li>Mundingburra</li><li>Aitkenvale</li>
+        <li>Hermit Park</li><li>Mt Louisa</li><li>Bushland Beach</li>
+      </ul>
       <a href="/contact.html" class="btn btn-primary">Get in touch</a>
     </div>
-    <div class="reveal" style="transition-delay:.15s">
-      <div class="trust__stats">
-        <div><strong>100%</strong><span>Mobile service</span></div>
-        <div><strong>Photo</strong><span>report each visit</span></div>
-        <div><strong>Local</strong><span>family-run</span></div>
-        <div><strong>4 plans</strong><span>weekly to one-off</span></div>
-      </div>
+    <div class="reveal map-wrap" style="transition-delay:.15s">
+      <svg class="coast-map" viewBox="0 0 520 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Service area map of Townsville and suburbs">
+        <defs>
+          <radialGradient id="mwater" cx="0.35" cy="0.55" r="0.7">
+            <stop offset="0" stop-color="#D5EEF6"/>
+            <stop offset="1" stop-color="#A8DBEA"/>
+          </radialGradient>
+          <linearGradient id="mland" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#FBF9F5"/>
+            <stop offset="1" stop-color="#F4F0E8"/>
+          </linearGradient>
+        </defs>
+        <rect width="520" height="480" fill="url(#mwater)"/>
+        <!-- Cleveland Bay coastline (stylised) -->
+        <path d="M520 80 C 380 110, 330 180, 290 220 S 240 320, 320 360 S 460 380, 520 360 Z" fill="url(#mland)" stroke="#E5DECF" stroke-width="1"/>
+        <path d="M-20 0 C 80 30, 140 70, 220 90 S 320 140, 360 220 S 380 320, 360 400 S 280 480, 0 480 L -20 480 Z" fill="url(#mland)" stroke="#E5DECF" stroke-width="1"/>
+        <!-- Magnetic Island -->
+        <ellipse cx="80" cy="80" rx="44" ry="22" fill="url(#mland)" stroke="#E5DECF"/>
+        <text x="80" y="84" text-anchor="middle" font-size="9" fill="#6A6151" letter-spacing="0.1em">MAGNETIC IS.</text>
+        <!-- Service radius -->
+        <circle cx="245" cy="265" r="120" fill="rgba(56,168,205,0.08)" stroke="#1487B2" stroke-width="1.2" stroke-dasharray="4 4"/>
+        <text x="160" y="155" font-size="10" fill="#0E6E94" letter-spacing="0.12em">50 KM SERVICE RADIUS</text>
+        <!-- Suburb pins -->
+        <g class="pin" transform="translate(245,265)">
+          <circle r="7" fill="#0E6E94"/><circle r="3" fill="#FFFFFF"/>
+          <text x="12" y="4" font-size="11" font-weight="700" fill="#062E3F">Townsville CBD</text>
+        </g>
+        <g class="pin" transform="translate(195,295)"><circle r="5" fill="#1487B2"/><text x="9" y="4" font-size="10" fill="#08425A">Kirwan</text></g>
+        <g class="pin" transform="translate(225,235)"><circle r="5" fill="#1487B2"/><text x="9" y="4" font-size="10" fill="#08425A">North Ward</text></g>
+        <g class="pin" transform="translate(265,310)"><circle r="5" fill="#1487B2"/><text x="9" y="4" font-size="10" fill="#08425A">Annandale</text></g>
+        <g class="pin" transform="translate(285,260)"><circle r="5" fill="#1487B2"/><text x="9" y="4" font-size="10" fill="#08425A">Hyde Park</text></g>
+        <g class="pin" transform="translate(295,330)"><circle r="5" fill="#1487B2"/><text x="9" y="4" font-size="10" fill="#08425A">Idalia</text></g>
+        <g class="pin" transform="translate(220,335)"><circle r="5" fill="#1487B2"/><text x="9" y="4" font-size="10" fill="#08425A">Mundingburra</text></g>
+        <g class="pin" transform="translate(195,355)"><circle r="5" fill="#1487B2"/><text x="9" y="4" font-size="10" fill="#08425A">Aitkenvale</text></g>
+        <g class="pin" transform="translate(255,295)"><circle r="5" fill="#1487B2"/><text x="9" y="4" font-size="10" fill="#08425A">Hermit Park</text></g>
+        <g class="pin" transform="translate(165,235)"><circle r="5" fill="#1487B2"/><text x="9" y="4" font-size="10" fill="#08425A">Mt Louisa</text></g>
+        <g class="pin" transform="translate(140,180)"><circle r="5" fill="#1487B2"/><text x="9" y="4" font-size="10" fill="#08425A">Bushland Bch</text></g>
+      </svg>
     </div>
+  </div>
+</section>
+
+<!-- ============ TRUST STRIP ============ -->
+<section class="strip">
+  <div class="container strip__row">
+    <div class="strip__item reveal">
+      <span class="strip__num">100%</span>
+      <span class="strip__label">Mobile service</span>
+    </div>
+    <span class="strip__sep" aria-hidden="true"></span>
+    <div class="strip__item reveal" style="transition-delay:.05s">
+      <span class="strip__num">11</span>
+      <span class="strip__label">Suburbs we cover</span>
+    </div>
+    <span class="strip__sep" aria-hidden="true"></span>
+    <div class="strip__item reveal" style="transition-delay:.1s">
+      <span class="strip__num">24h</span>
+      <span class="strip__label">Reply window</span>
+    </div>
+    <span class="strip__sep" aria-hidden="true"></span>
+    <div class="strip__item reveal" style="transition-delay:.15s">
+      <span class="strip__num">Photo</span>
+      <span class="strip__label">Report each visit</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RECENT WORK ============ -->
+<section class="work">
+  <div class="container">
+    <div class="section-head section-head--start reveal">
+      <span class="eyebrow">Recent visits</span>
+      <h2>What a service<br>actually looks like.</h2>
+      <p>Real before/after from a Townsville fortnight rotation. Photos go in your inbox after every visit so you know exactly what was done.</p>
+    </div>
+    <div class="work__grid">
+      <figure class="work__tile reveal" data-shade="1">
+        <div class="work__media work__media--green" aria-hidden="true"></div>
+        <figcaption><span class="work__chip">Before</span> Hyde Park, post-storm</figcaption>
+      </figure>
+      <figure class="work__tile reveal" style="transition-delay:.05s" data-shade="2">
+        <div class="work__media work__media--clear" aria-hidden="true"></div>
+        <figcaption><span class="work__chip work__chip--ok">After</span> Hyde Park, +48 hrs</figcaption>
+      </figure>
+      <figure class="work__tile reveal" style="transition-delay:.1s" data-shade="3">
+        <div class="work__media work__media--haze" aria-hidden="true"></div>
+        <figcaption><span class="work__chip">Before</span> Annandale family pool</figcaption>
+      </figure>
+      <figure class="work__tile reveal" style="transition-delay:.15s" data-shade="4">
+        <div class="work__media work__media--bright" aria-hidden="true"></div>
+        <figcaption><span class="work__chip work__chip--ok">After</span> Annandale, regular fortnightly</figcaption>
+      </figure>
+    </div>
+    <p class="work__note">Photos shown are illustrative. Real before/after shots replace these once we've got your permission.</p>
+  </div>
+</section>
+
+<!-- ============ TESTIMONIALS ============ -->
+<section class="reviews">
+  <div class="container">
+    <div class="section-head section-head--start reveal">
+      <span class="eyebrow">What clients say</span>
+      <h2>Townsville pool owners,<br>in their own words.</h2>
+    </div>
+    <div class="reviews__grid">
+      <figure class="quote reveal">
+        <blockquote>Pool was knee-deep in palm fronds after the last cyclone. They came out the next morning, sent before/after photos, and we were swimming by Friday.</blockquote>
+        <figcaption>
+          <strong>Kelly A.</strong>
+          <span>Mt Louisa · fortnightly</span>
+        </figcaption>
+      </figure>
+      <figure class="quote quote--accent reveal" style="transition-delay:.08s">
+        <blockquote>Honest pricing, no upselling. They flagged the chlorinator cell needed replacing months before it failed and saved us a green pool over Christmas.</blockquote>
+        <figcaption>
+          <strong>Marcus W.</strong>
+          <span>Kirwan · weekly</span>
+        </figcaption>
+      </figure>
+      <figure class="quote reveal" style="transition-delay:.16s">
+        <blockquote>The chemical reports they email after each visit are gold. We can see at a glance whether anything's drifting and act on it.</blockquote>
+        <figcaption>
+          <strong>Priya P.</strong>
+          <span>Idalia · 4-weekly</span>
+        </figcaption>
+      </figure>
+    </div>
+    <p class="reviews__note">Demo testimonials — replace with real ones in <code>index.html</code> once you've collected reviews.</p>
   </div>
 </section>
 
