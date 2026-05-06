@@ -1,8 +1,11 @@
 // ============================================================
-// HERO MOUSE-TRAIL POOL RIPPLES
-// Spawns small water ripples that follow the cursor across the
-// hero. Throttled by minimum distance so we don't paint dozens
-// of nodes per second; respects reduced-motion users.
+// HERO POOL RIPPLES
+// Two layers of ripples on the hero:
+//   1. Ambient — large, multi-ring "rain on water" ripples spawn
+//      at random positions every couple of seconds. Always running.
+//   2. Cursor — small ripples that follow the cursor and a 3-ring
+//      splash on pointerdown. Distance-throttled.
+// Both honour prefers-reduced-motion.
 // ============================================================
 
 (function () {
@@ -11,36 +14,69 @@
   const hero = document.querySelector('.hero');
   if (!hero) return;
 
-  // Layer that holds the ripple nodes (positioned absolutely inside .hero)
   const layer = document.createElement('div');
   layer.className = 'hero-ripples';
   layer.setAttribute('aria-hidden', 'true');
   hero.appendChild(layer);
 
-  const MIN_DIST   = 28;     // px between spawns
-  const MAX_LIVE   = 14;     // hard cap on simultaneous ripples
-  const LIFE_MS    = 1100;   // matches CSS animation duration
+  const MIN_DIST  = 28;
+  const MAX_LIVE  = 22;
+  const CURSOR_MS = 1100;
+  const AMBIENT_MS = 2400;
   let lastX = -9999, lastY = -9999;
   let live = 0;
 
-  function spawn(x, y) {
+  function spawn(x, y, opts = {}) {
     if (live >= MAX_LIVE) return;
+    const ambient = !!opts.ambient;
     const r = document.createElement('span');
-    r.className = 'hero-ripple';
-    // Slight size + rotation jitter so the trail doesn't look mechanical
-    const size = 22 + Math.random() * 18;
+    r.className = ambient ? 'hero-ripple hero-ripple--ambient' : 'hero-ripple';
+    const baseSize = ambient
+      ? 60 + Math.random() * 70   // 60–130 px
+      : 22 + Math.random() * 18;  // 22–40 px
     r.style.left   = x + 'px';
     r.style.top    = y + 'px';
-    r.style.width  = size + 'px';
-    r.style.height = size + 'px';
+    r.style.width  = baseSize + 'px';
+    r.style.height = baseSize + 'px';
     r.style.setProperty('--rot', (Math.random() * 360).toFixed(0) + 'deg');
     layer.appendChild(r);
     live++;
-    setTimeout(() => { r.remove(); live--; }, LIFE_MS);
+    setTimeout(() => { r.remove(); live--; }, ambient ? AMBIENT_MS : CURSOR_MS);
   }
 
+  // ---- Ambient: rain-on-water ripples at random positions ----
+  function spawnAmbient() {
+    if (document.visibilityState !== 'visible') return;
+    const r = hero.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > window.innerHeight) return; // hero off-screen
+    // Avoid the dead-centre 30% horizontal band where the headline lives
+    let x;
+    const margin = 24;
+    const w = r.width - margin * 2;
+    const cBand = [w * 0.18, w * 0.62];
+    do {
+      x = margin + Math.random() * w;
+    } while (x > cBand[0] && x < cBand[1] && Math.random() < 0.65);
+    const y = r.height * 0.18 + Math.random() * (r.height * 0.78);
+    spawn(x, y, { ambient: true });
+  }
+
+  // Stagger initial bursts so it looks alive immediately
+  setTimeout(spawnAmbient, 350);
+  setTimeout(spawnAmbient, 900);
+  setTimeout(spawnAmbient, 1500);
+
+  function ambientLoop() {
+    spawnAmbient();
+    // Randomised cadence: 900ms – 2300ms between drops
+    const next = 900 + Math.random() * 1400;
+    setTimeout(ambientLoop, next);
+  }
+  setTimeout(ambientLoop, 2200);
+
+  // ---- Cursor trail ----
   hero.addEventListener('pointermove', (e) => {
-    if (e.pointerType === 'touch') return; // skip touch — different UX
+    if (e.pointerType === 'touch') return;
     const r = hero.getBoundingClientRect();
     const x = e.clientX - r.left;
     const y = e.clientY - r.top;
@@ -50,7 +86,7 @@
     spawn(x, y);
   }, { passive: true });
 
-  // A gentle splash on click — three concentric rings
+  // Click splash: three concentric rings
   hero.addEventListener('pointerdown', (e) => {
     if (e.pointerType === 'touch') return;
     const r = hero.getBoundingClientRect();
