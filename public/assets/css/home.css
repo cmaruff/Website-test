@@ -23,26 +23,45 @@
     radial-gradient(circle at 50% 80%, rgba(168, 219, 234, 0.35) 0, transparent 7%);
   animation: drift 18s ease-in-out infinite;
 }
-/* Cursor-driven ripple — soft halo that follows where you look */
-.hero {
-  --m-x: 70%;
-  --m-y: 30%;
-}
-.hero::after {
-  content: "";
+/* Mouse-trail pool ripples — water rings that follow the cursor */
+.hero-ripples {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background:
-    radial-gradient(circle at var(--m-x) var(--m-y),
-      rgba(255, 208, 87, 0.20) 0%,
-      rgba(56, 168, 205, 0.14) 18%,
-      transparent 42%);
-  transition: background-position 80ms linear;
-  mix-blend-mode: screen;
+  overflow: hidden;
   z-index: 0;
 }
-.hero__inner { z-index: 1; }
+.hero-ripple {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid rgba(56, 168, 205, 0.55);
+  background: radial-gradient(circle,
+    rgba(168, 219, 234, 0.35) 0%,
+    rgba(56, 168, 205, 0.10) 55%,
+    transparent 75%);
+  transform: translate(-50%, -50%) scale(0.4) rotate(var(--rot, 0deg));
+  opacity: 0.85;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  animation: hero-ripple-out 1100ms cubic-bezier(0.16, 0.84, 0.44, 1) forwards;
+}
+.hero-ripple::after {
+  content: "";
+  position: absolute;
+  inset: 18%;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 208, 87, 0.4);
+  opacity: 0.7;
+}
+@keyframes hero-ripple-out {
+  0%   { transform: translate(-50%, -50%) scale(0.35) rotate(var(--rot, 0deg)); opacity: 0; }
+  18%  { opacity: 0.9; }
+  100% { transform: translate(-50%, -50%) scale(2.6)  rotate(var(--rot, 0deg)); opacity: 0; }
+}
+.hero__inner { position: relative; z-index: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-ripples { display: none; }
+}
 @keyframes drift {
   0%, 100% { transform: translate3d(0,0,0); }
   50%      { transform: translate3d(20px,-15px,0); }

@@ -89,42 +89,134 @@
 <section class="prose">
   <div class="container">
     <div class="prose__inner reveal">
-      <span class="eyebrow">Local servicing</span>
-      <h2>Pool service in Townsville is its own thing.</h2>
-      <p>
-        North Queensland puts pools through more than the southern states ever
-        see. Long stretches of tropical heat drive evaporation and chlorine
-        demand up. The wet season dumps leaves, frangipani, mango blossom and
-        storm runoff into open water week after week. Salt-air on the coastal
-        side eats away at chlorinator cells, pump seals and filter housings
-        faster than the manufacturer manuals suggest. None of that is a problem
-        with the right cadence — it only becomes a problem when a pool is left
-        to drift between visits.
-      </p>
-      <p>
-        A regular Townsville pool service rotation typically runs fortnightly
-        through summer and can stretch to four-weekly in the cooler months. A
-        weekly schedule suits holiday rentals, family pools with heavy use, and
-        anything sitting under a big mango or palm canopy. Whatever the
-        cadence, the visit looks the same: a full clean, a complete chemical
-        balance, equipment and basket check, backwash or cartridge clean as
-        required, and a written report that's actually readable.
-      </p>
-      <p>
-        Because we're a mobile pool service, everything turns up in the van —
-        vacuum, brushes, test kit, dosing chemicals, cartridge cleaner. There
-        is nothing for you to stock beyond a few basics, and there is nothing
-        to drive to. Most of our regulars leave the side gate unlocked while
-        they're at work; we send before-and-after photos so you know exactly
-        what was done. If chemistry is drifting we flag it on the report and
-        act before it turns into a green pool.
-      </p>
+      <div class="prose__text">
+        <span class="eyebrow">Local servicing</span>
+        <h2>Pool service in Townsville is its own thing.</h2>
+        <p>
+          North Queensland puts pools through more than the southern states ever
+          see. Long stretches of tropical heat drive evaporation and chlorine
+          demand up. The wet season dumps leaves, frangipani, mango blossom and
+          storm runoff into open water week after week. Salt-air on the coastal
+          side eats away at chlorinator cells, pump seals and filter housings
+          faster than the manufacturer manuals suggest. None of that is a problem
+          with the right cadence — it only becomes a problem when a pool is left
+          to drift between visits.
+        </p>
+        <p>
+          A regular Townsville pool service rotation typically runs fortnightly
+          through summer and can stretch to four-weekly in the cooler months. A
+          weekly schedule suits holiday rentals, family pools with heavy use, and
+          anything sitting under a big mango or palm canopy. Whatever the
+          cadence, the visit looks the same: a full clean, a complete chemical
+          balance, equipment and basket check, backwash or cartridge clean as
+          required, and a written report that's actually readable.
+        </p>
+        <p>
+          Because we're a mobile pool service, everything turns up in the van —
+          vacuum, brushes, test kit, dosing chemicals, cartridge cleaner. There
+          is nothing for you to stock beyond a few basics, and there is nothing
+          to drive to. Most of our regulars leave the side gate unlocked while
+          they're at work; we send before-and-after photos so you know exactly
+          what was done. If chemistry is drifting we flag it on the report and
+          act before it turns into a green pool.
+        </p>
+      </div>
+
+      <figure class="prose__media" aria-label="Top-down illustration of a residential pool">
+        <svg class="prose-pool" viewBox="0 0 360 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+          <defs>
+            <linearGradient id="proseWater" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%"  stop-color="#7dd3fc"/>
+              <stop offset="55%" stop-color="#38bdf8"/>
+              <stop offset="100%" stop-color="#0284c7"/>
+            </linearGradient>
+            <linearGradient id="proseDeck" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"  stop-color="#f5efe6"/>
+              <stop offset="100%" stop-color="#e7dccb"/>
+            </linearGradient>
+            <pattern id="proseShimmer" width="38" height="38" patternUnits="userSpaceOnUse" patternTransform="rotate(18)">
+              <path d="M0 19 Q9 13 19 19 T38 19" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.4" stroke-linecap="round"/>
+            </pattern>
+          </defs>
+
+          <!-- Deck -->
+          <rect x="0" y="0" width="360" height="460" fill="url(#proseDeck)"/>
+          <!-- Subtle deck texture lines -->
+          <g stroke="rgba(0,0,0,0.05)" stroke-width="1">
+            <line x1="0" y1="92"  x2="360" y2="92"/>
+            <line x1="0" y1="184" x2="360" y2="184"/>
+            <line x1="0" y1="276" x2="360" y2="276"/>
+            <line x1="0" y1="368" x2="360" y2="368"/>
+          </g>
+
+          <!-- Palm shadow (top-left corner) -->
+          <g opacity="0.18" fill="#0c4a6e">
+            <ellipse cx="40" cy="50" rx="60" ry="22"/>
+            <path d="M40 50 q-30 -28 -34 -54 q22 12 38 30 q-2 12 -4 24 z"/>
+            <path d="M40 50 q26 -30 56 -36 q-12 22 -32 38 q-12 4 -24 -2 z"/>
+            <path d="M40 50 q-12 -34 -2 -64 q14 22 14 44 q-4 12 -12 20 z"/>
+          </g>
+
+          <!-- Pool basin (rounded rectangle) -->
+          <rect x="46" y="78" width="268" height="324" rx="34" ry="34" fill="url(#proseWater)"/>
+          <!-- Shimmer overlay -->
+          <rect x="46" y="78" width="268" height="324" rx="34" ry="34" fill="url(#proseShimmer)" opacity="0.45"/>
+          <!-- Inner edge highlight -->
+          <rect x="50" y="82" width="260" height="316" rx="30" ry="30" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="2"/>
+          <!-- Coping stones -->
+          <rect x="42" y="74" width="276" height="332" rx="38" ry="38" fill="none" stroke="#f8f4ec" stroke-width="6"/>
+          <rect x="42" y="74" width="276" height="332" rx="38" ry="38" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>
+
+          <!-- Skimmer (left side mid) -->
+          <g>
+            <rect x="40" y="200" width="14" height="40" rx="3" fill="#f8f4ec" stroke="rgba(0,0,0,0.12)"/>
+            <rect x="44" y="208" width="6" height="24" rx="1.5" fill="#0c4a6e" opacity="0.55"/>
+          </g>
+
+          <!-- Return jet (right side upper) -->
+          <g>
+            <circle cx="306" cy="170" r="6" fill="#f8f4ec" stroke="rgba(0,0,0,0.15)"/>
+            <circle cx="306" cy="170" r="2.5" fill="#0c4a6e"/>
+            <path d="M298 170 q-14 4 -28 -4" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M296 176 q-16 8 -34 4"   fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-linecap="round"/>
+          </g>
+
+          <!-- Steps (top-right inside) -->
+          <g fill="rgba(255,255,255,0.32)" stroke="rgba(255,255,255,0.55)" stroke-width="1">
+            <rect x="240" y="92" width="64" height="14" rx="3"/>
+            <rect x="252" y="110" width="52" height="14" rx="3"/>
+            <rect x="264" y="128" width="40" height="14" rx="3"/>
+          </g>
+
+          <!-- Ladder (bottom-left inside) -->
+          <g stroke="#f8f4ec" stroke-width="3" stroke-linecap="round" fill="none">
+            <line x1="78"  y1="372" x2="78"  y2="402"/>
+            <line x1="98"  y1="372" x2="98"  y2="402"/>
+            <line x1="78"  y1="382" x2="98"  y2="382"/>
+            <line x1="78"  y1="394" x2="98"  y2="394"/>
+          </g>
+
+          <!-- Pool floor cleaner / robot hint (centre) -->
+          <g transform="translate(170 250)">
+            <rect x="-18" y="-12" width="36" height="24" rx="6" fill="#0c4a6e" opacity="0.55"/>
+            <circle cx="0" cy="0" r="3" fill="#f8f4ec"/>
+            <path d="M-30 -22 q12 -10 26 -2" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.2"/>
+          </g>
+
+          <!-- Caption tag -->
+          <g transform="translate(220 412)">
+            <rect x="-72" y="-14" width="144" height="28" rx="14" fill="#0c4a6e"/>
+            <text x="0" y="5" text-anchor="middle" font-family="'Inter Tight', sans-serif" font-size="12" font-weight="600" fill="#f8f4ec" letter-spacing="0.5">TOP-DOWN VIEW</text>
+          </g>
+        </svg>
+        <figcaption class="prose__media-cap">A typical residential layout — what we touch every visit.</figcaption>
+      </figure>
     </div>
   </div>
 </section>
 
 <!-- ============ INTERACTIVE POOL DIAGRAM ============ -->
-<section class="pool-diagram">
+<section class="pool-diagram" data-drop-tip="pool-diagram">
   <div class="container">
     <div class="section-head section-head--start reveal">
       <span class="eyebrow">What gets serviced</span>
@@ -311,7 +403,7 @@
 </section>
 
 <!-- ============ PRICING TABLE ============ -->
-<section class="pricing">
+<section class="pricing" data-drop-tip="pricing">
   <div class="container">
     <div class="section-head reveal">
       <span class="eyebrow">Servicing costs</span>
@@ -388,7 +480,7 @@
 </section>
 
 <!-- ============ EXTRAS ============ -->
-<section class="extras">
+<section class="extras" data-drop-tip="extras">
   <div class="container">
     <div class="section-head reveal">
       <span class="eyebrow">Beyond regular service</span>
@@ -436,7 +528,7 @@
 </section>
 
 <!-- ============ FAQ ============ -->
-<section class="faq">
+<section class="faq" data-drop-tip="faq">
   <div class="container">
     <div class="section-head reveal">
       <span class="eyebrow">FAQs</span>
