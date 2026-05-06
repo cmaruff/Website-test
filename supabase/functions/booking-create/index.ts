@@ -1,17 +1,18 @@
 // ============================================================
 // EDGE FUNCTION: booking-create
-// Creates a booking row + Stripe Checkout session.
+// Creates a booking row + Square Hosted Checkout payment link.
 // Called from /book.html on form submit.
 //
 // Required env vars:
-//   STRIPE_SECRET_KEY
-//   SUPABASE_URL
-//   SUPABASE_SERVICE_ROLE_KEY
-//   PUBLIC_SITE_URL  (e.g. https://tqpoolservices.com)
+//   SQUARE_ACCESS_TOKEN          (Bearer access token, prod or sandbox)
+//   SQUARE_LOCATION_ID           (one location ID per Square account)
+//   SQUARE_API_BASE              (optional, defaults to https://connect.squareup.com)
+//   SUPABASE_URL                 (auto-injected by Supabase)
+//   SUPABASE_SERVICE_ROLE_KEY    (auto-injected by Supabase)
+//   PUBLIC_SITE_URL              (e.g. https://tqpoolservices.com)
 // ============================================================
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import Stripe from "https://esm.sh/stripe@14?target=denonext";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -29,11 +30,9 @@ Deno.serve(async (req) => {
       service_date,
       slot,
       report_included,
-      amount_cents,
       customer,
     } = body;
 
-    // Basic validation
     if (!service_code || !service_date || !slot || !customer?.email) {
       return json({ error: "Missing required fields" }, 400);
     }
@@ -43,10 +42,6 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
-      apiVersion: "2024-06-20",
-    });
-
     // 1. Look up service for verified pricing (don't trust client)
     const { data: svc, error: svcErr } = await supabase
       .from("services")
@@ -54,7 +49,6 @@ Deno.serve(async (req) => {
       .eq("code", service_code)
       .eq("active", true)
       .single();
-
     if (svcErr || !svc) return json({ error: "Service not found" }, 404);
 
     // Recompute total server-side
@@ -83,7 +77,6 @@ Deno.serve(async (req) => {
       if (cErr) throw cErr;
       customerId = created.id;
     } else {
-      // Update non-empty fields
       await supabase
         .from("customers")
         .update({
@@ -111,54 +104,68 @@ Deno.serve(async (req) => {
       })
       .select("id")
       .single();
-
     if (bErr) {
-      // Likely the unique-slot constraint
       if (bErr.code === "23505") {
         return json({ error: "That slot was just taken — please pick another." }, 409);
       }
       throw bErr;
     }
 
-    // 4. Stripe Checkout session
+    // 4. Create Square Payment Link (Hosted Checkout)
     const siteUrl = Deno.env.get("PUBLIC_SITE_URL") ?? "https://tqpoolservices.com";
+    const apiBase = Deno.env.get("SQUARE_API_BASE") ?? "https://connect.squareup.com";
 
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      payment_method_types: ["card"],
-      customer_email: customer.email,
-      line_items: [{
-        price_data: {
-          currency: "aud",
-          product_data: {
-            name: `${svc.name} — TQ Pool Services`,
-            description: `${service_date} · ${slot}${report_included ? " · with PDF report" : ""}`,
-          },
-          unit_amount: computedTotal,
-        },
-        quantity: 1,
-      }],
-      success_url: `${siteUrl}/booking-success.html?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url:  `${siteUrl}/book.html?cancelled=1`,
-      metadata: {
-        booking_id: booking.id,
-        customer_id: customerId,
+    const sqRes = await fetch(`${apiBase}/v2/online-checkout/payment-links`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${Deno.env.get("SQUARE_ACCESS_TOKEN")!}`,
+        "Square-Version": "2024-08-21",
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify({
+        idempotency_key: booking.id,
+        quick_pay: {
+          name: `${svc.name} — TQ Pool Services`,
+          price_money: { amount: computedTotal, currency: "AUD" },
+          location_id: Deno.env.get("SQUARE_LOCATION_ID")!,
+        },
+        checkout_options: {
+          redirect_url: `${siteUrl}/booking-success.html?b=${booking.id}`,
+          ask_for_shipping_address: false,
+          accepted_payment_methods: { apple_pay: true, google_pay: true },
+        },
+        pre_populated_data: {
+          buyer_email: customer.email,
+          buyer_phone_number: customer.phone || undefined,
+        },
+        payment_note: `Booking ${booking.id} — ${service_date} ${slot}`,
+      }),
     });
 
-    // 5. Save Stripe session id on the booking
+    if (!sqRes.ok) {
+      const err = await sqRes.text();
+      console.error("Square payment-link error:", err);
+      return json({ error: "Couldn't create payment link", detail: err }, 502);
+    }
+    const sqData = await sqRes.json();
+    const link = sqData.payment_link;
+
+    // 5. Save Square ids on the booking
     await supabase
       .from("bookings")
-      .update({ stripe_session_id: session.id })
+      .update({
+        square_order_id: link.order_id,
+        square_checkout_url: link.url,
+      })
       .eq("id", booking.id);
 
     return json({
       booking_id: booking.id,
-      checkout_url: session.url,
+      checkout_url: link.url,
     });
   } catch (err) {
     console.error("booking-create error:", err);
-    return json({ error: err.message ?? "Internal error" }, 500);
+    return json({ error: (err as Error).message ?? "Internal error" }, 500);
   }
 });
 

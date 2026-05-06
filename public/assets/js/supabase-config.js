@@ -18,8 +18,7 @@ window.TQ_CONFIG = {
   FN_BOOKING_CREATE: '/functions/v1/booking-create',
   FN_DISTANCE_CHECK: '/functions/v1/distance-check',
 
-  // Stripe (publishable key only — secret stays in Edge Functions)
-  STRIPE_PUBLISHABLE_KEY: 'pk_test_REPLACE_ME',
+  // Square (no public key needed — we redirect to Square's hosted checkout)
 
   // Service area
   SERVICE_ORIGIN: { lat: -19.2589, lng: 146.8169 },  // Townsville CBD

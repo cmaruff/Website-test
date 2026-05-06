@@ -7,34 +7,40 @@ Production-ready vanilla JS + Supabase build for a mobile pool service business.
 ```
 public/                 ← static frontend (upload this folder's contents to SiteGround)
 ├── index.html          ← home
-├── services.html       ← services & fees
+├── services.html       ← services & prices
 ├── contact.html        ← contact form
 ├── book.html           ← 3-step booking flow
 ├── booking-success.html
-├── .htaccess           ← SiteGround / Apache config (HTTPS, clean URLs, caching)
+├── blog.html           ← public blog (list + detail via ?slug=)
+├── products.html       ← public shop (list + detail via ?slug=)
+├── cart.html           ← cart + checkout (delivery + Square)
+├── sitemap.xml, robots.txt, favicon.svg, .htaccess
 ├── admin/              ← admin dashboard (single-page)
-│   ├── index.html
-│   ├── login.html
-│   ├── css/admin.css
-│   └── js/admin.js
 └── assets/
-    ├── css/   tokens.css, base.css, page-specific
-    └── js/    main.js, supabase-config.js, booking.js, contact.js,
-                mock-supabase.js (demo backend), demo-banner.js
+    ├── css/  tokens.css, base.css, page-specific
+    └── js/   main, supabase-config, business-info, booking, contact,
+              services-page, products, cart, cart-page, blog,
+              mock-supabase (demo backend), demo-banner
 
 supabase/
 ├── migrations/         ← run in order: 0001 → 0002 → 0003 → 0004
 └── functions/          ← Edge Functions (Deno)
-    ├── booking-create     creates booking + Stripe session
-    ├── stripe-webhook     confirms bookings on payment
-    ├── distance-check     geocodes address, checks service area
-    ├── send-confirmation  emails customer via Resend
-    └── monthly-seo-post   AI-drafts a blog post each month
+    ├── booking-create        booking + Square checkout link
+    ├── order-create          product order + delivery cost + Square
+    ├── square-webhook        confirms paid bookings/orders, saves card-on-file
+    ├── send-confirmation     emails customer via Resend
+    ├── distance-check        geocodes + checks service / delivery radius
+    ├── charge-saved-card     rebill a recurring customer's saved card
+    ├── qbo-connect           starts QuickBooks OAuth
+    ├── qbo-callback          QBO OAuth callback → stores tokens
+    ├── qbo-sync              creates QBO invoice + payment from booking/order
+    ├── send-sms-reminder     daily 24h reminder via Notifyre
+    └── calendar-feed         iCal subscribe URL for tech's calendar
 
 docs/
 ├── DEPLOY.md           ← step-by-step deploy instructions (incl. SiteGround)
 ├── BRAND.md            ← design tokens, colours, voice
-└── INTEGRATIONS.md     ← Stripe, QuickBooks, Resend, Google Maps
+└── INTEGRATIONS.md     ← Square, QuickBooks, Resend, Maps, Notifyre, iCal
 ```
 
 ## Quick start — demo mode (no backend required)
@@ -62,29 +68,26 @@ Out of the box every page works as a self-contained demo:
 To switch from demo to live, replace the placeholders in
 `public/assets/js/supabase-config.js` and follow `docs/DEPLOY.md`.
 
-## Phase 1 scope (what's in this build)
+## Scope (what's in this build)
 
-✅ Marketing site (Home / Services & Fees / Contact)
-✅ Online booking with date/slot picker, Stripe Checkout
+✅ Marketing site (Home / Services / Contact / Blog)
+✅ Online booking with date/slot picker, Square Hosted Checkout
 ✅ Service area validation (50km from Townsville CBD)
 ✅ Admin dashboard:
-   • Bookings (calendar + list + edit)
+   • Bookings (calendar + list + edit + rebill saved card)
    • Customers
    • Services (CRUD)
    • Products (CRUD)
+   • Posts / blog (admin write, public read)
    • Site Images (drag-and-drop swap)
    • Contact enquiries
-   • Settings
-✅ Stripe webhook → automatic confirmation emails (Resend)
-✅ Monthly SEO post auto-drafted by Anthropic API
-
-## Phase 2 (deferred — scaffolded, not wired)
-
-⚪ QuickBooks Online OAuth + invoice sync (fields are in schema)
-⚪ Public products listing pages
-⚪ SMS reminders via Notifyre (24hr-before)
-⚪ iCal feed for tech's calendar
-⚪ Stripe customer portal (saved cards, auto-rebill for ongoing)
+   • Settings (incl. QBO connect, iCal feed, SMS toggle)
+✅ Square webhook → automatic confirmation emails (Resend) → QuickBooks invoice sync
+✅ Public products store (cart, delivery cost calc, Square checkout)
+✅ Public blog (admin-managed posts at `/blog`)
+✅ SMS reminders via Notifyre (24hr-before, daily cron)
+✅ iCal feed for the tech's calendar (subscribe URL in admin)
+✅ Square Card-on-File for ongoing services + admin "Charge again" button
 
 ## Tech
 
@@ -96,21 +99,23 @@ To switch from demo to live, replace the placeholders in
 | Auth         | Supabase Auth (admin only — public is anon)    |
 | Storage      | Supabase Storage (`public-images`, `product-images`) |
 | Functions    | Supabase Edge Functions (Deno)                 |
-| Payments     | Stripe Checkout                                |
+| Payments     | Square Hosted Checkout + Card-on-File          |
+| Bookkeeping  | QuickBooks Online (OAuth + Invoice API)        |
 | Email        | Resend                                         |
+| SMS          | Notifyre (AU)                                  |
 | Geocoding    | Google Maps Geocoding API                      |
-| AI content   | Anthropic API (Claude Sonnet 4)                |
 
 ## Cost estimate (monthly, light traffic)
 
 | Service            | Tier        | Cost          |
 |--------------------|-------------|---------------|
 | Supabase           | Free → Pro  | $0–$25 USD    |
-| Stripe             | Pay per txn | 1.7%+30¢ AU  |
+| Square             | Pay per txn | 2.2% AU online |
 | Resend             | Free        | $0 (3k/mo)   |
-| Vercel / Netlify   | Free        | $0           |
 | Google Maps        | Free tier   | $0 (28k/mo geocodes) |
-| Anthropic API      | Pay per use | <$1 (1 post/mo) |
+| QuickBooks Online  | existing sub | $35–55 AUD   |
+| Notifyre SMS       | per send    | 5–10¢ ea     |
+| SiteGround hosting | varies      | per their plan |
 | Domain             | annual      | ~$15 AUD/yr  |
 
 ## License

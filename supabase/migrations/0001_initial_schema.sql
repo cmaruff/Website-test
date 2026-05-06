@@ -48,8 +48,9 @@ create table if not exists public.customers (
   -- QuickBooks sync
   qbo_customer_id text,
   qbo_synced_at timestamptz,
-  -- Stripe
-  stripe_customer_id text,
+  -- Square
+  square_customer_id text,
+  square_card_id text,                          -- card-on-file for ongoing services
   notes text,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
@@ -85,9 +86,10 @@ create table if not exists public.bookings (
   amount_cents integer not null,
   paid_amount_cents integer default 0,
 
-  -- Stripe
-  stripe_session_id text,
-  stripe_payment_intent text,
+  -- Square
+  square_order_id text,
+  square_payment_id text,
+  square_checkout_url text,
 
   -- QuickBooks
   qbo_invoice_id text,
@@ -153,9 +155,11 @@ create table if not exists public.orders (
   delivery_address text not null,
   delivery_lat double precision,
   delivery_lng double precision,
-  stripe_session_id text,
-  stripe_payment_intent text,
+  square_order_id text,
+  square_payment_id text,
+  square_checkout_url text,
   qbo_invoice_id text,
+  qbo_synced_at timestamptz,
   notes text,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
@@ -204,6 +208,10 @@ create table if not exists public.settings (
   qbo_refresh_token text,
   qbo_access_token text,
   qbo_token_expires_at timestamptz,
+  -- iCal feed (random secret token used in the URL so feed is unguessable)
+  ical_secret text,
+  -- Notifyre SMS
+  sms_reminders_enabled boolean default false,
   -- Toggles
   bookings_open boolean default true,
   products_open boolean default false,
