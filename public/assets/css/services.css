@@ -227,3 +227,26 @@
 }
 .faq__list details[open] summary::after { content: "−"; }
 .faq__list p { margin-top: var(--sp-3); padding-top: var(--sp-3); border-top: 1px solid var(--color-border); }
+
+/* ---------- Prose intro section ---------- */
+.prose {
+  background: var(--white);
+  padding: var(--sp-9) 0 var(--sp-7);
+  border-bottom: 1px solid var(--color-border);
+}
+.prose__inner {
+  max-width: 760px;
+}
+.prose__inner h2 {
+  font-size: clamp(var(--fs-2xl), 3.2vw, var(--fs-4xl));
+  margin-bottom: var(--sp-4);
+  line-height: 1.1;
+}
+.prose__inner p {
+  font-size: var(--fs-lg);
+  line-height: 1.75;
+  color: var(--sand-700);
+  margin-bottom: var(--sp-4);
+  max-width: 70ch;
+}
+.prose__inner p:last-child { margin-bottom: 0; }
