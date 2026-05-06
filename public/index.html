@@ -120,7 +120,42 @@
 <!-- ============ HERO ============ -->
 <section class="hero">
   <div class="hero__bg" aria-hidden="true">
+    <div class="hero__mesh"></div>
+    <svg class="hero__blobs" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs>
+        <filter id="heroGoo" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="48"/>
+        </filter>
+      </defs>
+      <g filter="url(#heroGoo)">
+        <circle class="hero__blob hero__blob--1" cx="0" cy="0" r="220" fill="#7dd3fc"/>
+        <circle class="hero__blob hero__blob--2" cx="0" cy="0" r="260" fill="#38bdf8"/>
+        <circle class="hero__blob hero__blob--3" cx="0" cy="0" r="180" fill="#FFD057"/>
+        <circle class="hero__blob hero__blob--4" cx="0" cy="0" r="200" fill="#A8DBEA"/>
+      </g>
+    </svg>
     <div class="hero__caustic"></div>
+    <div class="hero__bubbles">
+      <span class="hero__bubble" style="--x:6%;--s:10px;--d:9s;--delay:0s"></span>
+      <span class="hero__bubble" style="--x:14%;--s:6px;--d:11s;--delay:2s"></span>
+      <span class="hero__bubble" style="--x:22%;--s:14px;--d:8s;--delay:4s"></span>
+      <span class="hero__bubble" style="--x:30%;--s:8px;--d:12s;--delay:1s"></span>
+      <span class="hero__bubble" style="--x:38%;--s:5px;--d:10s;--delay:6s"></span>
+      <span class="hero__bubble" style="--x:48%;--s:12px;--d:14s;--delay:3s"></span>
+      <span class="hero__bubble" style="--x:58%;--s:7px;--d:9s;--delay:5s"></span>
+      <span class="hero__bubble" style="--x:68%;--s:11px;--d:11s;--delay:0.5s"></span>
+      <span class="hero__bubble" style="--x:76%;--s:6px;--d:13s;--delay:7s"></span>
+      <span class="hero__bubble" style="--x:84%;--s:9px;--d:10s;--delay:2.5s"></span>
+      <span class="hero__bubble" style="--x:92%;--s:12px;--d:12s;--delay:4.5s"></span>
+    </div>
+    <svg class="hero__wave" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+      <path class="hero__wave-path hero__wave-path--back"
+            d="M0,60 C240,100 480,20 720,60 C960,100 1200,20 1440,60 L1440,120 L0,120 Z"
+            fill="rgba(56,168,205,0.18)"/>
+      <path class="hero__wave-path hero__wave-path--front"
+            d="M0,80 C240,40 480,120 720,80 C960,40 1200,120 1440,80 L1440,120 L0,120 Z"
+            fill="rgba(168,219,234,0.55)"/>
+    </svg>
   </div>
   <div class="container hero__inner">
     <div class="hero__content reveal">
@@ -160,14 +195,14 @@
           <rect width="400" height="300" fill="url(#water)"/>
           <rect width="400" height="300" fill="url(#sun)"/>
           <!-- caustic ripples -->
-          <g opacity="0.55" stroke="#FFFFFF" fill="none" stroke-linecap="round">
+          <g class="card-ripples" opacity="0.55" stroke="#FFFFFF" fill="none" stroke-linecap="round">
             <path d="M30 80 Q 80 60, 130 80 T 230 80 T 330 80 T 430 80" stroke-width="1.5"/>
             <path d="M10 130 Q 70 110, 130 130 T 250 130 T 380 130" stroke-width="1"/>
             <path d="M40 180 Q 90 165, 140 180 T 240 180 T 360 180" stroke-width="1.5"/>
             <path d="M20 230 Q 90 215, 160 230 T 300 230 T 420 230" stroke-width="1"/>
           </g>
           <!-- floating leaf -->
-          <g transform="translate(280,90) rotate(20)">
+          <g class="card-leaf" transform="translate(280,90)">
             <path d="M0 0 Q 15 -12, 30 0 Q 15 12, 0 0 Z" fill="#2E8C5A"/>
             <line x1="0" y1="0" x2="30" y2="0" stroke="#1A5A38" stroke-width="0.8"/>
           </g>
