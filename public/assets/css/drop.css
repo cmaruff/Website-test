@@ -133,3 +133,46 @@ body.drop-hidden #drop-bubble { display: none !important; }
 @media (prefers-reduced-motion: reduce) {
   #drop, #drop .drop-eyelid { animation: none !important; }
 }
+
+/* ----- Section "peek" reaction (small bounce + tilt) ----- */
+@keyframes drop-peek {
+  0%   { transform: translateY(0)     rotate(0deg); }
+  35%  { transform: translateY(-10px) rotate(-6deg); }
+  70%  { transform: translateY(-2px)  rotate(3deg); }
+  100% { transform: translateY(0)     rotate(0deg); }
+}
+#drop.is-peeking { animation: drop-peek .7s var(--ease-out, ease-out); }
+
+/* ----- Reopen button (only visible when Drop is dismissed) ----- */
+#drop-reopen {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 44px;
+  height: 56px;
+  z-index: 9000;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  filter: drop-shadow(0 6px 14px rgba(8, 66, 90, 0.25));
+  opacity: 0;
+  transform: scale(0.7) translateY(8px);
+  pointer-events: none;
+  transition: opacity .3s ease, transform .3s var(--ease-out, ease-out);
+}
+#drop-reopen.is-shown {
+  opacity: 0.9;
+  transform: scale(1) translateY(0);
+  pointer-events: auto;
+  animation: drop-bob 4s ease-in-out infinite;
+}
+#drop-reopen:hover { opacity: 1; transform: scale(1.08); }
+#drop-reopen svg   { width: 100%; height: 100%; display: block; }
+@media (max-width: 640px) {
+  #drop-reopen { right: 14px; bottom: 14px; width: 36px; height: 46px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #drop-reopen.is-shown { animation: none; }
+  #drop.is-peeking      { animation: none; }
+}
