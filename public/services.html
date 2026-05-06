@@ -122,7 +122,7 @@
         </p>
       </div>
 
-      <figure class="prose__media" aria-label="Top-down illustration of a residential pool">
+      <figure class="prose__media" aria-label="Top-down illustration of a typical backyard pool">
         <svg class="prose-pool" viewBox="0 0 360 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
           <defs>
             <linearGradient id="proseWater" x1="0" y1="0" x2="1" y2="1">
@@ -134,89 +134,37 @@
               <stop offset="0%"  stop-color="#f5efe6"/>
               <stop offset="100%" stop-color="#e7dccb"/>
             </linearGradient>
-            <pattern id="proseShimmer" width="38" height="38" patternUnits="userSpaceOnUse" patternTransform="rotate(18)">
-              <path d="M0 19 Q9 13 19 19 T38 19" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.4" stroke-linecap="round"/>
+            <pattern id="proseShimmer" width="42" height="42" patternUnits="userSpaceOnUse" patternTransform="rotate(20)">
+              <path d="M0 21 Q10 15 21 21 T42 21" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-linecap="round"/>
             </pattern>
           </defs>
 
           <!-- Deck -->
           <rect x="0" y="0" width="360" height="460" fill="url(#proseDeck)"/>
-          <!-- Subtle deck texture lines -->
-          <g stroke="rgba(0,0,0,0.05)" stroke-width="1">
-            <line x1="0" y1="92"  x2="360" y2="92"/>
-            <line x1="0" y1="184" x2="360" y2="184"/>
-            <line x1="0" y1="276" x2="360" y2="276"/>
-            <line x1="0" y1="368" x2="360" y2="368"/>
-          </g>
-
-          <!-- Palm shadow (top-left corner) -->
-          <g opacity="0.18" fill="#0c4a6e">
-            <ellipse cx="40" cy="50" rx="60" ry="22"/>
-            <path d="M40 50 q-30 -28 -34 -54 q22 12 38 30 q-2 12 -4 24 z"/>
-            <path d="M40 50 q26 -30 56 -36 q-12 22 -32 38 q-12 4 -24 -2 z"/>
-            <path d="M40 50 q-12 -34 -2 -64 q14 22 14 44 q-4 12 -12 20 z"/>
-          </g>
 
           <!-- Pool basin (rounded rectangle) -->
-          <rect x="46" y="78" width="268" height="324" rx="34" ry="34" fill="url(#proseWater)"/>
-          <!-- Shimmer overlay -->
-          <rect x="46" y="78" width="268" height="324" rx="34" ry="34" fill="url(#proseShimmer)" opacity="0.45"/>
-          <!-- Inner edge highlight -->
-          <rect x="50" y="82" width="260" height="316" rx="30" ry="30" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="2"/>
-          <!-- Coping stones -->
-          <rect x="42" y="74" width="276" height="332" rx="38" ry="38" fill="none" stroke="#f8f4ec" stroke-width="6"/>
-          <rect x="42" y="74" width="276" height="332" rx="38" ry="38" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>
+          <rect x="50" y="70" width="260" height="340" rx="22" ry="22" fill="url(#proseWater)"/>
+          <!-- Shimmer -->
+          <rect x="50" y="70" width="260" height="340" rx="22" ry="22" fill="url(#proseShimmer)" opacity="0.4"/>
+          <!-- Coping -->
+          <rect x="46" y="66" width="268" height="348" rx="26" ry="26" fill="none" stroke="#f8f4ec" stroke-width="6"/>
+          <rect x="46" y="66" width="268" height="348" rx="26" ry="26" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>
 
-          <!-- Skimmer (left side mid) -->
-          <g>
-            <rect x="40" y="200" width="14" height="40" rx="3" fill="#f8f4ec" stroke="rgba(0,0,0,0.12)"/>
-            <rect x="44" y="208" width="6" height="24" rx="1.5" fill="#0c4a6e" opacity="0.55"/>
-          </g>
-
-          <!-- Return jet (right side upper) -->
-          <g>
-            <circle cx="306" cy="170" r="6" fill="#f8f4ec" stroke="rgba(0,0,0,0.15)"/>
-            <circle cx="306" cy="170" r="2.5" fill="#0c4a6e"/>
-            <path d="M298 170 q-14 4 -28 -4" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M296 176 q-16 8 -34 4"   fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.2" stroke-linecap="round"/>
-          </g>
-
-          <!-- Steps (top-right inside) -->
-          <g fill="rgba(255,255,255,0.32)" stroke="rgba(255,255,255,0.55)" stroke-width="1">
-            <rect x="240" y="92" width="64" height="14" rx="3"/>
-            <rect x="252" y="110" width="52" height="14" rx="3"/>
-            <rect x="264" y="128" width="40" height="14" rx="3"/>
-          </g>
-
-          <!-- Ladder (bottom-left inside) -->
-          <g stroke="#f8f4ec" stroke-width="3" stroke-linecap="round" fill="none">
-            <line x1="78"  y1="372" x2="78"  y2="402"/>
-            <line x1="98"  y1="372" x2="98"  y2="402"/>
-            <line x1="78"  y1="382" x2="98"  y2="382"/>
-            <line x1="78"  y1="394" x2="98"  y2="394"/>
-          </g>
-
-          <!-- Pool floor cleaner / robot hint (centre) -->
-          <g transform="translate(170 250)">
-            <rect x="-18" y="-12" width="36" height="24" rx="6" fill="#0c4a6e" opacity="0.55"/>
-            <circle cx="0" cy="0" r="3" fill="#f8f4ec"/>
-            <path d="M-30 -22 q12 -10 26 -2" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.2"/>
-          </g>
-
-          <!-- Caption tag -->
-          <g transform="translate(220 412)">
-            <rect x="-72" y="-14" width="144" height="28" rx="14" fill="#0c4a6e"/>
-            <text x="0" y="5" text-anchor="middle" font-family="'Inter Tight', sans-serif" font-size="12" font-weight="600" fill="#f8f4ec" letter-spacing="0.5">TOP-DOWN VIEW</text>
+          <!-- Ladder rails (typical Townsville pool fixture) -->
+          <g stroke="#f8f4ec" stroke-width="3.5" stroke-linecap="round" fill="none">
+            <line x1="170" y1="64"  x2="170" y2="92"/>
+            <line x1="190" y1="64"  x2="190" y2="92"/>
+            <path d="M170 64 q10 -6 20 0" stroke-width="3"/>
           </g>
         </svg>
-        <figcaption class="prose__media-cap">A typical residential layout — what we touch every visit.</figcaption>
+        <figcaption class="prose__media-cap">A typical Townsville backyard pool.</figcaption>
       </figure>
     </div>
   </div>
 </section>
 
 <!-- ============ INTERACTIVE POOL DIAGRAM ============ -->
-<section class="pool-diagram" data-drop-tip="pool-diagram">
+<section class="pool-diagram" data-drop-stage="pool-dive">
   <div class="container">
     <div class="section-head section-head--start reveal">
       <span class="eyebrow">What gets serviced</span>
@@ -403,7 +351,7 @@
 </section>
 
 <!-- ============ PRICING TABLE ============ -->
-<section class="pricing" data-drop-tip="pricing">
+<section class="pricing" data-drop-stage="pricing-glide">
   <div class="container">
     <div class="section-head reveal">
       <span class="eyebrow">Servicing costs</span>

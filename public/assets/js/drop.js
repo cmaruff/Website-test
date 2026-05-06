@@ -252,36 +252,156 @@
     const seen = new Set();
     const io = new IntersectionObserver((entries) => {
       const now = Date.now();
-      // Throttle: at most one section reaction every 9s
       if (now - lastSectionAt < 9000) return;
-      // Don't override the intro
+      if (busy) return;
       if (!introShown() && page !== 'booking') return;
 
       for (const en of entries) {
         if (!en.isIntersecting) continue;
+
+        // Performance stage takes priority over a bubble tip
+        const stage = en.target.getAttribute('data-drop-stage');
+        if (stage && !seen.has('stage:' + stage)) {
+          seen.add('stage:' + stage);
+          lastSectionAt = now;
+          performStage(en.target, stage);
+          break;
+        }
+
         const key = en.target.getAttribute('data-drop-tip');
-        if (!key || seen.has(key)) continue;
+        if (!key || seen.has('tip:' + key)) continue;
         const tip = SECTION_TIPS[key];
         if (!tip) continue;
-        seen.add(key);
+        seen.add('tip:' + key);
         lastSectionAt = now;
         showBubble(tip[0], tip[1]);
         if (!reduced) {
           drop.classList.add('is-peeking');
           setTimeout(() => drop.classList.remove('is-peeking'), 700);
         }
-        break; // one at a time
+        break;
       }
     }, { rootMargin: '-30% 0px -40% 0px', threshold: 0.01 });
 
-    document.querySelectorAll('[data-drop-tip]').forEach((el) => io.observe(el));
+    document.querySelectorAll('[data-drop-tip], [data-drop-stage]').forEach((el) => io.observe(el));
 
-    // Pause rotation while actively scrolling
     window.addEventListener('scroll', () => {
       scrolling = true;
       clearTimeout(scrollPauseTimer);
       scrollPauseTimer = setTimeout(() => { scrolling = false; }, 400);
     }, { passive: true });
+  }
+
+  // ---------- Travel system: Drop physically performs at a target ----------
+  let busy = false;
+
+  function tween(ms, onTick) {
+    return new Promise((resolve) => {
+      const t0 = performance.now();
+      function step(t) {
+        const k = Math.min(1, (t - t0) / ms);
+        onTick(k);
+        if (k < 1) requestAnimationFrame(step);
+        else resolve();
+      }
+      requestAnimationFrame(step);
+    });
+  }
+  const easeInOutCubic = (k) => k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+  const easeOutCubic   = (k) => 1 - Math.pow(1 - k, 3);
+
+  function travelDeltas(targetEl) {
+    const tr = targetEl.getBoundingClientRect();
+    const dr = drop.getBoundingClientRect();
+    return {
+      dx: (tr.left + tr.width  / 2) - (dr.left + dr.width  / 2),
+      dy: (tr.top  + tr.height / 2) - (dr.top  + dr.height / 2),
+    };
+  }
+
+  function setTravel(x, y, rot = 0, scale = 1) {
+    drop.style.setProperty('--travel-x', x + 'px');
+    drop.style.setProperty('--travel-y', y + 'px');
+    drop.style.setProperty('--travel-rot', rot + 'deg');
+    drop.style.setProperty('--travel-scale', scale);
+  }
+  function clearTravel() {
+    drop.style.removeProperty('--travel-x');
+    drop.style.removeProperty('--travel-y');
+    drop.style.removeProperty('--travel-rot');
+    drop.style.removeProperty('--travel-scale');
+  }
+
+  async function performStage(stageEl, type) {
+    if (busy) return;
+    if (reduced) return; // skip motion-heavy choreography
+    busy = true;
+    bubble.classList.remove('is-shown');
+
+    const target = stageEl.querySelector('[data-drop-target]') || stageEl;
+    const { dx, dy } = travelDeltas(target);
+
+    drop.classList.add('is-traveling');
+
+    // Travel out (arc-ish: rotate while moving)
+    await tween(700, (k) => {
+      const e = easeInOutCubic(k);
+      // little vertical arc lift in the middle so it looks like a hop
+      const arc = -Math.sin(k * Math.PI) * 30;
+      setTravel(dx * e, dy * e + arc, -10 * e, 1 + 0.05 * e);
+    });
+
+    if (type === 'pool-dive') {
+      // Lazy figure-8 swim around the target
+      await tween(1800, (k) => {
+        const t = k * Math.PI * 2;
+        const ox = Math.sin(t) * 70;
+        const oy = Math.sin(2 * t) * 28;
+        const rot = Math.cos(t) * 18;
+        setTravel(dx + ox, dy + oy, rot, 1.05);
+      });
+    } else if (type === 'map-hop') {
+      const points = [
+        { x: -90, y: -45 },
+        { x:  60, y: -55 },
+        { x: -10, y:  35 },
+        { x:  70, y:  20 },
+      ];
+      for (const p of points) {
+        await tween(420, (k) => {
+          const e = easeInOutCubic(k);
+          const arc = -Math.sin(k * Math.PI) * 24;
+          setTravel(dx + p.x * e, dy + p.y * e + arc, p.x < 0 ? -10 : 10, 1.05);
+        });
+      }
+    } else if (type === 'pricing-glide') {
+      // Slide across pricing rows, pause briefly mid-way
+      await tween(1100, (k) => {
+        const e = easeInOutCubic(k);
+        const ox = (k - 0.5) * 180; // -90 → +90 over the duration
+        const bob = Math.sin(k * Math.PI * 2) * 6;
+        setTravel(dx + ox, dy + bob, ox * 0.06, 1.05);
+      });
+    }
+
+    // Travel home
+    const startX = parseFloat(drop.style.getPropertyValue('--travel-x')) || 0;
+    const startY = parseFloat(drop.style.getPropertyValue('--travel-y')) || 0;
+    await tween(700, (k) => {
+      const e = easeOutCubic(k);
+      const arc = -Math.sin(k * Math.PI) * 20;
+      setTravel(startX * (1 - e), startY * (1 - e) + arc, 12 * (1 - e), 1);
+    });
+
+    drop.classList.remove('is-traveling');
+    clearTravel();
+    busy = false;
+
+    // Tiny landing splash
+    drop.classList.remove('is-jumping');
+    void drop.offsetWidth;
+    drop.classList.add('is-jumping');
+    setTimeout(() => drop.classList.remove('is-jumping'), 600);
   }
 
   function mount() {

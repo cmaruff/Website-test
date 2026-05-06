@@ -28,6 +28,34 @@
 #drop.is-talking  { animation-play-state: paused; transform: translateY(-2px) rotate(var(--drop-lean)); }
 #drop.is-leaning  { animation-play-state: paused; transform: rotate(var(--drop-lean)) translateY(-1px); }
 
+/* ----- Travelling: Drop physically swims/hops to a target on the page ----- */
+#drop.is-traveling {
+  animation: none !important;
+  transition: filter .2s ease;
+  transform: translate(var(--travel-x, 0), var(--travel-y, 0))
+             rotate(var(--travel-rot, 0deg))
+             scale(var(--travel-scale, 1));
+  z-index: 9999;
+  filter: drop-shadow(0 14px 22px rgba(8, 66, 90, 0.28));
+}
+/* Trailing ripple while travelling */
+#drop.is-traveling::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 28px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(56,168,205,0.55), rgba(56,168,205,0));
+  transform: translateX(-50%);
+  animation: drop-trail-pulse .55s ease-out infinite;
+}
+@keyframes drop-trail-pulse {
+  0%   { transform: translateX(-50%) scale(0.6); opacity: 0.9; }
+  100% { transform: translateX(-50%) scale(1.6); opacity: 0; }
+}
+
 @keyframes drop-bob {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(-6px); }
