@@ -1,0 +1,14 @@
+/*
+Theme Name:        TQ Pool Services
+Theme URI:         https://tqpoolservices.com.au
+Author:            TQ Pool Services
+Description:       Custom WordPress theme for TQ Pool Services — a Townsville mobile pool service business. Static site design ported to WP with editable content via ACF; Supabase handles bookings, Square checkout, QuickBooks invoicing, SMS, and iCal exports through Edge Functions.
+Version:           1.0.0
+Requires at least: 6.0
+Requires PHP:      8.0
+License:           Proprietary
+Text Domain:       tqps
+*/
+
+/* All visual styles are loaded via wp_enqueue_style from /assets/css/.
+   This file exists for the WP theme metadata header only. */

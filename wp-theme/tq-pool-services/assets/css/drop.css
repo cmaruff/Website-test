@@ -1,0 +1,266 @@
+/* ============================================================
+   DROP — minimalist water-droplet mascot
+   Site-wide. Dismissible. Persists across pages.
+   ============================================================ */
+
+/* Wrapper allows drip-in / lean / splash-out to compose with the base bob */
+#drop {
+  position: fixed;
+  right: 28px;
+  bottom: 92px;
+  width: 56px;
+  height: 76px;
+  z-index: 9000;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
+  -webkit-user-select: none;
+  filter: drop-shadow(0 6px 14px rgba(8, 66, 90, 0.25));
+  transition: transform .25s var(--ease-out, ease-out),
+              opacity   .35s ease;
+  opacity: 0;
+  --drop-lean: 0deg;
+  transform: rotate(var(--drop-lean));
+  animation: drop-bob 4s ease-in-out infinite;
+}
+#drop.is-loaded   { opacity: 1; }
+#drop:hover       { transform: scale(1.06) rotate(-3deg); }
+#drop.is-talking  { animation-play-state: paused; transform: translateY(-2px) rotate(var(--drop-lean)); }
+#drop.is-leaning  { animation-play-state: paused; transform: rotate(var(--drop-lean)) translateY(-1px); }
+
+/* ----- Travelling: Drop physically swims/hops to a target on the page ----- */
+#drop.is-traveling {
+  animation: none !important;
+  transition: filter .2s ease;
+  transform: translate(var(--travel-x, 0), var(--travel-y, 0))
+             rotate(var(--travel-rot, 0deg))
+             scale(var(--travel-scale, 1));
+  z-index: 9999;
+  filter: drop-shadow(0 14px 22px rgba(8, 66, 90, 0.28));
+}
+/* Trailing ripple while travelling */
+#drop.is-traveling::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 28px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(56,168,205,0.55), rgba(56,168,205,0));
+  transform: translateX(-50%);
+  animation: drop-trail-pulse .55s ease-out infinite;
+}
+@keyframes drop-trail-pulse {
+  0%   { transform: translateX(-50%) scale(0.6); opacity: 0.9; }
+  100% { transform: translateX(-50%) scale(1.6); opacity: 0; }
+}
+
+@keyframes drop-bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+@keyframes drop-jump {
+  0%   { transform: translateY(0)   scaleY(1); }
+  20%  { transform: translateY(-22px) scaleY(1.05); }
+  60%  { transform: translateY(0)   scaleY(0.86); }
+  80%  { transform: translateY(-4px) scaleY(1.02); }
+  100% { transform: translateY(0)   scaleY(1); }
+}
+#drop.is-jumping { animation: drop-jump .55s var(--ease-out, ease-out); }
+
+/* ----- Drip-in entrance: drops from off-screen above with squash landing ----- */
+@keyframes drop-drip-in {
+  0%   { transform: translateY(-110vh) scaleY(1.55) scaleX(0.65); opacity: 0; }
+  55%  { transform: translateY(0)      scaleY(1.55) scaleX(0.65); opacity: 1; }
+  68%  { transform: translateY(0)      scaleY(0.55) scaleX(1.35); }
+  82%  { transform: translateY(-12px)  scaleY(1.08) scaleX(0.94); }
+  100% { transform: translateY(0)      scaleY(1)    scaleX(1);    }
+}
+#drop.is-arriving {
+  opacity: 1;
+  animation: drop-drip-in .9s cubic-bezier(0.45, 0, 0.55, 1.4) both;
+}
+
+/* ----- Splash-out exit: squashes flat, fades, leaves a ring ----- */
+@keyframes drop-splash-out {
+  0%   { transform: translateY(0)   scaleY(1)   scaleX(1);   opacity: 1; }
+  60%  { transform: translateY(8px) scaleY(0.45) scaleX(1.45); opacity: 0.65; }
+  100% { transform: translateY(20px) scaleY(0.05) scaleX(1.85); opacity: 0; }
+}
+#drop.is-leaving {
+  animation: drop-splash-out .22s ease-in forwards;
+}
+
+/* ----- Idle: look-around (subtle eye wiggle via parent rotation) ----- */
+@keyframes drop-look {
+  0%, 100% { transform: rotate(var(--drop-lean, 0deg)); }
+  20%      { transform: rotate(calc(var(--drop-lean, 0deg) - 4deg)) translateY(-1px); }
+  55%      { transform: rotate(calc(var(--drop-lean, 0deg) + 5deg)) translateY(-1px); }
+  80%      { transform: rotate(calc(var(--drop-lean, 0deg) - 2deg)); }
+}
+#drop.is-looking { animation: drop-look 1.6s ease-in-out; }
+
+/* ----- Idle: playful spin ----- */
+@keyframes drop-spin {
+  0%   { transform: rotate(0deg)   scale(1);    }
+  40%  { transform: rotate(180deg) scale(1.06); }
+  100% { transform: rotate(360deg) scale(1);    }
+}
+#drop.is-spinning { animation: drop-spin .9s cubic-bezier(0.5, 0, 0.5, 1); }
+
+/* ----- End-of-page celebration: hop + wave ----- */
+@keyframes drop-celebrate {
+  0%   { transform: translateY(0)    rotate(0deg); }
+  20%  { transform: translateY(-26px) rotate(-12deg); }
+  40%  { transform: translateY(-10px) rotate(10deg); }
+  60%  { transform: translateY(-22px) rotate(-8deg); }
+  80%  { transform: translateY(-4px) rotate(4deg); }
+  100% { transform: translateY(0)    rotate(0deg); }
+}
+#drop.is-celebrating { animation: drop-celebrate 1.1s var(--ease-out, ease-out); }
+
+@keyframes drop-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95%           { transform: scaleY(0.05); }
+}
+#drop .drop-eyelid {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: drop-blink 5.5s ease-in-out infinite;
+}
+#drop .drop-eyelid--right { animation-delay: .04s; }
+
+#drop .drop-mouth {
+  transition: transform .25s ease;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+#drop:hover .drop-mouth { transform: scaleX(1.4) translateY(0.5px); }
+
+#drop .drop-splash { opacity: 0; }
+#drop.is-jumping .drop-splash { animation: splash-out .55s ease-out; }
+@keyframes splash-out {
+  0%   { opacity: 0; transform: scale(0.4); }
+  40%  { opacity: 0.9; }
+  100% { opacity: 0; transform: scale(1.6); }
+}
+
+/* ----- Speech bubble ----- */
+#drop-bubble {
+  position: fixed;
+  right: 92px;
+  bottom: 110px;
+  max-width: 240px;
+  background: var(--white, #fff);
+  color: var(--blue-900, #062E3F);
+  padding: 12px 30px 12px 14px;
+  border-radius: 18px 18px 4px 18px;
+  font-family: var(--font-body, system-ui), system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1.45;
+  box-shadow: 0 14px 30px rgba(8, 66, 90, 0.22);
+  z-index: 9001;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity .25s ease, transform .25s ease;
+}
+#drop-bubble.is-shown {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+#drop-bubble::before {
+  content: "";
+  position: absolute;
+  right: -6px; bottom: 14px;
+  width: 14px; height: 14px;
+  background: var(--white, #fff);
+  border-radius: 0 0 4px 0;
+  transform: rotate(-12deg);
+}
+#drop-bubble strong {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--blue-600, #0E6E94);
+  margin-bottom: 4px;
+}
+#drop-bubble .drop-bubble__close {
+  position: absolute;
+  top: 4px; right: 6px;
+  background: none; border: none;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--sand-500, #6A6151);
+  cursor: pointer;
+  padding: 4px;
+}
+
+body.drop-hidden #drop,
+body.drop-hidden #drop-bubble { display: none !important; }
+
+#drop .drop-pupil {
+  transform: translate(var(--drop-eye-x, 0px), var(--drop-eye-y, 0px));
+  transition: transform .15s ease-out;
+}
+
+@media (max-width: 640px) {
+  #drop { right: 16px; bottom: 78px; width: 44px; height: 60px; }
+  #drop-bubble { right: 70px; bottom: 92px; max-width: 200px; font-size: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #drop, #drop .drop-eyelid { animation: none !important; }
+  #drop.is-arriving,
+  #drop.is-leaving,
+  #drop.is-looking,
+  #drop.is-spinning,
+  #drop.is-celebrating { animation: none !important; opacity: 1; transform: none; }
+}
+
+/* ----- Section "peek" reaction (small bounce + tilt) ----- */
+@keyframes drop-peek {
+  0%   { transform: translateY(0)     rotate(0deg); }
+  35%  { transform: translateY(-10px) rotate(-6deg); }
+  70%  { transform: translateY(-2px)  rotate(3deg); }
+  100% { transform: translateY(0)     rotate(0deg); }
+}
+#drop.is-peeking { animation: drop-peek .7s var(--ease-out, ease-out); }
+
+/* ----- Reopen button (only visible when Drop is dismissed) ----- */
+#drop-reopen {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 44px;
+  height: 56px;
+  z-index: 9000;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  filter: drop-shadow(0 6px 14px rgba(8, 66, 90, 0.25));
+  opacity: 0;
+  transform: scale(0.7) translateY(8px);
+  pointer-events: none;
+  transition: opacity .3s ease, transform .3s var(--ease-out, ease-out);
+}
+#drop-reopen.is-shown {
+  opacity: 0.9;
+  transform: scale(1) translateY(0);
+  pointer-events: auto;
+  animation: drop-bob 4s ease-in-out infinite;
+}
+#drop-reopen:hover { opacity: 1; transform: scale(1.08); }
+#drop-reopen svg   { width: 100%; height: 100%; display: block; }
+@media (max-width: 640px) {
+  #drop-reopen { right: 14px; bottom: 14px; width: 36px; height: 46px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #drop-reopen.is-shown { animation: none; }
+  #drop.is-peeking      { animation: none; }
+}
