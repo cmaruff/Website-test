@@ -19,9 +19,9 @@
   layer.setAttribute('aria-hidden', 'true');
   hero.appendChild(layer);
 
-  const MIN_DIST  = 28;
-  const MAX_LIVE  = 22;
-  const CURSOR_MS = 1100;
+  const MIN_DIST   = 32;
+  const MAX_LIVE   = 12;
+  const CURSOR_MS  = 1100;
   const AMBIENT_MS = 2400;
   let lastX = -9999, lastY = -9999;
   let live = 0;
@@ -61,18 +61,16 @@
     spawn(x, y, { ambient: true });
   }
 
-  // Stagger initial bursts so it looks alive immediately
-  setTimeout(spawnAmbient, 350);
-  setTimeout(spawnAmbient, 900);
-  setTimeout(spawnAmbient, 1500);
+  // One initial drop so it doesn't feel empty on landing
+  setTimeout(spawnAmbient, 600);
 
   function ambientLoop() {
     spawnAmbient();
-    // Randomised cadence: 900ms – 2300ms between drops
-    const next = 900 + Math.random() * 1400;
+    // Randomised cadence: 1.6s – 3.2s between drops (was 0.9–2.3s)
+    const next = 1600 + Math.random() * 1600;
     setTimeout(ambientLoop, next);
   }
-  setTimeout(ambientLoop, 2200);
+  setTimeout(ambientLoop, 2400);
 
   // ---- Cursor trail ----
   hero.addEventListener('pointermove', (e) => {

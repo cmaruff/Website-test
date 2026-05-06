@@ -17,56 +17,23 @@
               radial-gradient(ellipse at 10% 80%, rgba(56, 168, 205, 0.18), transparent 50%);
 }
 
-/* Animated mesh gradient — drifts and breathes */
+/* Animated mesh gradient — drifts and breathes (cheap: CSS-only) */
 .hero__mesh {
-  position: absolute; inset: -8%;
+  position: absolute; inset: -6%;
   background:
-    radial-gradient(circle at 18% 28%, #A8DBEA 0%, transparent 38%),
-    radial-gradient(circle at 82% 22%, #FFD057 0%, transparent 32%),
-    radial-gradient(circle at 28% 78%, #38BDF8 0%, transparent 38%),
-    radial-gradient(circle at 78% 72%, #0EA5E9 0%, transparent 38%);
-  filter: blur(38px);
+    radial-gradient(circle at 18% 28%, #A8DBEA 0%, transparent 42%),
+    radial-gradient(circle at 82% 22%, #FFD057 0%, transparent 36%),
+    radial-gradient(circle at 28% 78%, #38BDF8 0%, transparent 42%),
+    radial-gradient(circle at 78% 72%, #0EA5E9 0%, transparent 42%);
+  filter: blur(22px);
   opacity: 0.55;
   mix-blend-mode: screen;
-  animation: mesh-drift 22s ease-in-out infinite;
+  animation: mesh-drift 26s ease-in-out infinite;
+  will-change: transform;
 }
 @keyframes mesh-drift {
   0%, 100% { transform: translate(0, 0) scale(1);    }
-  33%      { transform: translate(-2%, -1%) scale(1.04); }
-  66%      { transform: translate(1.5%, 2%) scale(1.07); }
-}
-
-/* Goo blobs — slow drift around the hero */
-.hero__blobs {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  opacity: 0.5;
-  mix-blend-mode: screen;
-}
-.hero__blob {
-  transform-box: fill-box;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
-}
-.hero__blob--1 { animation: blob-1 26s; }
-.hero__blob--2 { animation: blob-2 32s; }
-.hero__blob--3 { animation: blob-3 28s; }
-.hero__blob--4 { animation: blob-4 34s; }
-@keyframes blob-1 {
-  0%, 100% { transform: translate(180px, 200px); }
-  50%      { transform: translate(420px, 280px); }
-}
-@keyframes blob-2 {
-  0%, 100% { transform: translate(880px, 220px); }
-  50%      { transform: translate(640px, 360px); }
-}
-@keyframes blob-3 {
-  0%, 100% { transform: translate(1000px, 600px); }
-  50%      { transform: translate(820px, 460px); }
-}
-@keyframes blob-4 {
-  0%, 100% { transform: translate(280px, 580px); }
-  50%      { transform: translate(460px, 660px); }
+  50%      { transform: translate(-1.5%, 1.5%) scale(1.04); }
 }
 
 /* Caustic dot drift (existing) */
@@ -127,7 +94,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .hero__mesh,
-  .hero__blob,
   .hero__caustic,
   .hero__bubble,
   .hero__wave-path { animation: none !important; }
