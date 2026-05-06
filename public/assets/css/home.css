@@ -11,10 +11,65 @@
 }
 .hero__bg {
   position: absolute; inset: 0;
+  overflow: hidden;
+  pointer-events: none;
   background: radial-gradient(ellipse at 80% 20%, rgba(255, 208, 87, 0.18), transparent 50%),
               radial-gradient(ellipse at 10% 80%, rgba(56, 168, 205, 0.18), transparent 50%);
-  pointer-events: none;
 }
+
+/* Animated mesh gradient — drifts and breathes */
+.hero__mesh {
+  position: absolute; inset: -8%;
+  background:
+    radial-gradient(circle at 18% 28%, #A8DBEA 0%, transparent 38%),
+    radial-gradient(circle at 82% 22%, #FFD057 0%, transparent 32%),
+    radial-gradient(circle at 28% 78%, #38BDF8 0%, transparent 38%),
+    radial-gradient(circle at 78% 72%, #0EA5E9 0%, transparent 38%);
+  filter: blur(38px);
+  opacity: 0.55;
+  mix-blend-mode: screen;
+  animation: mesh-drift 22s ease-in-out infinite;
+}
+@keyframes mesh-drift {
+  0%, 100% { transform: translate(0, 0) scale(1);    }
+  33%      { transform: translate(-2%, -1%) scale(1.04); }
+  66%      { transform: translate(1.5%, 2%) scale(1.07); }
+}
+
+/* Goo blobs — slow drift around the hero */
+.hero__blobs {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  opacity: 0.5;
+  mix-blend-mode: screen;
+}
+.hero__blob {
+  transform-box: fill-box;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+.hero__blob--1 { animation: blob-1 26s; }
+.hero__blob--2 { animation: blob-2 32s; }
+.hero__blob--3 { animation: blob-3 28s; }
+.hero__blob--4 { animation: blob-4 34s; }
+@keyframes blob-1 {
+  0%, 100% { transform: translate(180px, 200px); }
+  50%      { transform: translate(420px, 280px); }
+}
+@keyframes blob-2 {
+  0%, 100% { transform: translate(880px, 220px); }
+  50%      { transform: translate(640px, 360px); }
+}
+@keyframes blob-3 {
+  0%, 100% { transform: translate(1000px, 600px); }
+  50%      { transform: translate(820px, 460px); }
+}
+@keyframes blob-4 {
+  0%, 100% { transform: translate(280px, 580px); }
+  50%      { transform: translate(460px, 660px); }
+}
+
+/* Caustic dot drift (existing) */
 .hero__caustic {
   position: absolute; inset: 0;
   background-image:
@@ -22,6 +77,83 @@
     radial-gradient(circle at 70% 60%, rgba(168, 219, 234, 0.3) 0, transparent 6%),
     radial-gradient(circle at 50% 80%, rgba(168, 219, 234, 0.35) 0, transparent 7%);
   animation: drift 18s ease-in-out infinite;
+}
+
+/* Rising bubbles */
+.hero__bubbles {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.hero__bubble {
+  position: absolute;
+  bottom: -24px;
+  left: var(--x, 50%);
+  width:  var(--s, 10px);
+  height: var(--s, 10px);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 28%,
+      rgba(255,255,255,0.85) 0%,
+      rgba(168,219,234,0.45) 60%,
+      rgba(56,168,205,0.0)  100%);
+  box-shadow: inset 0 -1px 2px rgba(8,66,90,0.12);
+  opacity: 0;
+  animation: bubble-rise var(--d, 10s) linear infinite;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes bubble-rise {
+  0%   { transform: translateY(0) translateX(0)   scale(0.55); opacity: 0; }
+  10%  { opacity: 0.85; }
+  50%  { transform: translateY(-50vh) translateX(10px) scale(1); }
+  85%  { opacity: 0.45; }
+  100% { transform: translateY(-110vh) translateX(-6px) scale(1.05); opacity: 0; }
+}
+
+/* Wave at the bottom of the hero */
+.hero__wave {
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  width: 100%;
+  height: 100px;
+}
+.hero__wave-path { transform-origin: center; }
+.hero__wave-path--back  { animation: hero-wave 9s  ease-in-out infinite; }
+.hero__wave-path--front { animation: hero-wave 7s  ease-in-out infinite reverse; }
+@keyframes hero-wave {
+  0%, 100% { transform: translateX(0)    scaleY(1); }
+  50%      { transform: translateX(-30px) scaleY(1.05); }
+}
+
+/* Hero card animations: leaf drifts, ripples shimmer */
+.hero__card .card-leaf {
+  transform-origin: 15px 0;
+  animation: card-leaf-drift 11s ease-in-out infinite;
+}
+@keyframes card-leaf-drift {
+  0%, 100% { transform: translate(280px, 90px) rotate(15deg); }
+  50%      { transform: translate(295px, 82px) rotate(-12deg); }
+}
+.hero__card .card-ripples path {
+  stroke-dasharray: 12 8;
+  animation: card-ripple-shimmer 6s linear infinite;
+}
+.hero__card .card-ripples path:nth-child(2) { animation-duration: 8s; animation-direction: reverse; }
+.hero__card .card-ripples path:nth-child(3) { animation-duration: 7s; }
+.hero__card .card-ripples path:nth-child(4) { animation-duration: 9s; animation-direction: reverse; }
+@keyframes card-ripple-shimmer {
+  to { stroke-dashoffset: -40; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__mesh,
+  .hero__blob,
+  .hero__caustic,
+  .hero__bubble,
+  .hero__wave-path,
+  .hero__card .card-leaf,
+  .hero__card .card-ripples path { animation: none !important; }
+  .hero__bubbles { display: none; }
 }
 /* Mouse-trail pool ripples — water rings that follow the cursor */
 .hero-ripples {
