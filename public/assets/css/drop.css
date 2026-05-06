@@ -1,0 +1,135 @@
+/* ============================================================
+   DROP — minimalist water-droplet mascot
+   Site-wide. Dismissible. Persists across pages.
+   ============================================================ */
+
+#drop {
+  position: fixed;
+  right: 28px;
+  bottom: 92px;
+  width: 56px;
+  height: 76px;
+  z-index: 9000;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
+  -webkit-user-select: none;
+  filter: drop-shadow(0 6px 14px rgba(8, 66, 90, 0.25));
+  transition: transform .25s var(--ease-out, ease-out),
+              opacity   .35s ease;
+  opacity: 0;
+  animation: drop-bob 4s ease-in-out infinite;
+}
+#drop.is-loaded { opacity: 1; }
+#drop:hover     { transform: scale(1.06) rotate(-3deg); }
+#drop.is-talking { animation-play-state: paused; transform: translateY(-2px); }
+
+@keyframes drop-bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+@keyframes drop-jump {
+  0%   { transform: translateY(0)   scaleY(1); }
+  20%  { transform: translateY(-22px) scaleY(1.05); }
+  60%  { transform: translateY(0)   scaleY(0.86); }
+  80%  { transform: translateY(-4px) scaleY(1.02); }
+  100% { transform: translateY(0)   scaleY(1); }
+}
+#drop.is-jumping { animation: drop-jump .55s var(--ease-out, ease-out); }
+
+@keyframes drop-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95%           { transform: scaleY(0.05); }
+}
+#drop .drop-eyelid {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: drop-blink 5.5s ease-in-out infinite;
+}
+#drop .drop-eyelid--right { animation-delay: .04s; }
+
+#drop .drop-mouth {
+  transition: transform .25s ease;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+#drop:hover .drop-mouth { transform: scaleX(1.4) translateY(0.5px); }
+
+#drop .drop-splash { opacity: 0; }
+#drop.is-jumping .drop-splash { animation: splash-out .55s ease-out; }
+@keyframes splash-out {
+  0%   { opacity: 0; transform: scale(0.4); }
+  40%  { opacity: 0.9; }
+  100% { opacity: 0; transform: scale(1.6); }
+}
+
+/* ----- Speech bubble ----- */
+#drop-bubble {
+  position: fixed;
+  right: 92px;
+  bottom: 110px;
+  max-width: 240px;
+  background: var(--white, #fff);
+  color: var(--blue-900, #062E3F);
+  padding: 12px 30px 12px 14px;
+  border-radius: 18px 18px 4px 18px;
+  font-family: var(--font-body, system-ui), system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1.45;
+  box-shadow: 0 14px 30px rgba(8, 66, 90, 0.22);
+  z-index: 9001;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity .25s ease, transform .25s ease;
+}
+#drop-bubble.is-shown {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+#drop-bubble::before {
+  content: "";
+  position: absolute;
+  right: -6px; bottom: 14px;
+  width: 14px; height: 14px;
+  background: var(--white, #fff);
+  border-radius: 0 0 4px 0;
+  transform: rotate(-12deg);
+}
+#drop-bubble strong {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--blue-600, #0E6E94);
+  margin-bottom: 4px;
+}
+#drop-bubble .drop-bubble__close {
+  position: absolute;
+  top: 4px; right: 6px;
+  background: none; border: none;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--sand-500, #6A6151);
+  cursor: pointer;
+  padding: 4px;
+}
+
+body.drop-hidden #drop,
+body.drop-hidden #drop-bubble { display: none !important; }
+
+#drop .drop-pupil {
+  transform: translate(var(--drop-eye-x, 0px), var(--drop-eye-y, 0px));
+  transition: transform .15s ease-out;
+}
+
+@media (max-width: 640px) {
+  #drop { right: 16px; bottom: 78px; width: 44px; height: 60px; }
+  #drop-bubble { right: 70px; bottom: 92px; max-width: 200px; font-size: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #drop, #drop .drop-eyelid { animation: none !important; }
+}
