@@ -3,6 +3,7 @@
    Site-wide. Dismissible. Persists across pages.
    ============================================================ */
 
+/* Wrapper allows drip-in / lean / splash-out to compose with the base bob */
 #drop {
   position: fixed;
   right: 28px;
@@ -18,11 +19,42 @@
   transition: transform .25s var(--ease-out, ease-out),
               opacity   .35s ease;
   opacity: 0;
+  --drop-lean: 0deg;
+  transform: rotate(var(--drop-lean));
   animation: drop-bob 4s ease-in-out infinite;
 }
-#drop.is-loaded { opacity: 1; }
-#drop:hover     { transform: scale(1.06) rotate(-3deg); }
-#drop.is-talking { animation-play-state: paused; transform: translateY(-2px); }
+#drop.is-loaded   { opacity: 1; }
+#drop:hover       { transform: scale(1.06) rotate(-3deg); }
+#drop.is-talking  { animation-play-state: paused; transform: translateY(-2px) rotate(var(--drop-lean)); }
+#drop.is-leaning  { animation-play-state: paused; transform: rotate(var(--drop-lean)) translateY(-1px); }
+
+/* ----- Travelling: Drop physically swims/hops to a target on the page ----- */
+#drop.is-traveling {
+  animation: none !important;
+  transition: filter .2s ease;
+  transform: translate(var(--travel-x, 0), var(--travel-y, 0))
+             rotate(var(--travel-rot, 0deg))
+             scale(var(--travel-scale, 1));
+  z-index: 9999;
+  filter: drop-shadow(0 14px 22px rgba(8, 66, 90, 0.28));
+}
+/* Trailing ripple while travelling */
+#drop.is-traveling::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 28px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(56,168,205,0.55), rgba(56,168,205,0));
+  transform: translateX(-50%);
+  animation: drop-trail-pulse .55s ease-out infinite;
+}
+@keyframes drop-trail-pulse {
+  0%   { transform: translateX(-50%) scale(0.6); opacity: 0.9; }
+  100% { transform: translateX(-50%) scale(1.6); opacity: 0; }
+}
 
 @keyframes drop-bob {
   0%, 100% { transform: translateY(0); }
@@ -37,6 +69,57 @@
   100% { transform: translateY(0)   scaleY(1); }
 }
 #drop.is-jumping { animation: drop-jump .55s var(--ease-out, ease-out); }
+
+/* ----- Drip-in entrance: drops from off-screen above with squash landing ----- */
+@keyframes drop-drip-in {
+  0%   { transform: translateY(-110vh) scaleY(1.55) scaleX(0.65); opacity: 0; }
+  55%  { transform: translateY(0)      scaleY(1.55) scaleX(0.65); opacity: 1; }
+  68%  { transform: translateY(0)      scaleY(0.55) scaleX(1.35); }
+  82%  { transform: translateY(-12px)  scaleY(1.08) scaleX(0.94); }
+  100% { transform: translateY(0)      scaleY(1)    scaleX(1);    }
+}
+#drop.is-arriving {
+  opacity: 1;
+  animation: drop-drip-in .9s cubic-bezier(0.45, 0, 0.55, 1.4) both;
+}
+
+/* ----- Splash-out exit: squashes flat, fades, leaves a ring ----- */
+@keyframes drop-splash-out {
+  0%   { transform: translateY(0)   scaleY(1)   scaleX(1);   opacity: 1; }
+  60%  { transform: translateY(8px) scaleY(0.45) scaleX(1.45); opacity: 0.65; }
+  100% { transform: translateY(20px) scaleY(0.05) scaleX(1.85); opacity: 0; }
+}
+#drop.is-leaving {
+  animation: drop-splash-out .22s ease-in forwards;
+}
+
+/* ----- Idle: look-around (subtle eye wiggle via parent rotation) ----- */
+@keyframes drop-look {
+  0%, 100% { transform: rotate(var(--drop-lean, 0deg)); }
+  20%      { transform: rotate(calc(var(--drop-lean, 0deg) - 4deg)) translateY(-1px); }
+  55%      { transform: rotate(calc(var(--drop-lean, 0deg) + 5deg)) translateY(-1px); }
+  80%      { transform: rotate(calc(var(--drop-lean, 0deg) - 2deg)); }
+}
+#drop.is-looking { animation: drop-look 1.6s ease-in-out; }
+
+/* ----- Idle: playful spin ----- */
+@keyframes drop-spin {
+  0%   { transform: rotate(0deg)   scale(1);    }
+  40%  { transform: rotate(180deg) scale(1.06); }
+  100% { transform: rotate(360deg) scale(1);    }
+}
+#drop.is-spinning { animation: drop-spin .9s cubic-bezier(0.5, 0, 0.5, 1); }
+
+/* ----- End-of-page celebration: hop + wave ----- */
+@keyframes drop-celebrate {
+  0%   { transform: translateY(0)    rotate(0deg); }
+  20%  { transform: translateY(-26px) rotate(-12deg); }
+  40%  { transform: translateY(-10px) rotate(10deg); }
+  60%  { transform: translateY(-22px) rotate(-8deg); }
+  80%  { transform: translateY(-4px) rotate(4deg); }
+  100% { transform: translateY(0)    rotate(0deg); }
+}
+#drop.is-celebrating { animation: drop-celebrate 1.1s var(--ease-out, ease-out); }
 
 @keyframes drop-blink {
   0%, 92%, 100% { transform: scaleY(1); }
@@ -132,6 +215,11 @@ body.drop-hidden #drop-bubble { display: none !important; }
 
 @media (prefers-reduced-motion: reduce) {
   #drop, #drop .drop-eyelid { animation: none !important; }
+  #drop.is-arriving,
+  #drop.is-leaving,
+  #drop.is-looking,
+  #drop.is-spinning,
+  #drop.is-celebrating { animation: none !important; opacity: 1; transform: none; }
 }
 
 /* ----- Section "peek" reaction (small bounce + tilt) ----- */

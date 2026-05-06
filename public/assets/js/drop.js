@@ -252,36 +252,156 @@
     const seen = new Set();
     const io = new IntersectionObserver((entries) => {
       const now = Date.now();
-      // Throttle: at most one section reaction every 9s
       if (now - lastSectionAt < 9000) return;
-      // Don't override the intro
+      if (busy) return;
       if (!introShown() && page !== 'booking') return;
 
       for (const en of entries) {
         if (!en.isIntersecting) continue;
+
+        // Performance stage takes priority over a bubble tip
+        const stage = en.target.getAttribute('data-drop-stage');
+        if (stage && !seen.has('stage:' + stage)) {
+          seen.add('stage:' + stage);
+          lastSectionAt = now;
+          performStage(en.target, stage);
+          break;
+        }
+
         const key = en.target.getAttribute('data-drop-tip');
-        if (!key || seen.has(key)) continue;
+        if (!key || seen.has('tip:' + key)) continue;
         const tip = SECTION_TIPS[key];
         if (!tip) continue;
-        seen.add(key);
+        seen.add('tip:' + key);
         lastSectionAt = now;
         showBubble(tip[0], tip[1]);
         if (!reduced) {
           drop.classList.add('is-peeking');
           setTimeout(() => drop.classList.remove('is-peeking'), 700);
         }
-        break; // one at a time
+        break;
       }
     }, { rootMargin: '-30% 0px -40% 0px', threshold: 0.01 });
 
-    document.querySelectorAll('[data-drop-tip]').forEach((el) => io.observe(el));
+    document.querySelectorAll('[data-drop-tip], [data-drop-stage]').forEach((el) => io.observe(el));
 
-    // Pause rotation while actively scrolling
     window.addEventListener('scroll', () => {
       scrolling = true;
       clearTimeout(scrollPauseTimer);
       scrollPauseTimer = setTimeout(() => { scrolling = false; }, 400);
     }, { passive: true });
+  }
+
+  // ---------- Travel system: Drop physically performs at a target ----------
+  let busy = false;
+
+  function tween(ms, onTick) {
+    return new Promise((resolve) => {
+      const t0 = performance.now();
+      function step(t) {
+        const k = Math.min(1, (t - t0) / ms);
+        onTick(k);
+        if (k < 1) requestAnimationFrame(step);
+        else resolve();
+      }
+      requestAnimationFrame(step);
+    });
+  }
+  const easeInOutCubic = (k) => k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+  const easeOutCubic   = (k) => 1 - Math.pow(1 - k, 3);
+
+  function travelDeltas(targetEl) {
+    const tr = targetEl.getBoundingClientRect();
+    const dr = drop.getBoundingClientRect();
+    return {
+      dx: (tr.left + tr.width  / 2) - (dr.left + dr.width  / 2),
+      dy: (tr.top  + tr.height / 2) - (dr.top  + dr.height / 2),
+    };
+  }
+
+  function setTravel(x, y, rot = 0, scale = 1) {
+    drop.style.setProperty('--travel-x', x + 'px');
+    drop.style.setProperty('--travel-y', y + 'px');
+    drop.style.setProperty('--travel-rot', rot + 'deg');
+    drop.style.setProperty('--travel-scale', scale);
+  }
+  function clearTravel() {
+    drop.style.removeProperty('--travel-x');
+    drop.style.removeProperty('--travel-y');
+    drop.style.removeProperty('--travel-rot');
+    drop.style.removeProperty('--travel-scale');
+  }
+
+  async function performStage(stageEl, type) {
+    if (busy) return;
+    if (reduced) return; // skip motion-heavy choreography
+    busy = true;
+    bubble.classList.remove('is-shown');
+
+    const target = stageEl.querySelector('[data-drop-target]') || stageEl;
+    const { dx, dy } = travelDeltas(target);
+
+    drop.classList.add('is-traveling');
+
+    // Travel out (arc-ish: rotate while moving)
+    await tween(700, (k) => {
+      const e = easeInOutCubic(k);
+      // little vertical arc lift in the middle so it looks like a hop
+      const arc = -Math.sin(k * Math.PI) * 30;
+      setTravel(dx * e, dy * e + arc, -10 * e, 1 + 0.05 * e);
+    });
+
+    if (type === 'pool-dive') {
+      // Lazy figure-8 swim around the target
+      await tween(1800, (k) => {
+        const t = k * Math.PI * 2;
+        const ox = Math.sin(t) * 70;
+        const oy = Math.sin(2 * t) * 28;
+        const rot = Math.cos(t) * 18;
+        setTravel(dx + ox, dy + oy, rot, 1.05);
+      });
+    } else if (type === 'map-hop') {
+      const points = [
+        { x: -90, y: -45 },
+        { x:  60, y: -55 },
+        { x: -10, y:  35 },
+        { x:  70, y:  20 },
+      ];
+      for (const p of points) {
+        await tween(420, (k) => {
+          const e = easeInOutCubic(k);
+          const arc = -Math.sin(k * Math.PI) * 24;
+          setTravel(dx + p.x * e, dy + p.y * e + arc, p.x < 0 ? -10 : 10, 1.05);
+        });
+      }
+    } else if (type === 'pricing-glide') {
+      // Slide across pricing rows, pause briefly mid-way
+      await tween(1100, (k) => {
+        const e = easeInOutCubic(k);
+        const ox = (k - 0.5) * 180; // -90 → +90 over the duration
+        const bob = Math.sin(k * Math.PI * 2) * 6;
+        setTravel(dx + ox, dy + bob, ox * 0.06, 1.05);
+      });
+    }
+
+    // Travel home
+    const startX = parseFloat(drop.style.getPropertyValue('--travel-x')) || 0;
+    const startY = parseFloat(drop.style.getPropertyValue('--travel-y')) || 0;
+    await tween(700, (k) => {
+      const e = easeOutCubic(k);
+      const arc = -Math.sin(k * Math.PI) * 20;
+      setTravel(startX * (1 - e), startY * (1 - e) + arc, 12 * (1 - e), 1);
+    });
+
+    drop.classList.remove('is-traveling');
+    clearTravel();
+    busy = false;
+
+    // Tiny landing splash
+    drop.classList.remove('is-jumping');
+    void drop.offsetWidth;
+    drop.classList.add('is-jumping');
+    setTimeout(() => drop.classList.remove('is-jumping'), 600);
   }
 
   function mount() {
@@ -306,9 +426,15 @@
     document.body.appendChild(drop);
     document.body.appendChild(bubble);
 
-    requestAnimationFrame(() => {
-      setTimeout(() => drop.classList.add('is-loaded'), 1500);
-    });
+    // Drip-in: Drop falls from above on every page load
+    if (reduced) {
+      requestAnimationFrame(() => drop.classList.add('is-loaded'));
+    } else {
+      requestAnimationFrame(() => {
+        drop.classList.add('is-loaded', 'is-arriving');
+        setTimeout(() => drop.classList.remove('is-arriving'), 950);
+      });
+    }
 
     page    = detectPage();
     facts   = FACTS_BY_PAGE[page] || FACTS_BY_PAGE.home;
@@ -333,6 +459,120 @@
 
     attachEyeTracking();
     attachScrollAwareness();
+    attachCtaLean();
+    attachIdleActions();
+    attachEndOfPage();
+    attachSplashOutNav();
+  }
+
+  // ---------- Body-lean toward hovered CTA ----------
+  function attachCtaLean() {
+    if (reduced) return;
+    const sel = '.btn-primary, .btn-accent, [data-drop-look]';
+    let leanTimer = null;
+    document.addEventListener('mouseover', (e) => {
+      const el = e.target.closest(sel);
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const dRect = drop.getBoundingClientRect();
+      const dx = (r.left + r.width / 2) - (dRect.left + dRect.width / 2);
+      const dy = (r.top  + r.height / 2) - (dRect.top  + dRect.height / 2);
+      // Lean direction: -10deg to +10deg based on horizontal offset
+      const dist = Math.hypot(dx, dy) || 1;
+      const lean = Math.max(-10, Math.min(10, (dx / dist) * 10));
+      drop.style.setProperty('--drop-lean', lean.toFixed(1) + 'deg');
+      drop.classList.add('is-leaning');
+      clearTimeout(leanTimer);
+    });
+    document.addEventListener('mouseout', (e) => {
+      if (!e.target.closest(sel)) return;
+      clearTimeout(leanTimer);
+      leanTimer = setTimeout(() => {
+        drop.style.setProperty('--drop-lean', '0deg');
+        drop.classList.remove('is-leaning');
+      }, 200);
+    });
+  }
+
+  // ---------- Idle micro-actions ----------
+  let lastInteractionAt = Date.now();
+  function markInteraction() { lastInteractionAt = Date.now(); }
+
+  function attachIdleActions() {
+    if (reduced) return;
+    ['click', 'pointerdown', 'keydown', 'scroll'].forEach((ev) => {
+      window.addEventListener(ev, markInteraction, { passive: true });
+    });
+    setInterval(() => {
+      if (document.visibilityState !== 'visible') return;
+      if (document.body.classList.contains('drop-hidden')) return;
+      if (drop.classList.contains('is-arriving') ||
+          drop.classList.contains('is-leaving')  ||
+          drop.classList.contains('is-jumping')  ||
+          drop.classList.contains('is-celebrating')) return;
+      const idle = Date.now() - lastInteractionAt;
+      if (idle < 18000) return; // only if user has been still
+
+      const action = Math.random() < 0.65 ? 'is-looking' : 'is-spinning';
+      drop.classList.add(action);
+      setTimeout(() => drop.classList.remove(action), action === 'is-looking' ? 1700 : 1000);
+      lastInteractionAt = Date.now(); // throttle
+    }, 12000);
+  }
+
+  // ---------- End-of-page celebration ----------
+  function attachEndOfPage() {
+    let fired = false;
+    function check() {
+      if (fired) return;
+      const doc = document.documentElement;
+      const total = doc.scrollHeight - window.innerHeight;
+      if (total < 200) return;
+      const progress = window.scrollY / total;
+      if (progress < 0.94) return;
+      fired = true;
+      if (!reduced) {
+        drop.classList.add('is-celebrating');
+        setTimeout(() => drop.classList.remove('is-celebrating'), 1100);
+      }
+      const farewells = [
+        ['Cheers', "Made it to the bottom — need anything else? The contact page is one tap away."],
+        ['Nice',   "End of the page. If you're ready, the booking flow is two clicks from here."],
+      ];
+      const f = farewells[Math.floor(Math.random() * farewells.length)];
+      showBubble(f[0], f[1]);
+    }
+    window.addEventListener('scroll', check, { passive: true });
+  }
+
+  // ---------- Splash-out on internal navigation ----------
+  function attachSplashOutNav() {
+    if (reduced) return;
+    let leaving = false;
+    document.addEventListener('click', (e) => {
+      if (leaving) return;
+      if (e.defaultPrevented) return;
+      if (e.button !== 0) return;
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const a = e.target.closest('a[href]');
+      if (!a) return;
+      const href = a.getAttribute('href');
+      if (!href) return;
+      // Skip: external, new-tab, anchors, mailto/tel, downloads
+      if (a.target === '_blank') return;
+      if (a.hasAttribute('download')) return;
+      if (/^(mailto:|tel:|javascript:|#)/i.test(href)) return;
+      let url;
+      try { url = new URL(a.href, location.href); } catch (_) { return; }
+      if (url.origin !== location.origin) return;
+      if (url.pathname === location.pathname && url.search === location.search) return; // same page
+
+      e.preventDefault();
+      leaving = true;
+      drop.classList.add('is-leaving');
+      bubble.classList.remove('is-shown');
+      setTimeout(() => { window.location.href = a.href; }, 220);
+    });
   }
 
   mount();
