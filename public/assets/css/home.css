@@ -229,7 +229,14 @@
   flex-direction: column;
   align-items: center;
   gap: var(--sp-3);
+  max-width: 56ch;
+  margin-inline: auto;
 }
+.section-head h2 { max-width: 22ch; }
+.section-head p  { max-width: 52ch; margin-inline: auto; }
+.section-head--start { align-items: flex-start; text-align: left; margin-inline: 0; }
+.section-head--start h2,
+.section-head--start p { margin-inline: 0; }
 
 /* ---------- SERVICES PREVIEW ---------- */
 .services-preview { background: var(--white); }
@@ -244,12 +251,14 @@
 .service-card {
   background: var(--white);
   border: 1px solid var(--color-border);
-  border-radius: var(--r-lg);
+  border-radius: var(--r-asym-1);
   padding: var(--sp-6);
   transition: all var(--dur-med) var(--ease-out);
   position: relative;
   overflow: hidden;
 }
+.services-grid > .service-card:nth-child(even) { border-radius: var(--r-asym-2); }
+.services-grid > .service-card:nth-child(even) .service-card__icon { border-radius: 4px 14px 4px 14px; }
 .service-card::before {
   content: "";
   position: absolute;

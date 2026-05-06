@@ -24,12 +24,13 @@
   flex-direction: column;
   background: var(--white);
   border: 1px solid var(--color-border);
-  border-radius: var(--r-lg);
+  border-radius: var(--r-asym-1);
   padding: var(--sp-5);
   transition: transform .25s var(--ease-out), box-shadow .25s var(--ease-out);
   text-decoration: none;
   color: inherit;
 }
+.blog__grid > .blog__card:nth-child(even) { border-radius: var(--r-asym-2); }
 .blog__card:hover {
   transform: translateY(-2px);
   box-shadow: var(--sh-md);

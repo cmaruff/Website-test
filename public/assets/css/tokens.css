@@ -66,12 +66,17 @@
   --sp-9:  6rem;
   --sp-10: 8rem;
 
-  /* Radii */
+  /* Radii — Salt Editorial uses ASYMMETRIC pairs as a signature.
+     Use --r-asym-* on cards/tiles, --r-pill on buttons. Avoid uniform radii. */
   --r-sm: 4px;
   --r-md: 8px;
   --r-lg: 16px;
   --r-xl: 24px;
   --r-pill: 999px;
+
+  --r-asym-1: 14px 4px 14px 4px;   /* tradesperson hand — primary tile */
+  --r-asym-2: 4px 14px 4px 14px;   /* mirrored — alternates with asym-1 */
+  --r-asym-3: 22px 6px 22px 6px;   /* larger, for media/figures */
 
   /* Shadows */
   --sh-sm: 0 1px 2px rgba(8, 66, 90, 0.08);
@@ -129,8 +134,12 @@
 
   --card-bg:     var(--color-surface);
   --card-border: 1px solid var(--color-border);
-  --card-radius: var(--r-lg);
+  --card-radius: var(--r-asym-1);
   --card-shadow: var(--sh-md);
+
+  /* Section vertical rhythm — keeps every page on a consistent measure */
+  --section-pad-y:    clamp(var(--sp-8), 8vw, var(--sp-9));
+  --section-pad-y-lg: clamp(var(--sp-9), 10vw, var(--sp-10));
 
   --nav-bg:     rgba(255, 255, 255, 0.85);
   --nav-blur:   saturate(180%) blur(14px);

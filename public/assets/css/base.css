@@ -16,49 +16,87 @@ body {
   background: var(--color-bg);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  font-feature-settings: "ss01", "cv05";
 }
 
 img, svg { display: block; max-width: 100%; }
 
+/* Display headings use Fraunces' optical-size axis at the maximum reasonable
+   value, with optical tracking dialled in by size. Headlines wrap with
+   `text-wrap: balance` so they break the way a magazine sub-editor would
+   break them, not where the container happens to run out. */
 h1, h2, h3, h4 {
   font-family: var(--font-display);
   font-weight: 700;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
+  line-height: 1.04;
+  letter-spacing: -0.025em;
   color: var(--color-fg);
+  text-wrap: balance;
+  font-variation-settings: "opsz" 144;
 }
 
-h1 { font-size: clamp(var(--fs-4xl), 6vw, var(--fs-6xl)); font-weight: 800; }
-h2 { font-size: clamp(var(--fs-3xl), 4vw, var(--fs-5xl)); }
-h3 { font-size: var(--fs-2xl); }
-h4 { font-size: var(--fs-xl); }
+h1 {
+  font-size: clamp(var(--fs-4xl), 6vw, var(--fs-6xl));
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+h2 { font-size: clamp(var(--fs-3xl), 4vw, var(--fs-5xl)); letter-spacing: -0.028em; }
+h3 { font-size: var(--fs-2xl);  letter-spacing: -0.02em; }
+h4 { font-size: var(--fs-xl);   letter-spacing: -0.015em; font-variation-settings: "opsz" 36; }
 
-p { color: var(--color-fg-muted); max-width: 60ch; }
+p {
+  color: var(--color-fg-muted);
+  max-width: 60ch;
+  text-wrap: pretty;
+}
+
 a  { color: var(--color-primary); text-decoration: none; transition: color var(--dur-fast); }
 a:hover { color: var(--color-primary-hover); }
+
+/* Tabular figures everywhere numbers act as data — prices, stats, tables.
+   Salt Editorial reads ledgers cleanly; columns must align. */
+.pricing__table,
+.hero__readings,
+.strip__num,
+.how__num,
+.product-card__price,
+.service-card__price,
+[data-tabular-nums] {
+  font-variant-numeric: tabular-nums lining-nums;
+}
 
 .container {
   width: min(1200px, calc(100% - 2rem));
   margin-inline: auto;
 }
 
+/* Eyebrow — section-marker. Refined: thinner rule, longer tracking,
+   smaller cap, single-tone. */
 .eyebrow {
   font-family: var(--font-body);
-  font-size: var(--fs-sm);
+  font-size: 0.78rem;
   font-weight: 600;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--color-primary);
   display: inline-flex;
   align-items: center;
-  gap: var(--sp-2);
+  gap: var(--sp-3);
 }
 
 .eyebrow::before {
   content: "";
-  width: 28px;
-  height: 2px;
-  background: var(--color-primary);
+  width: 22px;
+  height: 1.5px;
+  background: currentColor;
+  opacity: 0.7;
+}
+
+/* Focus ring — visible, calm, accessible. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: none;
+  box-shadow: var(--sh-glow);
+  border-radius: 4px;
 }
 
 /* ---------- Buttons ---------- */
