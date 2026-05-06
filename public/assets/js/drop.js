@@ -306,9 +306,15 @@
     document.body.appendChild(drop);
     document.body.appendChild(bubble);
 
-    requestAnimationFrame(() => {
-      setTimeout(() => drop.classList.add('is-loaded'), 1500);
-    });
+    // Drip-in: Drop falls from above on every page load
+    if (reduced) {
+      requestAnimationFrame(() => drop.classList.add('is-loaded'));
+    } else {
+      requestAnimationFrame(() => {
+        drop.classList.add('is-loaded', 'is-arriving');
+        setTimeout(() => drop.classList.remove('is-arriving'), 950);
+      });
+    }
 
     page    = detectPage();
     facts   = FACTS_BY_PAGE[page] || FACTS_BY_PAGE.home;
@@ -333,6 +339,120 @@
 
     attachEyeTracking();
     attachScrollAwareness();
+    attachCtaLean();
+    attachIdleActions();
+    attachEndOfPage();
+    attachSplashOutNav();
+  }
+
+  // ---------- Body-lean toward hovered CTA ----------
+  function attachCtaLean() {
+    if (reduced) return;
+    const sel = '.btn-primary, .btn-accent, [data-drop-look]';
+    let leanTimer = null;
+    document.addEventListener('mouseover', (e) => {
+      const el = e.target.closest(sel);
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const dRect = drop.getBoundingClientRect();
+      const dx = (r.left + r.width / 2) - (dRect.left + dRect.width / 2);
+      const dy = (r.top  + r.height / 2) - (dRect.top  + dRect.height / 2);
+      // Lean direction: -10deg to +10deg based on horizontal offset
+      const dist = Math.hypot(dx, dy) || 1;
+      const lean = Math.max(-10, Math.min(10, (dx / dist) * 10));
+      drop.style.setProperty('--drop-lean', lean.toFixed(1) + 'deg');
+      drop.classList.add('is-leaning');
+      clearTimeout(leanTimer);
+    });
+    document.addEventListener('mouseout', (e) => {
+      if (!e.target.closest(sel)) return;
+      clearTimeout(leanTimer);
+      leanTimer = setTimeout(() => {
+        drop.style.setProperty('--drop-lean', '0deg');
+        drop.classList.remove('is-leaning');
+      }, 200);
+    });
+  }
+
+  // ---------- Idle micro-actions ----------
+  let lastInteractionAt = Date.now();
+  function markInteraction() { lastInteractionAt = Date.now(); }
+
+  function attachIdleActions() {
+    if (reduced) return;
+    ['click', 'pointerdown', 'keydown', 'scroll'].forEach((ev) => {
+      window.addEventListener(ev, markInteraction, { passive: true });
+    });
+    setInterval(() => {
+      if (document.visibilityState !== 'visible') return;
+      if (document.body.classList.contains('drop-hidden')) return;
+      if (drop.classList.contains('is-arriving') ||
+          drop.classList.contains('is-leaving')  ||
+          drop.classList.contains('is-jumping')  ||
+          drop.classList.contains('is-celebrating')) return;
+      const idle = Date.now() - lastInteractionAt;
+      if (idle < 18000) return; // only if user has been still
+
+      const action = Math.random() < 0.65 ? 'is-looking' : 'is-spinning';
+      drop.classList.add(action);
+      setTimeout(() => drop.classList.remove(action), action === 'is-looking' ? 1700 : 1000);
+      lastInteractionAt = Date.now(); // throttle
+    }, 12000);
+  }
+
+  // ---------- End-of-page celebration ----------
+  function attachEndOfPage() {
+    let fired = false;
+    function check() {
+      if (fired) return;
+      const doc = document.documentElement;
+      const total = doc.scrollHeight - window.innerHeight;
+      if (total < 200) return;
+      const progress = window.scrollY / total;
+      if (progress < 0.94) return;
+      fired = true;
+      if (!reduced) {
+        drop.classList.add('is-celebrating');
+        setTimeout(() => drop.classList.remove('is-celebrating'), 1100);
+      }
+      const farewells = [
+        ['Cheers', "Made it to the bottom — need anything else? The contact page is one tap away."],
+        ['Nice',   "End of the page. If you're ready, the booking flow is two clicks from here."],
+      ];
+      const f = farewells[Math.floor(Math.random() * farewells.length)];
+      showBubble(f[0], f[1]);
+    }
+    window.addEventListener('scroll', check, { passive: true });
+  }
+
+  // ---------- Splash-out on internal navigation ----------
+  function attachSplashOutNav() {
+    if (reduced) return;
+    let leaving = false;
+    document.addEventListener('click', (e) => {
+      if (leaving) return;
+      if (e.defaultPrevented) return;
+      if (e.button !== 0) return;
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const a = e.target.closest('a[href]');
+      if (!a) return;
+      const href = a.getAttribute('href');
+      if (!href) return;
+      // Skip: external, new-tab, anchors, mailto/tel, downloads
+      if (a.target === '_blank') return;
+      if (a.hasAttribute('download')) return;
+      if (/^(mailto:|tel:|javascript:|#)/i.test(href)) return;
+      let url;
+      try { url = new URL(a.href, location.href); } catch (_) { return; }
+      if (url.origin !== location.origin) return;
+      if (url.pathname === location.pathname && url.search === location.search) return; // same page
+
+      e.preventDefault();
+      leaving = true;
+      drop.classList.add('is-leaving');
+      bubble.classList.remove('is-shown');
+      setTimeout(() => { window.location.href = a.href; }, 220);
+    });
   }
 
   mount();
