@@ -225,8 +225,12 @@ async function viewBookings(view) {
 
 async function editBooking(id) {
   const { data: b } = await supa.from("bookings")
-    .select(`*, customers (name, email, phone, address)`).eq("id", id).single();
+    .select(`*, customers (name, email, phone, address, square_card_id)`).eq("id", id).single();
   if (!b) return toast("Booking not found", "error");
+
+  const ongoing = ["weekly","fortnightly","4weekly"].includes(b.service_code);
+  const cardOnFile = !!b.customers?.square_card_id;
+  const canRebill = ongoing && cardOnFile && b.status === "pending";
 
   modal(`
     <h2>Edit booking</h2>
@@ -252,7 +256,12 @@ async function editBooking(id) {
       <div class="field field--full"><label>Technician notes</label>
         <textarea id="bk_tech">${escape(b.technician_notes ?? "")}</textarea></div>
     </div>
+    ${ongoing ? `
+      <p style="margin:var(--sp-3) 0; color:var(--sand-500); font-size:var(--fs-sm);">
+        Ongoing service · ${cardOnFile ? "Card on file ✓" : "No card on file yet — will save automatically after first payment"}
+      </p>` : ""}
     <div class="btn-row">
+      ${canRebill ? `<button class="btn btn-primary" id="rebillBk">Charge saved card · ${fmtCurrency(b.amount_cents)}</button>` : ""}
       <button class="btn btn-ghost" data-close>Cancel</button>
       <button class="btn btn-primary" id="saveBk">Save</button>
     </div>
@@ -273,6 +282,38 @@ async function editBooking(id) {
       close();
       route();
     });
+
+    const rebillBtn = m.querySelector("#rebillBk");
+    if (rebillBtn) {
+      rebillBtn.addEventListener("click", async () => {
+        if (!confirm(`Charge the customer's saved card for ${fmtCurrency(b.amount_cents)}?`)) return;
+        rebillBtn.disabled = true;
+        rebillBtn.textContent = "Charging…";
+        if (window.IS_DEMO) {
+          await new Promise(r => setTimeout(r, 700));
+          await supa.from("bookings").update({ status: "confirmed", paid_amount_cents: b.amount_cents }).eq("id", id);
+          toast("Demo charge complete", "success");
+          close(); route();
+          return;
+        }
+        try {
+          const r = await window.tqFetch("/functions/v1/charge-saved-card", {
+            method: "POST",
+            body: JSON.stringify({ booking_id: id }),
+          });
+          if (r.payment_status === "COMPLETED") {
+            toast("Charged successfully", "success");
+            close(); route();
+          } else {
+            toast(`Square returned ${r.payment_status}`, "error");
+          }
+        } catch (e) {
+          toast(e.message, "error");
+          rebillBtn.disabled = false;
+          rebillBtn.textContent = `Charge saved card · ${fmtCurrency(b.amount_cents)}`;
+        }
+      });
+    }
   });
 }
 
@@ -768,9 +809,36 @@ async function viewSettings(view) {
         </div>
         <div class="field"><label><input id="s_book" type="checkbox" ${s.bookings_open ? "checked" : ""}> Bookings open</label></div>
         <div class="field"><label><input id="s_prod" type="checkbox" ${s.products_open ? "checked" : ""}> Products page live</label></div>
+        <div class="field"><label><input id="s_sms"  type="checkbox" ${s.sms_reminders_enabled ? "checked" : ""}> SMS reminders 24h before</label></div>
       </div>
       <div class="btn-row">
         <button class="btn btn-primary" id="saveSettings">Save settings</button>
+      </div>
+
+      <h2 style="margin:var(--sp-7) 0 var(--sp-4);">QuickBooks Online</h2>
+      <p style="color:var(--sand-500); margin-bottom:var(--sp-3);">
+        Sync paid bookings and orders into QuickBooks as invoices.
+      </p>
+      <div id="qboStatus" style="margin-bottom:var(--sp-3);">
+        ${s.qbo_realm_id
+          ? `<span class="pill pill--paid">Connected</span> · realm <code>${escape(s.qbo_realm_id)}</code>`
+          : `<span class="pill pill--pending">Not connected</span>`}
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="qboConnect">${s.qbo_realm_id ? "Reconnect" : "Connect to QuickBooks"}</button>
+        ${s.qbo_realm_id ? `<button class="btn btn-ghost" id="qboDisconnect">Disconnect</button>` : ""}
+      </div>
+
+      <h2 style="margin:var(--sp-7) 0 var(--sp-4);">Calendar feed (iCal)</h2>
+      <p style="color:var(--sand-500); margin-bottom:var(--sp-3);">
+        Subscribe in Apple Calendar / Google Calendar / Outlook to see bookings as they come in.
+      </p>
+      <div class="field field--full">
+        <input id="icalUrl" readonly value="${s.ical_secret ? `${window.TQ_CONFIG.SUPABASE_URL}/functions/v1/calendar-feed?token=${encodeURIComponent(s.ical_secret)}` : "Click 'Generate' below to create the feed URL."}" style="font-family:var(--font-mono); font-size:13px;">
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="icalCopy">Copy URL</button>
+        <button class="btn btn-primary" id="icalRegen">${s.ical_secret ? "Regenerate" : "Generate"}</button>
       </div>
     </div>
   `;
@@ -789,9 +857,48 @@ async function viewSettings(view) {
       delivery_per_km_cents: Math.round(parseFloat(view.querySelector("#s_dkm").value) * 100),
       bookings_open: view.querySelector("#s_book").checked,
       products_open: view.querySelector("#s_prod").checked,
+      sms_reminders_enabled: view.querySelector("#s_sms").checked,
     };
     const { error } = await supa.from("settings").update(payload).eq("id", 1);
     if (error) return toast(error.message, "error");
     toast("Settings saved", "success");
+  });
+
+  // ----- QuickBooks connect -----
+  view.querySelector("#qboConnect").addEventListener("click", async () => {
+    if (window.IS_DEMO) {
+      toast("Demo mode — QuickBooks won't actually connect", "");
+      return;
+    }
+    try {
+      const r = await window.tqFetch("/functions/v1/qbo-connect");
+      if (r.authorize_url) location.href = r.authorize_url;
+      else toast("Couldn't start QBO flow", "error");
+    } catch (e) { toast(e.message, "error"); }
+  });
+  const disc = view.querySelector("#qboDisconnect");
+  if (disc) disc.addEventListener("click", async () => {
+    if (!confirm("Disconnect QuickBooks? You'll need to reconnect to resume invoice sync.")) return;
+    const { error } = await supa.from("settings").update({
+      qbo_realm_id: null, qbo_access_token: null, qbo_refresh_token: null, qbo_token_expires_at: null,
+    }).eq("id", 1);
+    if (error) return toast(error.message, "error");
+    toast("Disconnected", "success");
+    route();
+  });
+
+  // ----- iCal feed -----
+  view.querySelector("#icalCopy").addEventListener("click", async () => {
+    const url = view.querySelector("#icalUrl").value;
+    try { await navigator.clipboard.writeText(url); toast("URL copied", "success"); }
+    catch { toast("Copy failed — select the field manually", "error"); }
+  });
+  view.querySelector("#icalRegen").addEventListener("click", async () => {
+    if (!confirm("Regenerating invalidates the old URL. Anyone subscribed will need the new one. Continue?")) return;
+    const secret = crypto.randomUUID().replace(/-/g, "");
+    const { error } = await supa.from("settings").update({ ical_secret: secret }).eq("id", 1);
+    if (error) return toast(error.message, "error");
+    toast("Feed URL regenerated", "success");
+    route();
   });
 }

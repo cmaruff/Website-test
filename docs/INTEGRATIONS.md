@@ -1,47 +1,57 @@
 # Integrations Guide
 
-Reference for every third-party service the build uses (or is wired for).
-**This is a Phase 1 build** — Stripe, Resend, Google Maps, and Anthropic are
-fully implemented. QuickBooks and Notifyre have schema/scaffolding but require
-Phase 2 work in Claude Code to complete.
+Reference for every third-party service this build uses. Square, Resend,
+Google Maps, QuickBooks Online and Notifyre are all wired in code — flip
+them on by setting the relevant env vars and (where required) connecting
+via OAuth from the admin Settings tab.
 
 ---
 
-## ✅ Stripe (Payments)
+## Square (Payments)
 
 ### Account setup
-1. [stripe.com](https://stripe.com) → create AU account
+1. [squareup.com/au](https://squareup.com/au) → create AU account
 2. Verify with ABN, bank account, ID
-3. Activate live mode
+3. Note your **Location ID** (Square Dashboard → Account → Locations)
+4. Generate a Personal Access Token under Apps → Sandbox/Production
 
-### Keys needed
-- `STRIPE_SECRET_KEY` (Edge Function env)
-- `STRIPE_WEBHOOK_SECRET` (Edge Function env, set after webhook creation)
-- `STRIPE_PUBLISHABLE_KEY` (front-end, in `supabase-config.js`) — *not actually
-  used in the current code since we redirect to Stripe Checkout, but keep it for
-  future Stripe Elements integration*
+### Env vars (Edge Functions)
+| Key | Value |
+|---|---|
+| `SQUARE_ACCESS_TOKEN`           | Bearer token from Square dashboard |
+| `SQUARE_LOCATION_ID`            | the location ID |
+| `SQUARE_WEBHOOK_SIGNATURE_KEY`  | from the webhook subscription you'll create below |
+| `SQUARE_API_BASE`               | optional. Defaults to `https://connect.squareup.com`. Set to `https://connect.squareupsandbox.com` for testing |
 
 ### How it works in this build
 1. User submits booking form → `booking-create` Edge Function
-2. Function inserts a `pending` booking, then creates a Stripe Checkout Session
-3. User redirects to Stripe-hosted payment page
-4. On success, Stripe redirects to `/booking-success.html`
-5. Stripe also POSTs to `stripe-webhook` with `checkout.session.completed`
-6. Webhook flips booking → `confirmed`, stores `payment_intent` and `paid_amount_cents`
+2. Function inserts a `pending` booking + creates a Square **Payment Link** (Hosted Checkout)
+3. User redirects to Square's hosted payment page
+4. On success, Square redirects to `/booking-success.html?b=<id>`
+5. Square POSTs to `square-webhook` with `payment.created` / `payment.updated`
+6. Webhook flips booking → `confirmed`, stores `square_payment_id` and `paid_amount_cents`,
+   triggers `send-confirmation` (Resend) and `qbo-sync` (QuickBooks invoice)
+
+### Saving the card for ongoing services
+For weekly / fortnightly / 4-weekly bookings, `square-webhook` saves the
+customer's `square_customer_id` + `square_card_id` after the first
+successful payment. The admin "Charge saved card" button on the next
+ongoing booking calls `charge-saved-card`, which charges the card
+on file and rolls the booking through the same flow.
+
+### Webhook setup
+Square Dashboard → Developers → Webhooks → Add subscription:
+- URL: `https://YOUR-PROJECT.supabase.co/functions/v1/square-webhook`
+- Events: `payment.created`, `payment.updated`, `refund.created`, `refund.updated`
+- Save the **Signature key** as `SQUARE_WEBHOOK_SIGNATURE_KEY`
+- Deploy `square-webhook` with `--no-verify-jwt`
 
 ### Refunds
-Refund from Stripe Dashboard → triggers `charge.refunded` → webhook flips booking → `cancelled`.
-
-### Future: Stripe Customer Portal (Phase 2)
-For ongoing weekly/fortnightly customers who want auto-rebill, save card, etc.
-Requires:
-- Stripe Subscriptions (replace one-off Checkout for recurring services)
-- Add a `stripe_subscription_id` column to bookings
-- Customer portal session creation Edge Function
+Refund from Square Dashboard → triggers `refund.created` → webhook flips booking → `cancelled`.
 
 ---
 
-## ✅ Resend (Transactional email)
+## Resend (Transactional email)
 
 ### Account setup
 1. [resend.com](https://resend.com) → free tier (3,000/month, 100/day)
@@ -50,108 +60,131 @@ Requires:
 4. Wait ~10 mins for verification
 5. Generate API key
 
-### Env var
+### Env vars
 - `RESEND_API_KEY=re_...`
 - `FROM_EMAIL="TQ Pools <bookings@tqpoolservices.com>"`
 
 ### Templates in this build
 - Booking confirmation (HTML inline in `send-confirmation/index.ts`)
-- *Future:* invoice email, service-complete email with PDF report, monthly digest
 
 To customise the template, edit `renderEmail()` in `supabase/functions/send-confirmation/index.ts`.
 
 ---
 
-## ✅ Google Maps (Geocoding + service area)
+## Google Maps (Geocoding + service area)
 
 ### API setup
 1. [console.cloud.google.com](https://console.cloud.google.com) → New project
 2. Enable **Geocoding API**
-3. Create API key, **restrict it**:
-   - Application restrictions → HTTP referrers → only your Supabase domain
-   - API restrictions → just Geocoding API
-4. Set billing (required, but generous free tier — 28k requests/month free)
+3. Create API key, restrict it to the Geocoding API and your Supabase domain
+4. Set billing (free tier: 28k requests/month)
+
+### Env var
+- `GOOGLE_MAPS_API_KEY`
 
 ### How it's used
-- `distance-check` Edge Function geocodes the customer's booking address
-- Computes haversine distance from `settings.service_origin_*`
-- Returns `in_range` boolean based on radius (50km default for service, 100km for delivery)
-- Front-end blocks submission if address is out of area
+- `distance-check` geocodes booking addresses for the 50km service-area check
+- `order-create` geocodes delivery addresses to compute delivery cost (`base_cents + per_km_cents × km`)
 
-### Settings (configurable in admin → Settings)
+### Settings (admin → Settings → Service area)
 - Origin lat/lng — defaults to Townsville CBD (-19.2589, 146.8169)
 - Service radius — 50km
 - Delivery radius — 100km
+- Delivery base + per-km — drives the products checkout total
 
 ---
 
-## ✅ Anthropic API (SEO content)
+## QuickBooks Online (Invoice sync)
 
 ### Setup
-1. [console.anthropic.com](https://console.anthropic.com) → API keys → create
-2. Add billing — $5 minimum, very cheap usage
-3. Save key as `ANTHROPIC_API_KEY` Edge Function env var
+1. [developer.intuit.com](https://developer.intuit.com) → My Apps → Create app (Accounting scope)
+2. Note **Client ID** + **Client Secret**
+3. Add `https://YOUR-PROJECT.supabase.co/functions/v1/qbo-callback` to the app's
+   Redirect URIs (both production and sandbox versions if you want to test)
+
+### Env vars
+| Key | Value |
+|---|---|
+| `QBO_CLIENT_ID`     | from your Intuit app |
+| `QBO_CLIENT_SECRET` | from your Intuit app |
+| `QBO_ENV`           | `production` (default) or `sandbox` |
+
+### Connecting (one-time, from the admin)
+1. Admin → Settings → "Connect to QuickBooks" button
+2. You'll be redirected to Intuit, sign in to your QBO company, click Authorize
+3. Land back in admin → Settings shows "Connected · realm <id>"
 
 ### How it works
-- `monthly-seo-post` runs on the 1st of each month via `pg_cron`
-- Picks a topic from a hardcoded list of 12 (focused on NQ tropical pool care)
-- Calls Claude Sonnet 4 with a tightly-scoped prompt:
-  - 600–800 words
-  - Conversational, no AI clichés
-  - Locally relevant
-  - Markdown output + JSON metadata block
-- Saves to `posts` table as `status='draft'`
-- Admin reviews and publishes from the dashboard
+- `qbo-connect` returns the OAuth authorize URL
+- `qbo-callback` exchanges the code for access + refresh tokens, stores them in `settings`
+- `qbo-sync` is invoked by `square-webhook` after each successful payment with
+  `{booking_id}` or `{order_id}`. It:
+  - Refreshes the access token if it's near expiry (rotates the refresh token too)
+  - Creates the customer in QBO if not yet synced
+  - Creates an Invoice with line items
+  - Records a Payment linked to the invoice (so the books match Square)
 
 ### Cost
-~$0.05–$0.15 per post. Negligible.
-
-### Customising topics
-Edit the `SEO_TOPICS` array in `supabase/functions/monthly-seo-post/index.ts`.
+QuickBooks Online subscription required (~$35–55 AUD/month for AU plans).
+The OAuth + API access is free on top of an existing subscription.
 
 ---
 
-## ⚪ QuickBooks Online (Phase 2 — scaffolded)
+## Notifyre (SMS reminders, AU)
 
-The schema has `qbo_*` fields ready (`customers.qbo_customer_id`, `bookings.qbo_invoice_id`,
-`settings.qbo_refresh_token`, etc.) but the OAuth flow isn't built — it requires:
-- Real domain callback URLs (can't test without)
-- Token refresh logic
-- Webhook handler for QBO events
-- Customer + invoice sync logic
+### Setup
+1. [notifyre.com](https://notifyre.com) → sign up (Australian provider, flat AUD pricing)
+2. Generate an API token
 
-### When you're ready (Phase 2):
-1. Create a QBO developer account → app → get Client ID + Secret
-2. Build `/admin/connect/qbo.html` page → starts OAuth flow
-3. Build `qbo-callback` Edge Function → exchanges code for tokens, stores in `settings`
-4. Build `qbo-sync` Edge Function → called from `stripe-webhook` after a booking confirms,
-   creates QBO invoice + records payment
-5. Periodic refresh-token rotation (QBO refresh tokens expire after 100 days)
+### Env var
+- `NOTIFYRE_API_KEY`
 
-This is the kind of work that's much faster in Claude Code with live testing.
+### How it works
+- `send-sms-reminder` runs once a day (cron), finds every booking with
+  status `confirmed` / `paid` / `scheduled` for tomorrow, sends a one-line
+  reminder via Notifyre
+- Honours the `Settings → SMS reminders 24h before` checkbox — turn it off
+  in admin to stop sends
+
+### Schedule (Supabase SQL editor, after enabling pg_cron + pg_net)
+```sql
+select cron.schedule(
+  'tq-sms-reminders',
+  '0 9 * * *',
+  $$ select net.http_post(
+       url := 'https://YOUR-PROJECT.supabase.co/functions/v1/send-sms-reminder',
+       headers := '{"Authorization": "Bearer SERVICE_ROLE_KEY"}'::jsonb
+     ) $$
+);
+```
+
+Sample SMS:
+
+```
+TQ Pool Services: confirming your pool service tomorrow (Wed 22 May)
+10-12. Make sure access is open. Reply STOP to cancel reminders.
+```
+
+### Cost
+~5–10¢ per SMS sent.
 
 ---
 
-## ⚪ Notifyre (Phase 2 — SMS reminders)
+## iCal feed (read-only calendar subscription)
 
-You flagged Notifyre as preferable to Twilio earlier — flat-rate AUD pricing,
-Australian data residency. Schema is ready (`customers.phone`, booking has all needed fields).
+No third-party account needed — `calendar-feed` is an Edge Function that
+returns an `.ics` document of upcoming bookings.
 
-### When you're ready:
-1. Sign up at [notifyre.com](https://notifyre.com) → API key
-2. Add `NOTIFYRE_API_KEY` env var
-3. Create `send-sms-reminder` Edge Function
-4. Schedule it via `pg_cron` to run every morning, find bookings for tomorrow,
-   send a single-line confirmation SMS
-5. Optionally add a "Reply Y to confirm / N to cancel" pattern (Notifyre supports
-   inbound webhooks)
+### Generating the URL
+- Admin → Settings → "Calendar feed" → click **Generate** to create a
+  random secret token
+- Copy the resulting URL (looks like
+  `https://YOUR-PROJECT.supabase.co/functions/v1/calendar-feed?token=<secret>`)
+- In Apple Calendar / Google Calendar / Outlook → "Subscribe to calendar"
+- Anyone with the URL can read the feed; click **Regenerate** to revoke
 
-Sample SMS template:
-
-```
-TQ Pools: just confirming your pool service tomorrow (Wed 22 May)
-between 10am-12pm. Make sure access is open. Reply HELP for issues.
-```
+### Deploy
+- Deploy `calendar-feed` with `--no-verify-jwt` (calendar clients won't send a Supabase JWT)
 
 ---
 
@@ -160,10 +193,9 @@ between 10am-12pm. Make sure access is open. Reply HELP for issues.
 | Service        | Monthly         |
 |----------------|-----------------|
 | Supabase Pro   | $25 USD         |
-| Stripe fees    | 1.7% + 30¢ per AU card transaction |
+| Square fees    | 2.2% per AU card transaction (online) |
 | Resend         | $0 (under 3k/month) |
 | Google Maps    | $0 (under 28k geocodes) |
-| Anthropic API  | <$1 (1 post/month) |
-| Vercel hosting | $0 (Pro tier optional at $20) |
-| QuickBooks (Phase 2) | $35–55 AUD existing subscription |
-| Notifyre (Phase 2) | ~5–10¢ per SMS |
+| QuickBooks Online | $35–55 AUD existing subscription |
+| Notifyre        | 5–10¢ per SMS sent |
+| Hosting (SiteGround) | varies by plan |

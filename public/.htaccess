@@ -9,8 +9,9 @@ RewriteCond %{HTTPS} !=on
 RewriteCond %{HTTP:X-Forwarded-Proto} !=https
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-# ---- Pretty URLs for blog posts: /blog/<slug> -> /blog.html?slug=<slug> ----
-RewriteRule ^blog/([a-z0-9-]+)/?$ /blog.html?slug=$1 [L,QSA]
+# ---- Pretty URLs for blog posts and products ----
+RewriteRule ^blog/([a-z0-9-]+)/?$     /blog.html?slug=$1     [L,QSA]
+RewriteRule ^products/([a-z0-9-]+)/?$ /products.html?slug=$1 [L,QSA]
 
 # ---- Drop .html so /services works as well as /services.html ----
 RewriteCond %{REQUEST_FILENAME} !-f
@@ -18,10 +19,11 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{DOCUMENT_ROOT}/$1.html -f
 RewriteRule ^([^/]+)/?$ /$1.html [L]
 
-# Canonical: redirect /foo.html -> /foo (skip blog.html so the slug query
-# doesn't get clobbered)
+# Canonical: redirect /foo.html -> /foo (skip blog.html and products.html so
+# the slug query parameter doesn't get clobbered)
 RewriteCond %{THE_REQUEST} \s/+([^?\s]+?)\.html[?\s]
 RewriteCond %1 !=blog
+RewriteCond %1 !=products
 RewriteRule ^([^/]+)\.html$ /$1 [R=301,L]
 
 # ---- Custom 404 ----

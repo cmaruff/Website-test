@@ -52,62 +52,86 @@ values ('PASTE-THE-AUTH-USER-UUID-HERE');
 
 ## 4. Set Edge Function environment variables
 
-Dashboard → Project Settings → Edge Functions → Add secrets:
+Dashboard → Project Settings → Edge Functions → Add secrets. Most you set
+once and forget; QuickBooks tokens are written by the OAuth flow itself.
 
-| Key                          | Value                                           |
-|------------------------------|-------------------------------------------------|
-| `STRIPE_SECRET_KEY`          | `sk_live_...` (or `sk_test_...` for staging)    |
-| `STRIPE_WEBHOOK_SECRET`      | `whsec_...` (set after step 7)                  |
-| `GOOGLE_MAPS_API_KEY`        | API key with Geocoding API enabled              |
-| `RESEND_API_KEY`             | `re_...`                                        |
-| `FROM_EMAIL`                 | `TQ Pools <bookings@tqpoolservices.com>`        |
-| `ANTHROPIC_API_KEY`          | `sk-ant-...`                                    |
-| `PUBLIC_SITE_URL`            | `https://tqpoolservices.com`                    |
+| Key                              | Value                                           | Required for |
+|----------------------------------|-------------------------------------------------|--------------|
+| `SQUARE_ACCESS_TOKEN`            | Personal access token from Square dashboard     | bookings, products |
+| `SQUARE_LOCATION_ID`             | Square location ID                              | bookings, products |
+| `SQUARE_WEBHOOK_SIGNATURE_KEY`   | from the webhook subscription (step 7)          | webhook |
+| `SQUARE_API_BASE`                | optional. `https://connect.squareupsandbox.com` for testing | sandbox |
+| `GOOGLE_MAPS_API_KEY`            | API key with Geocoding API enabled              | distance check, delivery |
+| `RESEND_API_KEY`                 | `re_...`                                        | confirmation emails |
+| `FROM_EMAIL`                     | `TQ Pools <bookings@tqpoolservices.com>`        | confirmation emails |
+| `QBO_CLIENT_ID`                  | from your Intuit app                            | QuickBooks |
+| `QBO_CLIENT_SECRET`              | from your Intuit app                            | QuickBooks |
+| `QBO_ENV`                        | `production` (default) or `sandbox`             | QuickBooks |
+| `NOTIFYRE_API_KEY`               | from notifyre.com                               | SMS reminders |
+| `PUBLIC_SITE_URL`                | `https://tqpoolservices.com`                    | redirects, OAuth callbacks |
 
 `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are auto-injected.
 
 ## 5. Deploy the Edge Functions
 
 ```bash
+# Public — verify JWT (default)
 supabase functions deploy booking-create
+supabase functions deploy order-create
 supabase functions deploy distance-check
 supabase functions deploy send-confirmation
+supabase functions deploy charge-saved-card
+supabase functions deploy qbo-connect
+supabase functions deploy qbo-sync
 
-# Stripe webhook must run without JWT verification:
-supabase functions deploy stripe-webhook --no-verify-jwt
-
-supabase functions deploy monthly-seo-post
+# Webhooks + OAuth callback + iCal feed must run without JWT verification
+supabase functions deploy square-webhook --no-verify-jwt
+supabase functions deploy qbo-callback   --no-verify-jwt
+supabase functions deploy calendar-feed  --no-verify-jwt
+supabase functions deploy send-sms-reminder --no-verify-jwt
 ```
 
-## 6. Schedule the monthly SEO post (optional)
+## 6. Schedule the daily SMS reminder cron (optional)
 
-In SQL Editor:
+Enable `pg_cron` + `pg_net` under Database → Extensions, then in SQL Editor:
 
 ```sql
--- Run on the 1st of each month at 9am
+-- 9am every day, send reminders for tomorrow's bookings
 select cron.schedule(
-  'tq-monthly-seo',
-  '0 9 1 * *',
+  'tq-sms-reminders',
+  '0 9 * * *',
   $$ select net.http_post(
-       url := 'https://YOUR-PROJECT-REF.supabase.co/functions/v1/monthly-seo-post',
+       url := 'https://YOUR-PROJECT-REF.supabase.co/functions/v1/send-sms-reminder',
        headers := '{"Authorization": "Bearer YOUR-SERVICE-ROLE-KEY"}'::jsonb
      ) $$
 );
 ```
 
-This requires the `pg_cron` and `pg_net` extensions — enable them under
-Database → Extensions if they're not already on.
+The function honours the `Settings → SMS reminders 24h before` toggle — turn
+it off in admin if you want to pause SMS without removing the cron job.
 
-## 7. Configure Stripe webhook
+## 7. Configure Square webhook
 
-1. Stripe Dashboard → Developers → Webhooks → Add endpoint
-2. URL: `https://YOUR-PROJECT-REF.supabase.co/functions/v1/stripe-webhook`
+1. Square Dashboard → Developers → Webhooks → Add subscription
+2. URL: `https://YOUR-PROJECT-REF.supabase.co/functions/v1/square-webhook`
 3. Events:
-   - `checkout.session.completed`
-   - `charge.refunded`
-4. Copy the **Signing secret** (`whsec_...`) → save as `STRIPE_WEBHOOK_SECRET` (step 4)
+   - `payment.created`
+   - `payment.updated`
+   - `refund.created`
+   - `refund.updated`
+4. Copy the **Signature key** → save as `SQUARE_WEBHOOK_SIGNATURE_KEY` (step 4)
 
-## 8. Update front-end config
+## 8. Connect QuickBooks (optional, but recommended)
+
+1. Create a QBO developer app at <https://developer.intuit.com> (Accounting scope)
+2. Add `https://YOUR-PROJECT-REF.supabase.co/functions/v1/qbo-callback` as a redirect URI
+3. Save Client ID + Secret into the Edge Function env vars (step 4)
+4. In your live admin → Settings → click **Connect to QuickBooks**
+5. Authorize on Intuit's page → bounce back → status flips to "Connected"
+
+From then on, every paid booking and order auto-creates a QBO invoice + payment.
+
+## 9. Update front-end config
 
 Edit `public/assets/js/supabase-config.js`:
 
@@ -115,15 +139,22 @@ Edit `public/assets/js/supabase-config.js`:
 window.TQ_CONFIG = {
   SUPABASE_URL: 'https://YOUR-REF.supabase.co',
   SUPABASE_ANON_KEY: 'YOUR-ANON-KEY',
-  STRIPE_PUBLISHABLE_KEY: 'pk_live_...',
-  // ...etc
+  // ...
+  BUSINESS_NAME:    'TQ Pool Services',
+  BUSINESS_PHONE:   '+61400000000',
+  BUSINESS_PHONE_DISPLAY: '(07) XXXX XXXX',
+  BUSINESS_EMAIL:   'hello@tqpoolservices.com',
+  BUSINESS_ABN:     '00 000 000 000',
+  // ...
 };
 ```
 
-Update phone, email, and any placeholder copy across the HTML files
-(`+61400000000`, `(07) XXXX XXXX`, `hello@tqpoolservices.com`).
+That single config block drives every page (phone, email, ABN, hours,
+business name) via the `data-tq` attributes — no need to edit each HTML
+file. The JSON-LD block in `index.html` is the one place you still need
+to update by hand.
 
-## 9. Deploy the frontend
+## 10. Deploy the frontend
 
 ### Option A — SiteGround (chosen host)
 
@@ -167,13 +198,13 @@ netlify deploy --dir=public --prod
 
 Connect the GitHub repo, set build output to `public/`, no build command needed.
 
-## 10. Domain & DNS
+## 11. Domain & DNS
 
 Point `tqpoolservices.com` (or whichever) to your hosting provider:
 - Vercel/Netlify/Cloudflare give specific A or CNAME records
 - Add the domain in their dashboard, validate, enable HTTPS (auto)
 
-## 11. SEO: Google Search Console + sitemap
+## 12. SEO: Google Search Console + sitemap
 
 Once the site is reachable on the production domain over HTTPS:
 
@@ -238,7 +269,7 @@ unlocks the local pack.
 - After ~1 week in Search Console, check **Performance** for impressions
   on "mobile pool service townsville" / "townsville pool service"
 
-## 12. Smoke test
+## 13. Smoke test
 
 - Visit `/` — site loads
 - Visit `/book.html` — services pre-populate from DB (check console for fetch errors)
@@ -247,13 +278,15 @@ unlocks the local pack.
 - Confirmation email lands
 - Sign in at `/admin/login.html` — see the booking in the dashboard
 
-## 13. Common issues
+## 14. Common issues
 
 | Symptom                                | Fix                                                                |
 |----------------------------------------|--------------------------------------------------------------------|
 | `400 invalid api key` on booking submit| `SUPABASE_ANON_KEY` in `supabase-config.js` is wrong               |
-| Stripe webhook 400                     | Wrong `STRIPE_WEBHOOK_SECRET`, or function deployed *with* JWT     |
+| Square webhook 400 / bad signature     | Wrong `SQUARE_WEBHOOK_SIGNATURE_KEY`, or function deployed *with* JWT |
 | `not authorised` in admin              | User exists in `auth.users` but not in `admins` table               |
 | Image swap fails                       | RLS on storage bucket — check `0003_storage_buckets.sql` ran        |
-| SEO post not generating                | `pg_cron` / `pg_net` not enabled, or service role key missing       |
 | Distance check fails silently          | `GOOGLE_MAPS_API_KEY` not set, or Geocoding API not enabled         |
+| QuickBooks status stays "Not connected"| Redirect URI in your Intuit app must match `qbo-callback` URL exactly |
+| SMS reminders never fire               | `Settings → SMS reminders` toggle off, or pg_cron / pg_net not enabled |
+| iCal subscribe fails                   | Token in URL doesn't match `settings.ical_secret` — regenerate       |
