@@ -1,26 +1,30 @@
 // ============================================================
 // EDGE FUNCTION: charge-saved-card
-// Charges the customer's saved Square card for a follow-up booking
-// in an ongoing service plan (weekly/fortnightly/4-weekly). The
-// admin "Charge again" button on a recurring booking calls this.
+// Charges the customer's saved Stripe card off-session for the next
+// booking in an ongoing service plan (weekly / fortnightly / 4-weekly).
+// The admin "Charge again" button on a recurring booking calls this.
 //
 // Body: { booking_id }
 //
-// Required env vars (same as booking-create / square-webhook):
-//   SQUARE_ACCESS_TOKEN
-//   SQUARE_LOCATION_ID
-//   SQUARE_API_BASE              (default https://connect.squareup.com)
+// Required env vars:
+//   STRIPE_SECRET_KEY            (sk_test_… / sk_live_…)
 //   SUPABASE_URL                 (auto)
 //   SUPABASE_SERVICE_ROLE_KEY    (auto)
 //
 // Pre-conditions:
-//   - The customer must have square_customer_id and square_card_id set
-//     (these are saved automatically by square-webhook on first
-//     successful payment for an ongoing-cadence service).
+//   - The customer must have stripe_customer_id AND
+//     stripe_payment_method_id set (saved by stripe-webhook on the
+//     first successful Checkout for an ongoing-cadence service).
 //   - The booking must be in status 'pending'.
 // ============================================================
 
+import Stripe from "https://esm.sh/stripe@14.21.0?target=deno";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
+  apiVersion: "2024-06-20",
+  httpClient: Stripe.createFetchHttpClient(),
+});
 
 Deno.serve(async (req) => {
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405 });
@@ -31,58 +35,61 @@ Deno.serve(async (req) => {
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
     const { data: bk } = await supabase
       .from("bookings")
-      .select("id, amount_cents, status, customer_id, customers(square_customer_id, square_card_id)")
+      .select("id, amount_cents, status, customer_id, customers(stripe_customer_id, stripe_payment_method_id)")
       .eq("id", booking_id)
       .single();
     if (!bk) return json({ error: "booking not found" }, 404);
     if (bk.status !== "pending") return json({ error: "booking is not pending" }, 409);
+
     const cust: any = bk.customers;
-    if (!cust?.square_customer_id || !cust?.square_card_id) {
+    if (!cust?.stripe_customer_id || !cust?.stripe_payment_method_id) {
       return json({ error: "customer has no saved card" }, 400);
     }
 
-    const apiBase = Deno.env.get("SQUARE_API_BASE") ?? "https://connect.squareup.com";
-    const res = await fetch(`${apiBase}/v2/payments`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${Deno.env.get("SQUARE_ACCESS_TOKEN")!}`,
-        "Square-Version": "2024-08-21",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        idempotency_key: `${booking_id}-rebill`,
-        source_id: cust.square_card_id,
-        customer_id: cust.square_customer_id,
-        location_id: Deno.env.get("SQUARE_LOCATION_ID")!,
-        amount_money: { amount: bk.amount_cents, currency: "AUD" },
-        autocomplete: true,
-        note: `Rebill for booking ${booking_id}`,
-      }),
-    });
-    if (!res.ok) {
-      const t = await res.text();
-      return json({ error: "Square charge failed", detail: t }, 502);
+    // Off-session PaymentIntent. If the card requires 3DS we surface the
+    // hosted-action URL so admin can send it to the customer.
+    let intent: Stripe.PaymentIntent;
+    try {
+      intent = await stripe.paymentIntents.create({
+        amount: bk.amount_cents,
+        currency: "aud",
+        customer: cust.stripe_customer_id,
+        payment_method: cust.stripe_payment_method_id,
+        off_session: true,
+        confirm: true,
+        description: `Rebill for booking ${booking_id}`,
+        metadata: { kind: "booking", record_id: booking_id },
+      }, { idempotencyKey: `${booking_id}-rebill` });
+    } catch (err) {
+      const e = err as Stripe.errors.StripeError;
+      // Card requires authentication — admin will need to email the
+      // payment_intent client_secret link to the customer.
+      if (e.code === "authentication_required" && e.payment_intent) {
+        return json({
+          error: "authentication_required",
+          payment_intent_id: e.payment_intent.id,
+          client_secret: e.payment_intent.client_secret,
+        }, 402);
+      }
+      return json({ error: e.message, code: e.code ?? null }, 502);
     }
-    const data = await res.json();
-    const payment = data.payment;
 
-    if (payment.status === "COMPLETED") {
+    if (intent.status === "succeeded") {
       await supabase
         .from("bookings")
         .update({
           status: "confirmed",
-          paid_amount_cents: payment.amount_money?.amount ?? bk.amount_cents,
-          square_payment_id: payment.id,
-          square_order_id: payment.order_id,
+          paid_amount_cents: intent.amount_received ?? bk.amount_cents,
+          stripe_payment_intent_id: intent.id,
         })
         .eq("id", booking_id);
 
-      // Trigger confirmation email + QBO sync (fire and forget)
+      // Fire-and-forget downstream effects
       const supaUrl = Deno.env.get("SUPABASE_URL")!;
       const auth = `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!}`;
       fetch(`${supaUrl}/functions/v1/send-confirmation`, {
@@ -97,7 +104,11 @@ Deno.serve(async (req) => {
       }).catch(console.error);
     }
 
-    return json({ ok: true, payment_status: payment.status, payment_id: payment.id });
+    return json({
+      ok: true,
+      payment_status: intent.status,
+      payment_intent_id: intent.id,
+    });
   } catch (err) {
     console.error("charge-saved-card error:", err);
     return json({ error: (err as Error).message }, 500);

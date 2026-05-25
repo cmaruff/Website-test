@@ -225,11 +225,11 @@ async function viewBookings(view) {
 
 async function editBooking(id) {
   const { data: b } = await supa.from("bookings")
-    .select(`*, customers (name, email, phone, address, square_card_id)`).eq("id", id).single();
+    .select(`*, customers (name, email, phone, address, stripe_payment_method_id)`).eq("id", id).single();
   if (!b) return toast("Booking not found", "error");
 
   const ongoing = ["weekly","fortnightly","4weekly"].includes(b.service_code);
-  const cardOnFile = !!b.customers?.square_card_id;
+  const cardOnFile = !!b.customers?.stripe_payment_method_id;
   const canRebill = ongoing && cardOnFile && b.status === "pending";
 
   modal(`
@@ -301,11 +301,13 @@ async function editBooking(id) {
             method: "POST",
             body: JSON.stringify({ booking_id: id }),
           });
-          if (r.payment_status === "COMPLETED") {
+          if (r.payment_status === "succeeded") {
             toast("Charged successfully", "success");
             close(); route();
+          } else if (r.error === "authentication_required") {
+            toast("Card needs 3DS — Stripe link sent to customer email", "error");
           } else {
-            toast(`Square returned ${r.payment_status}`, "error");
+            toast(`Stripe returned ${r.payment_status ?? r.error}`, "error");
           }
         } catch (e) {
           toast(e.message, "error");

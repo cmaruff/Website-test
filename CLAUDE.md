@@ -3,7 +3,7 @@
 Vanilla HTML / CSS / ES2022 site. No build step. Hosted on SiteGround in
 production, with a GitHub Pages preview deployed from `main` via the workflow
 in `.github/workflows/`. Mock Supabase backend for the demo; real Supabase +
-Square + QuickBooks + Resend + Notifyre wiring lives in `public/admin/` and
+Stripe + QuickBooks + Resend + Notifyre wiring lives in `public/admin/` and
 `supabase/functions/` for Phase 2 cutover.
 
 ## Working conventions
@@ -36,7 +36,7 @@ Square + QuickBooks + Resend + Notifyre wiring lives in `public/admin/` and
   contact, blog, booking-success, admin/).
 - `public/assets/css/` and `public/assets/js/` — split per page + a few
   site-wide modules (drop, hero-ripple, mock-supabase, business-info).
-- `supabase/functions/` — Deno edge functions for Phase 2 (Square checkout +
+- `supabase/functions/` — Deno edge functions for Phase 2 (Stripe Checkout +
   webhook, QuickBooks invoice creation, SMS sender, etc).
 - `.github/workflows/` — Pages deploy workflow. Rewrites `/assets/` and
   `/admin/` paths to subpath form via sed before publishing.

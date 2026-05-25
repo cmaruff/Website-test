@@ -4,7 +4,7 @@
 // You can find them in: Supabase Dashboard → Project Settings → API
 //
 // While these placeholders are present the site runs in DEMO MODE:
-//   • booking flow uses a built-in service list and skips Stripe
+//   • booking flow uses a built-in service list and skips Stripe checkout
 //   • contact form pretends to send
 //   • admin dashboard skips auth and uses seeded mock data
 // ============================================================
@@ -18,7 +18,7 @@ window.TQ_CONFIG = {
   FN_BOOKING_CREATE: '/functions/v1/booking-create',
   FN_DISTANCE_CHECK: '/functions/v1/distance-check',
 
-  // Square (no public key needed — we redirect to Square's hosted checkout)
+  // Stripe (no publishable key needed — we redirect to Stripe Checkout)
 
   // Service area
   SERVICE_ORIGIN: { lat: -19.2589, lng: 146.8169 },  // Townsville CBD

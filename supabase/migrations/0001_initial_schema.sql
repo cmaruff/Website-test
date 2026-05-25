@@ -48,9 +48,9 @@ create table if not exists public.customers (
   -- QuickBooks sync
   qbo_customer_id text,
   qbo_synced_at timestamptz,
-  -- Square
-  square_customer_id text,
-  square_card_id text,                          -- card-on-file for ongoing services
+  -- Stripe
+  stripe_customer_id text,
+  stripe_payment_method_id text,                -- saved card for ongoing services (pm_…)
   notes text,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
@@ -86,10 +86,10 @@ create table if not exists public.bookings (
   amount_cents integer not null,
   paid_amount_cents integer default 0,
 
-  -- Square
-  square_order_id text,
-  square_payment_id text,
-  square_checkout_url text,
+  -- Stripe
+  stripe_checkout_session_id text,              -- cs_…
+  stripe_payment_intent_id text,                -- pi_…
+  stripe_checkout_url text,
 
   -- QuickBooks
   qbo_invoice_id text,
@@ -155,9 +155,9 @@ create table if not exists public.orders (
   delivery_address text not null,
   delivery_lat double precision,
   delivery_lng double precision,
-  square_order_id text,
-  square_payment_id text,
-  square_checkout_url text,
+  stripe_checkout_session_id text,
+  stripe_payment_intent_id text,
+  stripe_checkout_url text,
   qbo_invoice_id text,
   qbo_synced_at timestamptz,
   notes text,
