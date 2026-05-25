@@ -57,10 +57,8 @@ once and forget; QuickBooks tokens are written by the OAuth flow itself.
 
 | Key                              | Value                                           | Required for |
 |----------------------------------|-------------------------------------------------|--------------|
-| `SQUARE_ACCESS_TOKEN`            | Personal access token from Square dashboard     | bookings, products |
-| `SQUARE_LOCATION_ID`             | Square location ID                              | bookings, products |
-| `SQUARE_WEBHOOK_SIGNATURE_KEY`   | from the webhook subscription (step 7)          | webhook |
-| `SQUARE_API_BASE`                | optional. `https://connect.squareupsandbox.com` for testing | sandbox |
+| `STRIPE_SECRET_KEY`              | `sk_test_…` (test) or `sk_live_…` (production)  | bookings, products, rebills |
+| `STRIPE_WEBHOOK_SECRET`          | `whsec_…` from the webhook subscription (step 7) | webhook |
 | `GOOGLE_MAPS_API_KEY`            | API key with Geocoding API enabled              | distance check, delivery |
 | `RESEND_API_KEY`                 | `re_...`                                        | confirmation emails |
 | `FROM_EMAIL`                     | `TQ Pools <bookings@tqpoolservices.com>`        | confirmation emails |
@@ -85,7 +83,7 @@ supabase functions deploy qbo-connect
 supabase functions deploy qbo-sync
 
 # Webhooks + OAuth callback + iCal feed must run without JWT verification
-supabase functions deploy square-webhook --no-verify-jwt
+supabase functions deploy stripe-webhook --no-verify-jwt
 supabase functions deploy qbo-callback   --no-verify-jwt
 supabase functions deploy calendar-feed  --no-verify-jwt
 supabase functions deploy send-sms-reminder --no-verify-jwt
@@ -110,16 +108,15 @@ select cron.schedule(
 The function honours the `Settings → SMS reminders 24h before` toggle — turn
 it off in admin if you want to pause SMS without removing the cron job.
 
-## 7. Configure Square webhook
+## 7. Configure Stripe webhook
 
-1. Square Dashboard → Developers → Webhooks → Add subscription
-2. URL: `https://YOUR-PROJECT-REF.supabase.co/functions/v1/square-webhook`
+1. Stripe Dashboard → Developers → Webhooks → Add endpoint
+2. URL: `https://YOUR-PROJECT-REF.supabase.co/functions/v1/stripe-webhook`
 3. Events:
-   - `payment.created`
-   - `payment.updated`
-   - `refund.created`
-   - `refund.updated`
-4. Copy the **Signature key** → save as `SQUARE_WEBHOOK_SIGNATURE_KEY` (step 4)
+   - `checkout.session.completed`
+   - `checkout.session.async_payment_succeeded`
+   - `charge.refunded`
+4. Reveal the **Signing secret** (`whsec_…`) → save as `STRIPE_WEBHOOK_SECRET` (step 4)
 
 ## 8. Connect QuickBooks (optional, but recommended)
 
@@ -283,7 +280,7 @@ unlocks the local pack.
 | Symptom                                | Fix                                                                |
 |----------------------------------------|--------------------------------------------------------------------|
 | `400 invalid api key` on booking submit| `SUPABASE_ANON_KEY` in `supabase-config.js` is wrong               |
-| Square webhook 400 / bad signature     | Wrong `SQUARE_WEBHOOK_SIGNATURE_KEY`, or function deployed *with* JWT |
+| Stripe webhook 400 / bad signature     | Wrong `STRIPE_WEBHOOK_SECRET`, or function deployed *with* JWT verification |
 | `not authorised` in admin              | User exists in `auth.users` but not in `admins` table               |
 | Image swap fails                       | RLS on storage bucket — check `0003_storage_buckets.sql` ran        |
 | Distance check fails silently          | `GOOGLE_MAPS_API_KEY` not set, or Geocoding API not enabled         |

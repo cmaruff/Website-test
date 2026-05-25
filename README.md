@@ -13,7 +13,7 @@ public/                 ← static frontend (upload this folder's contents to Si
 ├── booking-success.html
 ├── blog.html           ← public blog (list + detail via ?slug=)
 ├── products.html       ← public shop (list + detail via ?slug=)
-├── cart.html           ← cart + checkout (delivery + Square)
+├── cart.html           ← cart + checkout (delivery + Stripe)
 ├── sitemap.xml, robots.txt, favicon.svg, .htaccess
 ├── admin/              ← admin dashboard (single-page)
 └── assets/
@@ -25,9 +25,9 @@ public/                 ← static frontend (upload this folder's contents to Si
 supabase/
 ├── migrations/         ← run in order: 0001 → 0002 → 0003 → 0004
 └── functions/          ← Edge Functions (Deno)
-    ├── booking-create        booking + Square checkout link
-    ├── order-create          product order + delivery cost + Square
-    ├── square-webhook        confirms paid bookings/orders, saves card-on-file
+    ├── booking-create        booking + Stripe Checkout Session
+    ├── order-create          product order + delivery cost + Stripe Checkout
+    ├── stripe-webhook        confirms paid bookings/orders, saves PaymentMethod-on-file
     ├── send-confirmation     emails customer via Resend
     ├── distance-check        geocodes + checks service / delivery radius
     ├── charge-saved-card     rebill a recurring customer's saved card
@@ -40,7 +40,7 @@ supabase/
 docs/
 ├── DEPLOY.md           ← step-by-step deploy instructions (incl. SiteGround)
 ├── BRAND.md            ← design tokens, colours, voice
-└── INTEGRATIONS.md     ← Square, QuickBooks, Resend, Maps, Notifyre, iCal
+└── INTEGRATIONS.md     ← Stripe, QuickBooks, Resend, Maps, Notifyre, iCal
 ```
 
 ## Quick start — demo mode (no backend required)
@@ -71,7 +71,7 @@ To switch from demo to live, replace the placeholders in
 ## Scope (what's in this build)
 
 ✅ Marketing site (Home / Services / Contact / Blog)
-✅ Online booking with date/slot picker, Square Hosted Checkout
+✅ Online booking with date/slot picker, Stripe Checkout
 ✅ Service area validation (50km from Townsville CBD)
 ✅ Admin dashboard:
    • Bookings (calendar + list + edit + rebill saved card)
@@ -82,12 +82,11 @@ To switch from demo to live, replace the placeholders in
    • Site Images (drag-and-drop swap)
    • Contact enquiries
    • Settings (incl. QBO connect, iCal feed, SMS toggle)
-✅ Square webhook → automatic confirmation emails (Resend) → QuickBooks invoice sync
-✅ Public products store (cart, delivery cost calc, Square checkout)
+✅ Stripe webhook → automatic confirmation emails (Resend) → QuickBooks invoice sync
+✅ Public products store (cart, delivery cost calc, Stripe Checkout)
 ✅ Public blog (admin-managed posts at `/blog`)
 ✅ SMS reminders via Notifyre (24hr-before, daily cron)
-✅ iCal feed for the tech's calendar (subscribe URL in admin)
-✅ Square Card-on-File for ongoing services + admin "Charge again" button
+✅ Stripe saved PaymentMethod for ongoing services + admin "Charge again" button
 
 ## Tech
 
@@ -99,7 +98,7 @@ To switch from demo to live, replace the placeholders in
 | Auth         | Supabase Auth (admin only — public is anon)    |
 | Storage      | Supabase Storage (`public-images`, `product-images`) |
 | Functions    | Supabase Edge Functions (Deno)                 |
-| Payments     | Square Hosted Checkout + Card-on-File          |
+| Payments     | Stripe Checkout + saved PaymentMethod          |
 | Bookkeeping  | QuickBooks Online (OAuth + Invoice API)        |
 | Email        | Resend                                         |
 | SMS          | Notifyre (AU)                                  |
@@ -110,7 +109,7 @@ To switch from demo to live, replace the placeholders in
 | Service            | Tier        | Cost          |
 |--------------------|-------------|---------------|
 | Supabase           | Free → Pro  | $0–$25 USD    |
-| Square             | Pay per txn | 2.2% AU online |
+| Stripe             | Pay per txn | 1.7% + A$0.30 AU domestic card |
 | Resend             | Free        | $0 (3k/mo)   |
 | Google Maps        | Free tier   | $0 (28k/mo geocodes) |
 | QuickBooks Online  | existing sub | $35–55 AUD   |

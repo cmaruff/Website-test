@@ -3,7 +3,7 @@
 // Pushes a paid booking or order into QuickBooks Online as an Invoice
 // marked as paid (so the books match what happened on the website).
 //
-// Called from square-webhook after a successful payment with either
+// Called from stripe-webhook after a successful payment with either
 //   { booking_id: "..." }  or  { order_id: "..." }
 //
 // Required env vars:

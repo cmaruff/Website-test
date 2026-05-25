@@ -1,53 +1,65 @@
 # Integrations Guide
 
-Reference for every third-party service this build uses. Square, Resend,
+Reference for every third-party service this build uses. Stripe, Resend,
 Google Maps, QuickBooks Online and Notifyre are all wired in code — flip
 them on by setting the relevant env vars and (where required) connecting
 via OAuth from the admin Settings tab.
 
 ---
 
-## Square (Payments)
+## Stripe (Payments)
 
 ### Account setup
-1. [squareup.com/au](https://squareup.com/au) → create AU account
-2. Verify with ABN, bank account, ID
-3. Note your **Location ID** (Square Dashboard → Account → Locations)
-4. Generate a Personal Access Token under Apps → Sandbox/Production
+1. [stripe.com/au](https://stripe.com/au) → create AU account
+2. Activate the account (business details, ABN, bank account, ID)
+3. Developers → API keys → copy the **Secret key** (sk_live_…). The
+   publishable key isn't needed — we don't render a client-side payment
+   form, customers are redirected to Stripe Checkout.
+4. Test mode keys (sk_test_… / whsec_…) work identically — use them
+   until go-live, then swap.
 
 ### Env vars (Edge Functions)
 | Key | Value |
 |---|---|
-| `SQUARE_ACCESS_TOKEN`           | Bearer token from Square dashboard |
-| `SQUARE_LOCATION_ID`            | the location ID |
-| `SQUARE_WEBHOOK_SIGNATURE_KEY`  | from the webhook subscription you'll create below |
-| `SQUARE_API_BASE`               | optional. Defaults to `https://connect.squareup.com`. Set to `https://connect.squareupsandbox.com` for testing |
+| `STRIPE_SECRET_KEY`     | `sk_test_…` (test) or `sk_live_…` (production) |
+| `STRIPE_WEBHOOK_SECRET` | `whsec_…` from the webhook subscription you'll create below |
 
 ### How it works in this build
 1. User submits booking form → `booking-create` Edge Function
-2. Function inserts a `pending` booking + creates a Square **Payment Link** (Hosted Checkout)
-3. User redirects to Square's hosted payment page
-4. On success, Square redirects to `/booking-success.html?b=<id>`
-5. Square POSTs to `square-webhook` with `payment.created` / `payment.updated`
-6. Webhook flips booking → `confirmed`, stores `square_payment_id` and `paid_amount_cents`,
-   triggers `send-confirmation` (Resend) and `qbo-sync` (QuickBooks invoice)
+2. Function inserts a `pending` booking + ensures a Stripe Customer exists
+   for the email, then creates a **Stripe Checkout Session** (mode: payment)
+3. User is redirected to Stripe's hosted Checkout page
+4. On success, Stripe redirects to `/booking-success.html?b=<id>`
+5. Stripe POSTs to `stripe-webhook` with `checkout.session.completed`
+6. Webhook flips booking → `confirmed`, stores `stripe_checkout_session_id`
+   and `stripe_payment_intent_id` + `paid_amount_cents`, triggers
+   `send-confirmation` (Resend) and `qbo-sync` (QuickBooks invoice)
 
 ### Saving the card for ongoing services
-For weekly / fortnightly / 4-weekly bookings, `square-webhook` saves the
-customer's `square_customer_id` + `square_card_id` after the first
-successful payment. The admin "Charge saved card" button on the next
-ongoing booking calls `charge-saved-card`, which charges the card
-on file and rolls the booking through the same flow.
+For weekly / fortnightly / 4-weekly bookings, `booking-create` sets
+`payment_intent_data.setup_future_usage: 'off_session'` on the Checkout
+Session. After the first successful payment `stripe-webhook` retrieves the
+PaymentIntent, reads the resulting PaymentMethod, and saves both
+`stripe_customer_id` and `stripe_payment_method_id` on the customer.
+The admin "Charge saved card" button on the next ongoing booking calls
+`charge-saved-card`, which creates an off-session PaymentIntent against
+the saved PaymentMethod and rolls the booking through the same flow.
+If the card requires 3DS, the function returns the PaymentIntent's
+`client_secret` so admin can email the customer a confirmation link.
 
 ### Webhook setup
-Square Dashboard → Developers → Webhooks → Add subscription:
-- URL: `https://YOUR-PROJECT.supabase.co/functions/v1/square-webhook`
-- Events: `payment.created`, `payment.updated`, `refund.created`, `refund.updated`
-- Save the **Signature key** as `SQUARE_WEBHOOK_SIGNATURE_KEY`
-- Deploy `square-webhook` with `--no-verify-jwt`
+Stripe Dashboard → Developers → Webhooks → Add endpoint:
+- URL: `https://YOUR-PROJECT.supabase.co/functions/v1/stripe-webhook`
+- Events:
+  - `checkout.session.completed`
+  - `checkout.session.async_payment_succeeded`
+  - `charge.refunded`
+- Reveal and copy the **Signing secret** → set as `STRIPE_WEBHOOK_SECRET`
+- Deploy `stripe-webhook` with `--no-verify-jwt` (Stripe doesn't send a Supabase JWT)
 
 ### Refunds
-Refund from Square Dashboard → triggers `refund.created` → webhook flips booking → `cancelled`.
+Refund from Stripe Dashboard → triggers `charge.refunded` → webhook flips
+booking → `cancelled` (or order → `refunded`).
 
 ---
 
@@ -117,12 +129,12 @@ To customise the template, edit `renderEmail()` in `supabase/functions/send-conf
 ### How it works
 - `qbo-connect` returns the OAuth authorize URL
 - `qbo-callback` exchanges the code for access + refresh tokens, stores them in `settings`
-- `qbo-sync` is invoked by `square-webhook` after each successful payment with
+- `qbo-sync` is invoked by `stripe-webhook` after each successful payment with
   `{booking_id}` or `{order_id}`. It:
   - Refreshes the access token if it's near expiry (rotates the refresh token too)
   - Creates the customer in QBO if not yet synced
   - Creates an Invoice with line items
-  - Records a Payment linked to the invoice (so the books match Square)
+  - Records a Payment linked to the invoice (so the books match Stripe)
 
 ### Cost
 QuickBooks Online subscription required (~$35–55 AUD/month for AU plans).
@@ -193,7 +205,7 @@ returns an `.ics` document of upcoming bookings.
 | Service        | Monthly         |
 |----------------|-----------------|
 | Supabase Pro   | $25 USD         |
-| Square fees    | 2.2% per AU card transaction (online) |
+| Stripe fees    | 1.7% + A$0.30 per AU domestic card; 3.5% + A$0.30 international |
 | Resend         | $0 (under 3k/month) |
 | Google Maps    | $0 (under 28k geocodes) |
 | QuickBooks Online | $35–55 AUD existing subscription |
