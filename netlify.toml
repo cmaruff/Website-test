@@ -1,0 +1,40 @@
+# ============================================================
+# TQ Pool Services — Netlify config
+# Connects Netlify to publish the static site in public/.
+# ============================================================
+
+[build]
+  publish = "public"
+  # No build step — vanilla HTML/CSS/JS, just serve files as-is.
+  command = ""
+
+# Drop the .html extension on canonical URLs. Netlify's pretty_urls:
+#   • Serves /services.html at /services (200, transparent)
+#   • 301 redirects /services.html → /services
+# Query strings are preserved, so /blog?slug=foo still works.
+[build.processing.html]
+  pretty_urls = true
+
+# ============================================================
+# REDIRECTS  (processed top to bottom; first match wins)
+# ============================================================
+
+# Pretty slug URLs for blog posts and products.
+# /blog/some-slug      → serve blog.html?slug=some-slug
+# /products/some-slug  → serve products.html?slug=some-slug
+[[redirects]]
+  from = "/blog/:slug"
+  to = "/blog.html?slug=:slug"
+  status = 200
+
+[[redirects]]
+  from = "/products/:slug"
+  to = "/products.html?slug=:slug"
+  status = 200
+
+# Catch-all 404 → serve the homepage (matches the old .htaccess behavior).
+# Must be the last redirect rule.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 404

@@ -1,0 +1,37 @@
+# ============================================================
+# TQ Pool Services — Netlify response headers
+# Security headers on every response; cache lifetimes per asset type.
+# Netlify already does Brotli/gzip and HTTPS automatically.
+# ============================================================
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+
+# HTML never cached — always re-validate so edits go live instantly.
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# CSS / JS — 7 days. Bust by renaming the file when you ship breaking changes.
+/*.css
+  Cache-Control: public, max-age=604800
+/*.js
+  Cache-Control: public, max-age=604800
+
+# Images, icons, fonts — 30 days.
+/*.png
+  Cache-Control: public, max-age=2592000
+/*.jpg
+  Cache-Control: public, max-age=2592000
+/*.jpeg
+  Cache-Control: public, max-age=2592000
+/*.webp
+  Cache-Control: public, max-age=2592000
+/*.svg
+  Cache-Control: public, max-age=2592000
+/*.ico
+  Cache-Control: public, max-age=2592000
+/*.woff2
+  Cache-Control: public, max-age=2592000

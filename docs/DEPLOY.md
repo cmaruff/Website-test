@@ -6,7 +6,7 @@ Step-by-step from a fresh repo to a live site. Best run inside **Claude Code** s
 > `public/assets/js/supabase-config.js`) the site runs as a self-contained
 > demo — booking flow, contact form and admin dashboard all work with
 > seeded mock data. Steps 1–7 below are only needed when you're ready to
-> wire up the real backend. Step 9 is the SiteGround upload, which works
+> wire up the real backend. Step 10 is the Netlify deploy, which works
 > for both demo and live builds.
 
 ## 1. Create the Supabase project
@@ -153,53 +153,71 @@ to update by hand.
 
 ## 10. Deploy the frontend
 
-### Option A — SiteGround (chosen host)
+### Netlify (chosen host)
 
-Everything inside this repo's `public/` folder is the live site. SiteGround
-is plain Apache with cPanel, so the deploy is just a file copy.
+The repo is wired for Netlify: `netlify.toml` at the root sets the publish
+directory, redirects, and pretty URLs; `public/_headers` controls security
+and cache headers. No build step — Netlify just uploads what's in `public/`.
 
-1. Log in to **Site Tools → Site → File Manager** (or use SFTP).
-2. Open `public_html/` for the domain (delete the default `index.php` /
-   placeholder files first — back them up if anything matters).
-3. Upload **the contents of `public/`** (not the folder itself):
-   - `index.html`, `services.html`, `contact.html`, `book.html`,
-     `booking-success.html`, `admin/`, `assets/`, `.htaccess`
-4. Make sure `.htaccess` made it across (toggle "Show hidden files" in
-   File Manager, or `ls -la` over SFTP). It enables HTTPS, clean URLs,
-   gzip, and caching.
-5. Visit your domain — the site should load. The bottom-of-page banner
-   that says "Demo mode" stays visible until you replace the placeholder
-   keys in `assets/js/supabase-config.js` with real ones.
-6. **Updates later:** edit files locally, re-upload the changed ones.
-   For ongoing work the easiest path is *Site Tools → Devs → Git*: add
-   this repository, point it at `public_html/`, and SiteGround will pull
-   on push.
+#### First-time setup
 
-### Option B — Vercel
+1. Sign in at [app.netlify.com](https://app.netlify.com) with the same
+   GitHub account that owns the `cmaruff/Website-test` repo.
+2. **Add new site → Import an existing project → GitHub**, select the
+   repo. Netlify reads `netlify.toml` automatically; you should see:
+   - Branch to deploy: `main`
+   - Publish directory: `public`
+   - Build command: (empty)
+3. Click **Deploy site**. First deploy lands in ~30 seconds. The site is
+   reachable at the auto-generated `*.netlify.app` URL.
+4. **Site settings → Domain management → Add custom domain** → enter
+   `tqpoolservices.com.au`. Netlify gives you DNS records (A record and a
+   CNAME for `www`). Paste those into your registrar.
+5. Repeat for `tqpoolservices.com` and set it to redirect to
+   `tqpoolservices.com.au` (Netlify does this automatically once both
+   domains are attached and one is marked primary).
+6. **HTTPS** auto-provisions in ~5 min via Let's Encrypt; nothing to do.
 
-```bash
-npm install -g vercel
-cd public
-vercel
-# Follow prompts; set as production with `vercel --prod`
-```
+#### Ongoing workflow
 
-### Option C — Netlify
+- **Production deploys:** every push to `main` triggers a fresh deploy in
+  ~30 sec. No SFTP, no manual upload.
+- **Preview deploys:** every PR gets its own unique URL
+  (e.g. `deploy-preview-15--tq-pool-services.netlify.app`) so you can
+  click through changes before merging. Posted as a PR comment automatically.
+- **Rollback:** Site → Deploys → click any past deploy → **Publish deploy**.
+  Reverts in 2 seconds.
 
-```bash
-npm install -g netlify-cli
-netlify deploy --dir=public --prod
-```
+#### Free tier covers this build
 
-### Option D — Cloudflare Pages
+100 GB bandwidth / 300 build min per month — far more than a Townsville
+pool service site will use. Cost stays at $0 unless traffic explodes.
 
-Connect the GitHub repo, set build output to `public/`, no build command needed.
+### Alternatives (interchangeable, not used)
+
+- **Cloudflare Pages** — same model, slightly better CDN, even more generous
+  free tier. Swap in by removing `netlify.toml` and configuring Pages.
+- **Vercel** — fine, but free-tier terms are stricter for commercial use.
+- **SiteGround** — the original plan, but $15+/mo for shared hosting that's
+  overkill for a static site. The Apache `.htaccess` rules we ship as
+  `netlify.toml` + `_headers` could be restored from git history if needed.
 
 ## 11. Domain & DNS
 
-Point `tqpoolservices.com` (or whichever) to your hosting provider:
-- Vercel/Netlify/Cloudflare give specific A or CNAME records
-- Add the domain in their dashboard, validate, enable HTTPS (auto)
+Both `tqpoolservices.com.au` (canonical) and `tqpoolservices.com` (redirect
+target) point at Netlify:
+
+1. In Netlify → Domain management → add both domains.
+2. Mark `tqpoolservices.com.au` as the **primary domain**. Netlify
+   auto-301s `tqpoolservices.com` → `tqpoolservices.com.au`.
+3. In your registrar, set:
+   - `tqpoolservices.com.au` A record → `75.2.60.5`
+   - `tqpoolservices.com.au` AAAA record → `2600:1f18:3fff:c001::5`
+     (Netlify's load balancer; check Netlify dashboard for the current IPs)
+   - `www.tqpoolservices.com.au` CNAME → `<your-site>.netlify.app`
+   - Repeat A + CNAME for `tqpoolservices.com` and `www.tqpoolservices.com`
+4. Propagation usually finishes in 5–60 min. HTTPS provisions automatically
+   once Netlify verifies the A record.
 
 ## 12. SEO: Google Search Console + sitemap
 
@@ -235,7 +253,7 @@ public/book.html          (canonical, og:url)
      | xargs sed -i '' "s/REPLACE_WITH_GSC_TOKEN/YOUR-TOKEN-HERE/g"   # mac
    # Linux: drop the '' after -i
    ```
-7. Re-upload the changed HTML files to SiteGround.
+7. Commit + push — Netlify auto-redeploys in ~30 seconds.
 8. Back in Search Console, click **Verify**. It should turn green.
 
 ### c. Submit the sitemap

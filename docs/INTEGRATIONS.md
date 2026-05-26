@@ -210,4 +210,4 @@ returns an `.ics` document of upcoming bookings.
 | Google Maps    | $0 (under 28k geocodes) |
 | QuickBooks Online | $35–55 AUD existing subscription |
 | Notifyre        | 5–10¢ per SMS sent |
-| Hosting (SiteGround) | varies by plan |
+| Hosting (Netlify)    | $0 (free tier) |
