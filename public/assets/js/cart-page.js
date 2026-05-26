@@ -1,6 +1,6 @@
 // ============================================================
 // CART PAGE — renders cart, captures customer + delivery address,
-// posts to order-create which returns a Square checkout URL.
+// posts to order-create which returns a Stripe Checkout URL.
 // ============================================================
 
 (function () {

@@ -3,61 +3,106 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Booking Confirmed | TQ Pool Services</title>
+  <title>Booking request received — TQ Pool Services</title>
   <meta name="robots" content="noindex,nofollow">
   <link rel="stylesheet" href="/assets/css/tokens.css">
   <link rel="stylesheet" href="/assets/css/base.css">
-  <link rel="stylesheet" href="/assets/css/drop.css">
   <style>
     .success-wrap {
       min-height: calc(100vh - var(--nav-height));
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: var(--sp-7) var(--sp-4);
+      padding: var(--sp-8) var(--sp-4);
       background: linear-gradient(180deg, var(--sand-50), var(--blue-50));
     }
     .success-card {
-      max-width: 560px;
+      max-width: 620px;
       width: 100%;
       text-align: center;
       background: var(--white);
-      border-radius: var(--r-xl);
-      padding: var(--sp-9) var(--sp-6);
+      border-radius: var(--r-asym-5);
+      padding: var(--sp-9) var(--sp-7);
       box-shadow: var(--sh-lg);
     }
     .success-tick {
       width: 88px; height: 88px;
-      border-radius: 50%;
+      border-radius: 28px 8px 28px 8px;
       background: var(--blue-50);
       color: var(--color-success);
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 3rem;
       margin-bottom: var(--sp-5);
       animation: pop .5s var(--ease-out);
     }
+    .success-tick svg { width: 42px; height: 42px; }
     @keyframes pop {
       0%   { transform: scale(0); opacity: 0; }
       70%  { transform: scale(1.1); }
       100% { transform: scale(1); opacity: 1; }
     }
     .success-card h1 { font-size: var(--fs-3xl); margin-bottom: var(--sp-3); }
-    .success-card p  { margin: 0 auto var(--sp-5); max-width: 44ch; }
+    .success-card > p { margin: 0 auto var(--sp-5); max-width: 48ch; color: var(--sand-700); }
+    .success-card .lede { font-size: var(--fs-lg); color: var(--blue-900); }
+    .success-next {
+      text-align: left;
+      background: var(--sand-50);
+      border-radius: var(--r-asym-1);
+      padding: var(--sp-5);
+      margin: var(--sp-5) 0 var(--sp-6);
+      list-style: none;
+    }
+    .success-next li {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: var(--sp-3);
+      padding: var(--sp-2) 0;
+      font-size: var(--fs-sm);
+      color: var(--sand-700);
+    }
+    .success-next li strong { color: var(--blue-900); display: block; margin-bottom: 2px; }
+    .success-next .step {
+      width: 26px; height: 26px;
+      background: var(--blue-600);
+      color: var(--white);
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: var(--fs-xs);
+      border-radius: 14px 4px 14px 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
     .success-btns { display: flex; gap: var(--sp-3); justify-content: center; flex-wrap: wrap; }
+    .success-aside {
+      margin-top: var(--sp-6);
+      padding-top: var(--sp-5);
+      border-top: 1px solid var(--color-border);
+      font-size: var(--fs-sm);
+      color: var(--sand-500);
+    }
+    .success-aside a { font-weight: 600; }
   </style>
 </head>
 <body>
+<div class="tq-loader" id="tqLoader" aria-hidden="true"><div class="tq-loader__mark"><span>TQ</span></div><div class="tq-loader__wordmark" aria-label="TQ Pool Services"><span>T</span><span>Q</span><span class="gap"></span><span>P</span><span>O</span><span>O</span><span>L</span><span class="gap"></span><span>S</span><span>E</span><span>R</span><span>V</span><span>I</span><span>C</span><span>E</span><span>S</span></div></div>
 
 <header class="nav">
   <div class="container nav__inner">
-    <a href="/" class="nav__logo"><span class="nav__logo-mark"></span>TQ Pools</a>
+    <a href="/" class="nav__logo"><span class="nav__logo-mark"></span>TQ Pool Services</a>
     <nav>
       <ul class="nav__links">
         <li><a href="/">Home</a></li>
-        <li><a href="/services.html">Services &amp; prices</a></li>
-        <li><a href="/products.html">Shop</a></li>
+        <li class="has-dropdown">
+          <a href="/services.html" aria-haspopup="true">Services &amp; prices</a>
+          <ul class="nav__dropdown">
+            <li><a href="/services.html"><strong>All services &amp; prices</strong><em>Overview, chemistry guide, FAQs</em></a></li>
+            <li><a href="/pool-consultation-townsville.html"><strong>Consultation</strong><em>30 min site visit</em></a></li>
+            <li><a href="/pool-service-townsville.html"><strong>Basic Pool Service</strong><em>Priced by pool size</em></a></li>
+          </ul>
+        </li>
         <li><a href="/blog.html">Blog</a></li>
         <li><a href="/contact.html">Contact</a></li>
       </ul>
@@ -67,37 +112,53 @@
 
 <div class="success-wrap">
   <div class="success-card">
-    <span class="success-tick">✓</span>
-    <h1>You're booked in!</h1>
-    <p>
-      We've sent a confirmation to your email with all the details. We'll send you an SMS reminder
-      the day before your service so you know what to expect.
+    <span class="success-tick" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    <h1>Thanks for your request.</h1>
+    <p class="lede">
+      We've got your booking details and your pool photo. We'll be in touch
+      by phone or email within one business day to lock in the slot.
     </p>
-    <p style="font-size: var(--fs-sm); color: var(--sand-500);">
-      Need to make changes? Just call <a data-tq-href="phone-tel" href="tel:+61400000000"><span data-tq="phone-display">(07) XXXX XXXX</span></a> or reply to your confirmation email.
-    </p>
+
+    <ol class="success-next">
+      <li>
+        <span class="step">1</span>
+        <div>
+          <strong>We confirm your slot</strong>
+          A quick call or email back to confirm the date, time and what we'll bring.
+        </div>
+      </li>
+      <li>
+        <span class="step">2</span>
+        <div>
+          <strong>Invoice via QuickBooks</strong>
+          You'll get a proper invoice with a "Pay now" button to settle when ready.
+        </div>
+      </li>
+      <li>
+        <span class="step">3</span>
+        <div>
+          <strong>We arrive &amp; service the pool</strong>
+          Mobile unit, full kit, photo and chemical report sent by email when we're done.
+        </div>
+      </li>
+    </ol>
+
     <div class="success-btns">
       <a href="/" class="btn btn-primary btn-lg">Back to home</a>
-      <a href="/services.html" class="btn btn-ghost btn-lg">View services</a>
+      <a href="/services.html" class="btn btn-ghost btn-lg">View services &amp; prices</a>
     </div>
+
+    <p class="success-aside">
+      <strong>Pool turning green or equipment failing?</strong>
+      Call <a data-tq-href="phone-tel" href="tel:+61488355111"><span data-tq="phone-display">0488 355 111</span></a> — we'll prioritise urgent jobs.<br>
+      While you wait, <a href="/services.html#chem-guide">have a look at our pool chemistry guide</a>
+      or <a href="https://www.facebook.com/profile.php?id=61588638005587" target="_blank" rel="noopener">follow on Facebook</a> for weekly pool tips.
+    </p>
   </div>
 </div>
 
 <script src="/assets/js/supabase-config.js"></script>
 <script src="/assets/js/business-info.js"></script>
 <script src="/assets/js/main.js"></script>
-<script>
-  // If we arrived via the demo flow, soften the copy.
-  if (new URLSearchParams(location.search).get('demo') === '1') {
-    const h = document.querySelector('.success-card h1');
-    if (h) h.textContent = 'Demo booking complete!';
-    const note = document.createElement('p');
-    note.style.cssText = 'font-size:var(--fs-sm); color:var(--coral-600); margin-top:-8px;';
-    note.innerHTML = '<em>This is a demo — no real booking was created and no payment was taken.</em>';
-    h.insertAdjacentElement('afterend', note);
-  }
-</script>
-<script src="/assets/js/drop.js"></script>
-<script src="/assets/js/demo-banner.js"></script>
 </body>
 </html>

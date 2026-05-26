@@ -170,27 +170,26 @@ a:hover { color: var(--color-primary-hover); }
   align-items: center;
   gap: var(--sp-2);
 }
+/* Brand logo mark — loads /assets/img/brand/logo.svg. Designer/client can
+   drop a replacement file at that path (any aspect ratio, the rule below
+   adapts) and every page picks it up. */
 .nav__logo-mark {
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--blue-400), var(--blue-700));
-  position: relative;
-  overflow: hidden;
+  width: 38px;
+  height: 38px;
+  background-image: url('/assets/img/brand/logo.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  flex-shrink: 0;
 }
-.nav__logo-mark::after {
-  content: "";
-  position: absolute; inset: 60% 0 0 0;
-  background: var(--sand-50);
-  border-radius: 50% 50% 0 0 / 80% 80% 0 0;
-  animation: wave 4s ease-in-out infinite;
-}
-@keyframes wave { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
 
 .nav__links {
   display: flex;
+  align-items: center;
   gap: var(--sp-6);
   list-style: none;
 }
+.nav__links li { display: flex; align-items: center; }
 .nav__links a {
   color: var(--color-fg);
   font-weight: 500;
@@ -209,6 +208,99 @@ a:hover { color: var(--color-primary-hover); }
   transition: transform var(--dur-med) var(--ease-out);
 }
 .nav__links a:hover::after { transform: scaleX(1); transform-origin: left; }
+
+/* ---------- Dropdown under Services & prices ---------- */
+.nav__links .has-dropdown { position: relative; }
+.nav__links .has-dropdown > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.nav__links .has-dropdown > a::before {
+  content: "";
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid currentColor;
+  margin-left: 4px;
+  order: 2;
+  opacity: 0.55;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.nav__links .has-dropdown:hover > a::before,
+.nav__links .has-dropdown:focus-within > a::before { transform: rotate(180deg); opacity: 1; }
+
+.nav__dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: -8px;
+  min-width: 280px;
+  background: var(--white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--r-asym-1);
+  padding: var(--sp-2);
+  margin: 0;
+  list-style: none;
+  box-shadow: 0 16px 36px -16px rgba(8, 39, 84, 0.25), var(--sh-md);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: opacity var(--dur-fast) var(--ease-out),
+              transform var(--dur-fast) var(--ease-out),
+              visibility 0s linear var(--dur-fast);
+  z-index: 60;
+}
+.nav__links .has-dropdown:hover > .nav__dropdown,
+.nav__links .has-dropdown:focus-within > .nav__dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition-delay: 0s;
+}
+.nav__dropdown li { margin: 0; }
+.nav__dropdown a {
+  display: block;
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-md);
+  color: var(--color-fg);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  line-height: 1.4;
+}
+.nav__dropdown a::after { display: none; }  /* drop the nav underline */
+.nav__dropdown a:hover {
+  background: var(--blue-50);
+  color: var(--blue-700);
+}
+.nav__dropdown a strong {
+  display: block;
+  font-weight: 700;
+  color: var(--blue-900);
+  margin-bottom: 2px;
+}
+.nav__dropdown a em {
+  font-style: normal;
+  color: var(--sand-500);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.02em;
+}
+
+/* Mobile — dropdown sits inline (the burger menu handles overall reveal) */
+@media (max-width: 880px) {
+  .nav__dropdown {
+    position: static;
+    box-shadow: none;
+    border: none;
+    background: transparent;
+    padding: 0 0 0 var(--sp-4);
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    min-width: 0;
+  }
+  .nav__dropdown a { padding: var(--sp-2) var(--sp-3); }
+}
 
 .nav__cta { display: flex; gap: var(--sp-3); align-items: center; }
 
@@ -282,21 +374,105 @@ a:hover { color: var(--color-primary-hover); }
   gap: var(--sp-2);
   border-top: 2px solid var(--blue-400);
 }
+.callbar {
+  box-shadow: 0 -8px 24px -8px rgba(8, 66, 90, 0.45);
+}
 .callbar a {
   flex: 1;
   text-align: center;
-  padding: 0.85rem;
-  border-radius: var(--r-md);
+  padding: 0.95rem 0.85rem;
   font-weight: 600;
   font-size: var(--fs-sm);
+  letter-spacing: 0.01em;
+  transition: transform var(--dur-fast) var(--ease-out), background var(--dur-fast);
 }
-.callbar .call { background: var(--color-accent); color: var(--color-accent-fg); }
-.callbar .book { background: var(--white); color: var(--blue-800); }
+.callbar a:active { transform: translateY(1px); }
+.callbar .call {
+  background: var(--color-accent);
+  color: var(--color-accent-fg);
+  border-radius: var(--r-asym-1);
+}
+.callbar .book {
+  background: var(--white);
+  color: var(--blue-800);
+  border-radius: var(--r-asym-2);
+}
 @media (max-width: 720px) { .callbar { display: flex; } body { padding-bottom: 76px; } }
 
 /* ---------- Reveal-on-scroll ---------- */
-.reveal { opacity: 0; transform: translateY(24px); transition: opacity .8s var(--ease-out), transform .8s var(--ease-out); }
-.reveal.in { opacity: 1; transform: none; }
+/* Base reveal — gentle fade up. Variants below break the uniformity
+   so different sections animate differently as you scroll. */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 720ms var(--ease-out), transform 720ms var(--ease-out), filter 720ms var(--ease-out), clip-path 900ms var(--ease-out);
+  will-change: opacity, transform;
+}
+.reveal.in { opacity: 1; transform: none; filter: none; clip-path: inset(0 0 0 0); }
+
+/* Slide from the left */
+.reveal--left { transform: translateX(-40px); }
+/* Slide from the right */
+.reveal--right { transform: translateX(40px); }
+/* Scale up subtly */
+.reveal--scale { transform: scale(0.94); }
+/* Drop in from above */
+.reveal--down { transform: translateY(-28px); }
+/* Photographic clip-wipe — image reveals from the bottom upward.
+   Uses a small inset (8%) so even if the observer is slow, photos
+   stay visible. Less aggressive than a full 100% inset which can
+   leave content totally hidden if intersection timing is off. */
+.reveal--clip {
+  transform: translateY(40px);
+  clip-path: inset(8% 4% 0 4%);
+}
+.reveal--clip.in { clip-path: inset(0 0 0 0); transform: none; }
+/* Soft blur-in for cards/badges */
+.reveal--blur { filter: blur(8px); transform: translateY(16px); }
+
+/* Stagger helper — apply to a parent, children get incremental delays */
+.reveal-stagger > .reveal { transition-delay: 0ms; }
+.reveal-stagger.in > .reveal:nth-child(1) { transition-delay: 60ms; }
+.reveal-stagger.in > .reveal:nth-child(2) { transition-delay: 140ms; }
+.reveal-stagger.in > .reveal:nth-child(3) { transition-delay: 220ms; }
+.reveal-stagger.in > .reveal:nth-child(4) { transition-delay: 300ms; }
+.reveal-stagger.in > .reveal:nth-child(5) { transition-delay: 380ms; }
+.reveal-stagger.in > .reveal:nth-child(6) { transition-delay: 460ms; }
+
+/* Word-by-word reveal for marquee headings */
+.reveal-words .word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.4em);
+  transition: opacity 580ms var(--ease-out), transform 580ms var(--ease-out);
+}
+.reveal-words.in .word { opacity: 1; transform: none; }
+.reveal-words.in .word:nth-child(1)  { transition-delay: 0ms; }
+.reveal-words.in .word:nth-child(2)  { transition-delay: 80ms; }
+.reveal-words.in .word:nth-child(3)  { transition-delay: 160ms; }
+.reveal-words.in .word:nth-child(4)  { transition-delay: 240ms; }
+.reveal-words.in .word:nth-child(5)  { transition-delay: 320ms; }
+.reveal-words.in .word:nth-child(6)  { transition-delay: 400ms; }
+.reveal-words.in .word:nth-child(7)  { transition-delay: 480ms; }
+.reveal-words.in .word:nth-child(8)  { transition-delay: 560ms; }
+.reveal-words.in .word:nth-child(9)  { transition-delay: 640ms; }
+.reveal-words.in .word:nth-child(10) { transition-delay: 720ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal--left,
+  .reveal--right,
+  .reveal--scale,
+  .reveal--down,
+  .reveal--clip,
+  .reveal--blur,
+  .reveal-words .word {
+    transition: opacity 200ms ease !important;
+    transform: none !important;
+    clip-path: none !important;
+    filter: none !important;
+  }
+}
 
 /* ---------- Section spacing ---------- */
 section { padding: var(--sp-9) 0; }
@@ -345,3 +521,580 @@ section { padding: var(--sp-9) 0; }
   letter-spacing: 0.02em;
 }
 .badge--accent { background: rgba(244, 180, 26, 0.15); color: var(--sun-600); }
+
+/* ============================================================
+   PAGE LOADER — brand splash. TQ tile fills with rising water,
+   wordmark + caustic shimmer underneath, fades out on window.load.
+   ============================================================ */
+.tq-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background:
+    radial-gradient(circle at 50% 60%, rgba(21, 101, 192, 0.06), transparent 60%),
+    var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: var(--sp-5);
+  transition: opacity 520ms var(--ease-out), visibility 0s linear 520ms;
+}
+.tq-loader.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* The mark — a rounded blue tile with TQ in it. Two layers of "water"
+   rise inside on a loop, with a subtle wave crest at each layer's top. */
+.tq-loader__mark {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  border-radius: 18px;
+  background: var(--blue-50);
+  border: 2px solid var(--blue-100);
+  overflow: hidden;
+  box-shadow: 0 18px 38px -18px rgba(21, 101, 192, 0.35);
+  animation: tq-loader-pop 600ms var(--ease-out) backwards;
+}
+.tq-loader__mark::before,
+.tq-loader__mark::after {
+  content: "";
+  position: absolute;
+  left: -50%;
+  right: -50%;
+  height: 200%;
+  border-radius: 38% 42% 0 0 / 8% 10% 0 0;
+  bottom: -150%;
+  animation: tq-loader-fill 2.4s ease-in-out infinite;
+}
+.tq-loader__mark::before {
+  background: linear-gradient(180deg, var(--blue-500), var(--blue-700));
+  opacity: 0.75;
+  animation-delay: 0s;
+}
+.tq-loader__mark::after {
+  background: linear-gradient(180deg, var(--blue-400), var(--blue-600));
+  opacity: 0.55;
+  animation-delay: -0.6s;  /* offset so two waves overlap */
+}
+@keyframes tq-loader-fill {
+  0%   { transform: translateY(0)      rotate(0deg); }
+  50%  { transform: translateY(-105%)  rotate(2deg); }
+  100% { transform: translateY(0)      rotate(0deg); }
+}
+
+/* "TQ" stamped on top of the water — sits above ::before/::after */
+.tq-loader__mark span {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-weight: 900;
+  font-size: 38px;
+  letter-spacing: -1px;
+  color: var(--white);
+  z-index: 1;
+  mix-blend-mode: difference;  /* stays readable as water rises behind it */
+  filter: invert(1);
+}
+
+/* Wordmark below the tile, with letter-by-letter rise */
+.tq-loader__wordmark {
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: var(--fs-xs);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--blue-700);
+  display: flex;
+  gap: 0.18em;
+}
+.tq-loader__wordmark span {
+  display: inline-block;
+  animation: tq-loader-letter 1.4s var(--ease-out) infinite;
+}
+.tq-loader__wordmark span:nth-child(1) { animation-delay: 0.00s; }
+.tq-loader__wordmark span:nth-child(2) { animation-delay: 0.05s; }
+.tq-loader__wordmark span:nth-child(3) { animation-delay: 0.10s; }
+.tq-loader__wordmark span:nth-child(4) { animation-delay: 0.15s; }
+.tq-loader__wordmark span:nth-child(5) { animation-delay: 0.20s; }
+.tq-loader__wordmark span:nth-child(6) { animation-delay: 0.25s; }
+.tq-loader__wordmark span:nth-child(7) { animation-delay: 0.30s; }
+.tq-loader__wordmark span:nth-child(8) { animation-delay: 0.35s; }
+.tq-loader__wordmark span:nth-child(9) { animation-delay: 0.40s; }
+.tq-loader__wordmark span:nth-child(10){ animation-delay: 0.45s; }
+.tq-loader__wordmark span:nth-child(11){ animation-delay: 0.50s; }
+.tq-loader__wordmark span:nth-child(12){ animation-delay: 0.55s; }
+.tq-loader__wordmark span:nth-child(13){ animation-delay: 0.60s; }
+.tq-loader__wordmark span:nth-child(14){ animation-delay: 0.65s; }
+.tq-loader__wordmark .gap { width: 0.4em; animation: none; }
+
+@keyframes tq-loader-letter {
+  0%, 60%, 100% { transform: translateY(0);     opacity: 0.55; }
+  20%           { transform: translateY(-3px);  opacity: 1; }
+}
+@keyframes tq-loader-pop {
+  from { transform: scale(0.85); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tq-loader { transition: opacity 120ms linear, visibility 0s linear 120ms; }
+  .tq-loader__mark::before,
+  .tq-loader__mark::after,
+  .tq-loader__mark,
+  .tq-loader__wordmark span { animation: none !important; }
+  .tq-loader__mark::before { transform: translateY(-30%); }
+}
+
+/* ============================================================
+   SHARED PAGE-HEAD + HEADLINE PRIMITIVES
+   Used across multiple pages (book, services, contact, blog, etc.),
+   so they live here rather than in any single page CSS file.
+   ============================================================ */
+.page-head {
+  padding: calc(var(--nav-height) + var(--sp-8)) 0 var(--sp-7);
+  background: linear-gradient(180deg, var(--sand-50), var(--blue-50));
+  text-align: center;
+}
+.page-head .eyebrow { justify-content: center; margin-bottom: var(--sp-3); }
+.page-head h1 { margin-bottom: var(--sp-4); }
+.page-head__lede {
+  margin: 0 auto;
+  max-width: 56ch;
+  font-size: var(--fs-lg);
+  color: var(--sand-700);
+}
+
+/* ============================================================
+   .page-hero — cinemagraph-style banner used across all pages.
+   Photo background + slow diagonal light shimmer over the water.
+   Text sits left, centered vertically; scrim biases the left side
+   darker for legibility, lets the photo show through on the right.
+   ============================================================ */
+.page-hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--blue-900);
+  min-height: 380px;
+  padding: calc(var(--nav-height) + var(--sp-8)) 0 var(--sp-7);
+  color: var(--white);
+}
+.page-hero__photo {
+  position: absolute; inset: 0;
+  background-size: cover;
+  background-position: center 60%;
+  z-index: -3;
+}
+.page-hero__shimmer {
+  position: absolute; inset: 0;
+  background-image: linear-gradient(115deg,
+    rgba(255,255,255,0) 38%,
+    rgba(255,255,255,0.22) 50%,
+    rgba(255,255,255,0) 62%);
+  background-size: 240% 100%;
+  background-repeat: no-repeat;
+  background-position: -120% 0;
+  animation: pageHeroShimmer 11s ease-in-out infinite;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  z-index: -2;
+}
+@keyframes pageHeroShimmer {
+  0%   { background-position: -120% 0; }
+  100% { background-position: 240% 0; }
+}
+.page-hero__scrim {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(90deg,
+      rgba(8, 48, 95, 0.85) 0%,
+      rgba(21, 101, 192, 0.62) 40%,
+      rgba(21, 101, 192, 0.30) 70%,
+      rgba(21, 101, 192, 0.15) 100%),
+    linear-gradient(180deg,
+      rgba(0, 0, 0, 0.18) 0%,
+      rgba(0, 0, 0, 0) 30%,
+      rgba(0, 0, 0, 0) 70%,
+      rgba(0, 0, 0, 0.18) 100%);
+  z-index: -1;
+  pointer-events: none;
+}
+.page-hero__inner { position: relative; z-index: 1; max-width: 720px; }
+.page-hero .eyebrow {
+  color: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.10);
+  border-color: rgba(255,255,255,0.22);
+  margin-bottom: var(--sp-3);
+}
+.page-hero h1 {
+  color: var(--white);
+  margin-bottom: var(--sp-4);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.22);
+}
+.page-hero__lede {
+  max-width: 56ch;
+  font-size: var(--fs-lg);
+  color: rgba(255,255,255,0.94);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
+}
+/* Brighten the blue-gradient accent so it pops against the dark hero scrim
+   while keeping it unmistakably blue (uses lighter tokens of the same hue). */
+.page-hero .hero__accent {
+  background: linear-gradient(135deg, var(--blue-100), var(--blue-300));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.page-hero .hero__accent::after {
+  background: var(--sun-400, var(--sun-500));
+  opacity: 0.95;
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-hero__shimmer { animation: none; opacity: 0; }
+}
+@media (max-width: 720px) {
+  .page-hero { min-height: 320px; padding-top: calc(var(--nav-height) + var(--sp-6)); }
+  .page-hero__scrim {
+    background:
+      linear-gradient(180deg,
+        rgba(8, 48, 95, 0.78) 0%,
+        rgba(21, 101, 192, 0.55) 60%,
+        rgba(21, 101, 192, 0.30) 100%);
+  }
+}
+
+/* Two-line headline primitive — used in hero and page-head H1s.
+   .hero__line: forced block at >=560px, inline-block on narrow viewports
+   so text-wrap:balance can break naturally.
+   .hero__accent: gradient text with sun underline (Fraunces-friendly). */
+.hero__line { display: inline-block; }
+@media (min-width: 560px) {
+  .hero__line { display: block; }
+}
+.hero__accent {
+  background: linear-gradient(135deg, var(--blue-500), var(--blue-700));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  position: relative;
+  display: inline-block;
+}
+.hero__accent::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -0.05em;
+  height: 0.18em;
+  background: var(--sun-500);
+  border-radius: 999px;
+  opacity: 0.6;
+  z-index: -1;
+}
+
+/* ============================================================
+   HOW-LIST — dark vertical timeline. Used on home + book pages
+   for the "how it works" / "how to book" section. Deliberately a
+   completely different layout from the services-preview card grid
+   so it never reads as "another row of cards".
+   ============================================================ */
+.how-list {
+  background:
+    radial-gradient(ellipse at 15% 0%, rgba(20, 135, 178, 0.30), transparent 55%),
+    radial-gradient(ellipse at 95% 100%, rgba(61, 158, 224, 0.18), transparent 55%),
+    linear-gradient(180deg, var(--blue-900) 0%, #051E2B 100%);
+  color: var(--sand-50);
+  padding: var(--sp-10) 0;
+  position: relative;
+  overflow: hidden;
+}
+.how-list .eyebrow { color: var(--sky-400); }
+.how-list .eyebrow::before { background: var(--sky-400); }
+
+.how-list__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: var(--sp-7);
+  align-items: end;
+  margin-bottom: var(--sp-8);
+}
+.how-list__head h2 {
+  color: var(--white);
+  font-size: clamp(var(--fs-3xl), 4.4vw, var(--fs-5xl));
+  margin: var(--sp-3) 0 0;
+}
+.how-list__lede {
+  color: var(--sand-200);
+  font-size: var(--fs-lg);
+  margin: 0;
+  max-width: 40ch;
+  justify-self: end;
+}
+@media (max-width: 720px) {
+  .how-list__head { grid-template-columns: 1fr; gap: var(--sp-4); }
+  .how-list__lede { justify-self: start; }
+}
+
+.how-list__items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-width: 880px;
+  position: relative;
+}
+/* Dotted vertical connector — anchored to the centre of the numerals */
+.how-list__items::before {
+  content: "";
+  position: absolute;
+  left: 38px;
+  top: 30px;
+  bottom: 30px;
+  width: 2px;
+  background:
+    repeating-linear-gradient(180deg,
+      rgba(91, 188, 230, 0.55) 0 6px,
+      transparent 6px 14px);
+}
+
+.how-list__item {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: var(--sp-5);
+  padding: var(--sp-5) 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  align-items: start;
+}
+.how-list__item:last-child { border-bottom: none; }
+
+.how-list__num {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2.4rem, 4.6vw, 3.2rem);
+  color: var(--sky-400);
+  background: var(--blue-900);
+  width: 76px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-asym-3);
+  border: 2px solid rgba(91, 188, 230, 0.45);
+  letter-spacing: -0.04em;
+  position: relative;
+  z-index: 1;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+.how-list__item:nth-child(even) .how-list__num {
+  border-radius: var(--r-asym-4);
+}
+
+.how-list__text h3 {
+  color: var(--white);
+  font-size: var(--fs-2xl);
+  margin: 6px 0 var(--sp-2);
+  letter-spacing: -0.02em;
+}
+.how-list__text p {
+  color: var(--sand-200);
+  font-size: var(--fs-base);
+  line-height: 1.65;
+  margin: 0;
+  max-width: 60ch;
+}
+
+.how-list__cta {
+  margin-top: var(--sp-7);
+  display: inline-flex;
+}
+
+/* ============================================================
+   BOOK-FLOW — 4-step "how it works" as a connected water journey
+   Used on home + book pages. Dark pool-deep background, animated
+   wavy SVG connector behind asymmetric numbered tiles, custom
+   illustrated icons per step. Mobile collapses to vertical timeline
+   with a left-side wave rail.
+   ============================================================ */
+/* Light, crisp variant — white blending into pool blue, no dramatic dark bg. */
+.book-flow {
+  position: relative;
+  background: linear-gradient(180deg, var(--white) 0%, var(--blue-50) 100%);
+  color: var(--color-fg);
+  padding: var(--sp-9) 0;
+  overflow: hidden;
+}
+.book-flow .section-head { margin-bottom: var(--sp-8); }
+
+.book-flow__track {
+  position: relative;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-5);
+  z-index: 1;
+}
+
+/* SVG wave connector — sits behind the number badges. Vertically centered
+   on the badges (which are 88px tall starting at the top of the track), so
+   the rail midline (y=40 in viewBox) lands at the badges' centerline. */
+.book-flow__rail {
+  position: absolute;
+  top: 4px;
+  left: 6%;
+  right: 6%;
+  height: 80px;
+  pointer-events: none;
+  z-index: 0;
+}
+.book-flow__rail svg { width: 100%; height: 100%; overflow: visible; }
+.book-flow__rail .rail-path { animation: rail-drift 9s linear infinite; }
+@keyframes rail-drift {
+  to { stroke-dashoffset: -28; }
+}
+
+.book-flow__step {
+  position: relative;
+  text-align: center;
+  padding: 0 var(--sp-3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Numbered asymmetric tile — alternates radii left/right */
+.book-flow__num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  background: var(--blue-600);
+  color: var(--white);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--fs-2xl);
+  border-radius: var(--r-asym-3);
+  border: 3px solid var(--white);
+  box-shadow: 0 12px 28px -14px rgba(21, 101, 192, 0.45);
+  position: relative;
+  z-index: 2;
+  margin-bottom: var(--sp-4);
+  transition: transform var(--dur-med) var(--ease-out),
+              background var(--dur-med),
+              color var(--dur-med);
+}
+.book-flow__step:nth-child(even) .book-flow__num { border-radius: var(--r-asym-4); }
+.book-flow__step:hover .book-flow__num {
+  transform: translateY(-3px);
+  background: var(--blue-500);
+}
+
+/* Custom illustrated icon — pool palette, 1.6 stroke */
+.book-flow__icon {
+  display: block;
+  width: 44px;
+  height: 44px;
+  margin: 0 auto var(--sp-3);
+  color: var(--blue-500);
+  transition: transform var(--dur-med) var(--ease-out), color var(--dur-med);
+}
+.book-flow__icon path,
+.book-flow__icon circle,
+.book-flow__icon rect,
+.book-flow__icon line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.book-flow__step:hover .book-flow__icon { transform: translateY(-3px); }
+
+.book-flow__step h3 {
+  color: var(--blue-900);
+  font-size: var(--fs-xl);
+  margin-bottom: var(--sp-2);
+  letter-spacing: -0.015em;
+}
+.book-flow__step p {
+  color: var(--sand-700);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  margin: 0 auto;
+  max-width: 28ch;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .book-flow__rail .rail-path { animation: none; }
+}
+
+/* Tablet — 2x2 grid, hide horizontal rail (doesn't fit a 2x2) */
+@media (max-width: 880px) {
+  .book-flow__track { grid-template-columns: repeat(2, 1fr); gap: var(--sp-7) var(--sp-4); }
+  .book-flow__rail { display: none; }
+}
+
+/* Phone — vertical timeline with a left-side wave rail */
+@media (max-width: 540px) {
+  .book-flow__track {
+    grid-template-columns: 1fr;
+    gap: var(--sp-5);
+    position: relative;
+    padding-left: var(--sp-7);
+  }
+  .book-flow__track::before {
+    content: "";
+    position: absolute;
+    top: 32px;
+    bottom: 32px;
+    left: 36px;
+    width: 2px;
+    background-image: radial-gradient(circle, var(--blue-400) 1px, transparent 1.5px);
+    background-size: 2px 10px;
+    background-repeat: repeat-y;
+    opacity: 0.65;
+  }
+  .book-flow__step {
+    text-align: left;
+    align-items: flex-start;
+    padding: 0;
+    flex-direction: row;
+    gap: var(--sp-4);
+  }
+  .book-flow__num {
+    flex-shrink: 0;
+    width: 64px;
+    height: 64px;
+    font-size: var(--fs-xl);
+    margin-left: -28px;
+    margin-bottom: 0;
+  }
+  .book-flow__icon { display: none; }
+  .book-flow__step > div { flex: 1; }
+  .book-flow__step h3 { margin-top: var(--sp-1); }
+  .book-flow__step p { max-width: none; }
+}
+
+/* Inline check icon — replaces unicode ✓ glyphs.
+   Sized to inherit em + currentColor so it works in any context. */
+.ic-check {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  color: currentColor;
+  vertical-align: -0.125em;
+}
+.ic-check path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

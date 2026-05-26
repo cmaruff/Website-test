@@ -1,18 +1,19 @@
 # TQ Pool Services — agent guide
 
-Vanilla HTML / CSS / ES2022 site. No build step. Hosted on SiteGround in
-production, with a GitHub Pages preview deployed from `main` via the workflow
-in `.github/workflows/`. Mock Supabase backend for the demo; real Supabase +
-Square + QuickBooks + Resend + Notifyre wiring lives in `public/admin/` and
-`supabase/functions/` for Phase 2 cutover.
+Vanilla HTML / CSS / ES2022 site. No build step. Hosted on **Netlify**
+(auto-deploy from `main`, PR previews for every branch). Config lives in
+`netlify.toml` (publish dir, redirects, pretty URLs) and `public/_headers`
+(security + cache). Mock Supabase backend for the demo; real Supabase +
+Stripe + QuickBooks + Resend + Notifyre wiring lives in `public/admin/`
+and `supabase/functions/`.
 
 ## Working conventions
 
 - **Always open a pull request after pushing a feature branch.** Every push to
   a `claude/*` branch should be followed by a PR into `main` (use the GitHub
-  MCP tools, not the `gh` CLI). The user has GitHub Pages environment
-  protection that only redeploys on `main`, so unmerged work isn't visible.
-  Do not wait to be asked.
+  MCP tools, not the `gh` CLI). Netlify auto-deploys `main` to production
+  and creates a preview URL per PR, so unmerged work is visible at the
+  preview URL but not at the production domain. Do not wait to be asked.
 - The active feature branch is `claude/analyze-codebase-BhgjH`. Develop here,
   push here, and PR from here unless told otherwise.
 - Match the existing commit style: short imperative subject, then a body of
@@ -36,10 +37,10 @@ Square + QuickBooks + Resend + Notifyre wiring lives in `public/admin/` and
   contact, blog, booking-success, admin/).
 - `public/assets/css/` and `public/assets/js/` — split per page + a few
   site-wide modules (drop, hero-ripple, mock-supabase, business-info).
-- `supabase/functions/` — Deno edge functions for Phase 2 (Square checkout +
+- `supabase/functions/` — Deno edge functions for Phase 2 (Stripe Checkout +
   webhook, QuickBooks invoice creation, SMS sender, etc).
-- `.github/workflows/` — Pages deploy workflow. Rewrites `/assets/` and
-  `/admin/` paths to subpath form via sed before publishing.
+- `netlify.toml` (repo root) + `public/_headers` — Netlify build, redirect,
+  pretty-URL, security-header, and cache config.
 
 ## Things to be careful about
 

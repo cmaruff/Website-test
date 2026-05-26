@@ -18,8 +18,6 @@ window.TQ_CONFIG = {
   FN_BOOKING_CREATE: '/functions/v1/booking-create',
   FN_DISTANCE_CHECK: '/functions/v1/distance-check',
 
-  // Square (no public key needed — we redirect to Square's hosted checkout)
-
   // Service area
   SERVICE_ORIGIN: { lat: -19.2589, lng: 146.8169 },  // Townsville CBD
   SERVICE_RADIUS_KM: 50,                              // for service jobs
@@ -28,15 +26,16 @@ window.TQ_CONFIG = {
   // Business — single source of truth. Updated values flow through every
   // page automatically (see public/assets/js/business-info.js).
   BUSINESS_NAME:    'TQ Pool Services',
-  BUSINESS_PHONE:   '+61400000000',          // tel: link target (no spaces, +61 form)
-  BUSINESS_PHONE_DISPLAY: '(07) XXXX XXXX',  // human-readable form
-  BUSINESS_EMAIL:   'hello@tqpoolservices.com',
+  BUSINESS_PHONE:   '+61488355111',          // tel: link target (no spaces, +61 form)
+  BUSINESS_PHONE_DISPLAY: '0488 355 111',  // human-readable form
+  BUSINESS_EMAIL:   'info@tqpoolservices.com',
   BUSINESS_ABN:     '00 000 000 000',
-  BUSINESS_HOURS:   'Mon–Fri 7am–5pm',
-  BUSINESS_ADDRESS_LOCALITY: 'Townsville',
+  BUSINESS_HOURS:   'Open until 5:00 pm',
+  BUSINESS_ADDRESS_STREET:   '2 Allunga St',
+  BUSINESS_ADDRESS_LOCALITY: 'Kelso',
   BUSINESS_ADDRESS_REGION:   'QLD',
-  BUSINESS_ADDRESS_POSTCODE: '4810',
-  BUSINESS_FACEBOOK: 'https://facebook.com/',
+  BUSINESS_ADDRESS_POSTCODE: '4815',
+  BUSINESS_FACEBOOK: 'https://www.facebook.com/profile.php?id=61588638005587',
 };
 
 // ============================================================
@@ -53,6 +52,18 @@ window.IS_DEMO = (
 
 // Helper: build full Supabase URL for an Edge Function
 window.fnUrl = (path) => `${window.TQ_CONFIG.SUPABASE_URL}${path}`;
+
+// Lazy public supabase client (or mock in demo). Pages that need to
+// insert records — e.g. the lead form on /book.html and the contact
+// form on /contact.html — call window.tqSupa() to get a ready client.
+window.tqSupa = function () {
+  if (window.supabase && typeof window.supabase.from === 'function') return window.supabase;
+  if (window.IS_DEMO && typeof window.createMockSupa === 'function') {
+    window.supabase = window.createMockSupa();
+    return window.supabase;
+  }
+  return null;
+};
 
 // Helper: standard fetch with anon key
 window.tqFetch = async (path, options = {}) => {

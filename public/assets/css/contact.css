@@ -10,34 +10,82 @@
 @media (max-width: 880px) { .contact__grid { grid-template-columns: 1fr; } }
 
 .contact__info { padding-right: var(--sp-4); }
-.contact__info h2 { margin-bottom: var(--sp-5); }
+@media (max-width: 880px) { .contact__info { padding-right: 0; } }
 
-.contact__method {
+/* Urgent callout — first thing on the info column, coral-accented for urgency */
+.contact__urgent {
   display: flex;
   align-items: center;
   gap: var(--sp-4);
-  padding: var(--sp-4);
+  padding: var(--sp-4) var(--sp-5);
+  background: linear-gradient(135deg, var(--coral-500), var(--coral-600));
+  color: var(--white);
+  border-radius: var(--r-asym-1);
+  margin-bottom: var(--sp-5);
+  text-decoration: none;
+  box-shadow: 0 12px 24px -14px rgba(216, 85, 65, 0.55);
+  position: relative;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.contact__urgent:hover { transform: translateY(-2px); color: var(--white); }
+.contact__urgent strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  margin-bottom: 2px;
+}
+.contact__urgent span {
+  display: block;
+  font-size: var(--fs-sm);
+  opacity: 0.95;
+}
+.contact__urgent-pulse {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  background: var(--white);
+  border-radius: 50%;
+}
+.contact__urgent-pulse::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--white);
+  opacity: 0.6;
+  animation: contact-urgent-pulse 1.6s ease-out infinite;
+}
+@keyframes contact-urgent-pulse {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .contact__urgent-pulse::after { animation: none; }
+}
+
+/* Method cards row — phone / email / book */
+.contact__methods {
+  display: grid;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-6);
+}
+.contact__method {
+  display: block;
+  padding: var(--sp-4) var(--sp-5);
   background: var(--white);
   border: 1px solid var(--color-border);
-  border-radius: var(--r-lg);
-  margin-bottom: var(--sp-3);
+  border-radius: var(--r-asym-1);
   text-decoration: none;
   color: var(--color-fg);
-  transition: all var(--dur-fast);
+  transition: transform var(--dur-fast), border-color var(--dur-fast), box-shadow var(--dur-fast);
 }
+.contact__methods > .contact__method:nth-child(even) { border-radius: var(--r-asym-2); }
 .contact__method:hover {
   border-color: var(--blue-300);
   transform: translateX(4px);
   color: var(--color-fg);
   box-shadow: var(--sh-md);
-}
-.contact__icon {
-  width: 56px; height: 56px;
-  background: var(--blue-50);
-  border-radius: var(--r-md);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.75rem;
-  flex-shrink: 0;
 }
 .contact__method strong {
   display: block;
@@ -51,36 +99,97 @@
   font-size: var(--fs-base);
   color: var(--color-fg);
 }
-.contact__method small { display: block; font-size: var(--fs-xs); color: var(--sand-500); margin-top: 2px; }
+.contact__method small {
+  display: block;
+  font-size: var(--fs-xs);
+  color: var(--sand-500);
+  margin-top: 2px;
+}
 
-.contact__service-area {
-  margin-top: var(--sp-6);
+/* Info panels (hours, service area, FAQ tease) */
+.contact__panel {
+  background: var(--white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--r-asym-1);
   padding: var(--sp-5);
-  background: var(--blue-900);
-  color: var(--sand-100);
-  border-radius: var(--r-lg);
+  margin-bottom: var(--sp-4);
 }
-.contact__service-area h3 {
-  color: var(--sun-400);
-  font-size: var(--fs-lg);
-  margin-bottom: var(--sp-2);
-}
-.contact__service-area p {
-  color: var(--sand-200);
-  font-size: var(--fs-sm);
-  line-height: 1.7;
+.contact__info > .contact__panel:nth-of-type(even) { border-radius: var(--r-asym-2); }
+.contact__panel h3 {
+  font-size: var(--fs-base);
+  font-family: var(--font-body);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--blue-700);
+  margin-bottom: var(--sp-3);
 }
 
+.contact__hours {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 6px var(--sp-4);
+  margin: 0;
+  font-size: var(--fs-sm);
+}
+.contact__hours dt { color: var(--blue-900); font-weight: 600; }
+.contact__hours dd { margin: 0; color: var(--sand-700); font-variant-numeric: tabular-nums; }
+
+.contact__panel-lede {
+  font-size: var(--fs-sm);
+  color: var(--sand-700);
+  margin-bottom: var(--sp-3);
+}
+.contact__suburbs {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--sp-3);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+}
+.contact__suburbs li {
+  font-size: var(--fs-xs);
+  background: var(--blue-50);
+  color: var(--blue-800);
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--blue-100);
+}
+.contact__panel-foot {
+  font-size: var(--fs-sm);
+  color: var(--sand-500);
+  font-style: italic;
+  margin: 0;
+}
+
+.contact__panel--faq h3 { color: var(--blue-700); }
+.contact__panel--faq p { font-size: var(--fs-sm); color: var(--sand-700); margin: 0; }
+
+/* Form */
 .contact__form {
   background: var(--white);
   padding: var(--sp-6) var(--sp-6);
-  border-radius: var(--r-lg);
+  border-radius: var(--r-asym-5);
   border: 1px solid var(--color-border);
   box-shadow: var(--sh-md);
 }
 .contact__form h2 {
   font-size: var(--fs-2xl);
+  margin-bottom: var(--sp-2);
+}
+.contact__form-note {
+  font-size: var(--fs-sm);
+  color: var(--sand-500);
   margin-bottom: var(--sp-5);
+  padding-bottom: var(--sp-4);
+  border-bottom: 1px solid var(--color-border);
+}
+.contact__form-expect {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-xs);
+  color: var(--sand-500);
+  text-align: center;
 }
 .contact__success {
   margin-top: var(--sp-4);
@@ -88,7 +197,11 @@
   background: rgba(46, 140, 90, 0.1);
   border: 1px solid var(--color-success);
   color: var(--color-success);
-  border-radius: var(--r-md);
+  border-radius: 14px 4px 14px 4px;
   text-align: center;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
 }
+.contact__success .ic-check { width: 18px; height: 18px; }

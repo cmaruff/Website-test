@@ -7,24 +7,26 @@
 :root {
   /* ---------- PRIMITIVE: raw values ---------- */
 
-  /* Pool blues — confident, water-clean */
-  --blue-50:  #EEF8FB;
-  --blue-100: #D5EEF6;
-  --blue-200: #A8DBEA;
-  --blue-300: #6FC2DC;
-  --blue-400: #38A8CD;
-  --blue-500: #1487B2;
-  --blue-600: #0E6E94;
-  --blue-700: #0A5573;
-  --blue-800: #08425A;
-  --blue-900: #062E3F;
+  /* Pool blues — clean, crisp, water-bright. Calibrated against the
+     TQ Pool Services logo (~#1565C0) — less teal, more sky/sea. */
+  --blue-50:  #EAF4FB;
+  --blue-100: #CCE2F4;
+  --blue-200: #9DC8EA;
+  --blue-300: #6DAEDF;
+  --blue-400: #3D93D3;
+  --blue-500: #1E78C5;
+  --blue-600: #1565C0;   /* brand — matches the logo */
+  --blue-700: #0D4A99;
+  --blue-800: #0A3676;
+  --blue-900: #082754;
 
-  /* Sun — warm CTA accent */
-  --sun-400: #FFD057;
-  --sun-500: #F4B41A;
-  --sun-600: #D49808;
+  /* Sky — bright water-light accent (replaces the dropped sun yellow).
+     Use sparingly for hover lifts, badges, sparkle moments. */
+  --sky-300: #8FD3F0;
+  --sky-400: #5BBCE6;
+  --sky-500: #2DA1D6;
 
-  /* Coral — emergency/secondary accent */
+  /* Coral — kept for danger / emergency only (e.g. "green pool" badge) */
   --coral-500: #F26D5B;
   --coral-600: #D85541;
 
@@ -77,6 +79,9 @@
   --r-asym-1: 14px 4px 14px 4px;   /* tradesperson hand — primary tile */
   --r-asym-2: 4px 14px 4px 14px;   /* mirrored — alternates with asym-1 */
   --r-asym-3: 22px 6px 22px 6px;   /* larger, for media/figures */
+  --r-asym-4: 6px 22px 6px 22px;   /* mirrored asym-3 */
+  --r-asym-5: 28px 8px 28px 8px;   /* hero-scale, for big surface cards */
+  --r-asym-6: 8px 28px 8px 28px;   /* mirrored asym-5 */
 
   /* Shadows */
   --sh-sm: 0 1px 2px rgba(8, 66, 90, 0.08);
@@ -106,9 +111,15 @@
   --color-primary-hover:var(--blue-700);
   --color-primary-fg:   var(--white);
 
-  --color-accent:       var(--sun-500);
-  --color-accent-hover: var(--sun-600);
-  --color-accent-fg:    var(--blue-900);
+  --color-accent:       var(--sky-500);
+  --color-accent-hover: var(--blue-500);
+  --color-accent-fg:    var(--white);
+
+  /* Backwards-compat aliases for any leftover --sun-* references.
+     Mapped to sky/blue tokens so yellow can never sneak back. */
+  --sun-400: var(--sky-400);
+  --sun-500: var(--sky-500);
+  --sun-600: var(--blue-500);
 
   --color-danger:       var(--coral-500);
   --color-danger-fg:    var(--white);
