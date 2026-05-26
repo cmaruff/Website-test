@@ -3,203 +3,229 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Book a Pool Service Online — TQ Pool Services Townsville</title>
-  <meta name="description" content="Book your Townsville pool service online in about 90 seconds. Pick a service, pick a time, pay securely by card. Mobile across Townsville and surrounds.">
-  <meta name="keywords" content="book pool service Townsville, mobile pool service Townsville booking, Townsville pool service online">
+  <title>Book Mobile Pool Service Townsville — Online Booking | TQ Pool Services</title>
+  <meta name="description" content="Book a mobile pool service Townsville online — pool cleaning, maintenance or $35 consultation. Photo upload, pool size, preferred time. Confirmed by phone or email within one business day.">
+  <meta name="keywords" content="book pool service townsville, mobile pool service townsville, pool cleaning service townsville, pool maintenance townsville, online pool service booking townsville, pool service company townsville">
+  <meta name="theme-color" content="#1565C0">
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="canonical" href="https://tqpoolservices.com/book">
-  <meta name="google-site-verification" content="REPLACE_WITH_GSC_TOKEN">
 
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Book a Pool Service Online — TQ Pool Services Townsville">
-  <meta property="og:description" content="Book your Townsville mobile pool service in about 90 seconds.">
+  <meta property="og:title" content="Book Mobile Pool Service Townsville — Online Booking">
+  <meta property="og:description" content="Book a mobile pool service Townsville online. Pool cleaning, maintenance, or $35 consultation. Confirmed within one business day.">
   <meta property="og:url" content="https://tqpoolservices.com/book">
+  <meta property="og:image" content="https://tqpoolservices.com/assets/img/work/hero-lap-pool.jpg">
   <meta property="og:locale" content="en_AU">
   <meta name="twitter:card" content="summary_large_image">
 
   <link rel="stylesheet" href="/assets/css/tokens.css">
   <link rel="stylesheet" href="/assets/css/base.css">
   <link rel="stylesheet" href="/assets/css/book.css">
-  <link rel="stylesheet" href="/assets/css/drop.css">
 </head>
 <body>
+<div class="tq-loader" id="tqLoader" aria-hidden="true"><div class="tq-loader__mark"><span>TQ</span></div><div class="tq-loader__wordmark" aria-label="TQ Pool Services"><span>T</span><span>Q</span><span class="gap"></span><span>P</span><span>O</span><span>O</span><span>L</span><span class="gap"></span><span>S</span><span>E</span><span>R</span><span>V</span><span>I</span><span>C</span><span>E</span><span>S</span></div></div>
 
 <header class="nav">
   <div class="container nav__inner">
-    <a href="/" class="nav__logo"><span class="nav__logo-mark"></span>TQ Pools</a>
+    <a href="/" class="nav__logo"><span class="nav__logo-mark"></span>TQ Pool Services</a>
     <nav>
       <ul class="nav__links">
         <li><a href="/">Home</a></li>
-        <li><a href="/services.html">Services &amp; prices</a></li>
-        <li><a href="/products.html">Shop</a></li>
+        <li class="has-dropdown">
+          <a href="/services.html" aria-haspopup="true">Services &amp; prices</a>
+          <ul class="nav__dropdown">
+            <li><a href="/services.html"><strong>All services &amp; prices</strong><em>Overview, chemistry guide, FAQs</em></a></li>
+            <li><a href="/pool-consultation-townsville.html"><strong>Consultation</strong><em>30 min site visit</em></a></li>
+            <li><a href="/pool-service-townsville.html"><strong>Basic Pool Service</strong><em>Priced by pool size</em></a></li>
+          </ul>
+        </li>
         <li><a href="/blog.html">Blog</a></li>
         <li><a href="/contact.html">Contact</a></li>
       </ul>
     </nav>
     <div class="nav__cta">
-      <a data-tq-href="phone-tel" href="tel:+61400000000" class="btn btn-ghost">Call us</a>
+      <a data-tq-href="phone-tel" href="tel:+61488355111" class="btn btn-ghost">Call us</a>
     </div>
-    <button class="nav__burger"><span></span><span></span><span></span></button>
+    <button class="nav__burger" aria-label="Menu"><span></span><span></span><span></span></button>
   </div>
 </header>
 
-<section class="page-head">
+<!-- ============ PAGE HEAD ============ -->
+<section class="page-hero">
+  <div class="page-hero__photo" style="background-image: url('/assets/img/heros/book.jpg')"></div>
+  <div class="page-hero__shimmer"></div>
+  <div class="page-hero__scrim"></div>
   <div class="container">
-    <span class="eyebrow reveal">Book online</span>
-    <h1 class="reveal" style="transition-delay:.1s">Book your pool service in 90 seconds.</h1>
-  </div>
-</section>
-
-<section class="book">
-  <div class="container">
-    <div class="book__layout">
-
-      <!-- ============ FORM SIDE ============ -->
-      <div class="book__main">
-
-        <!-- Step indicator -->
-        <ol class="book__steps">
-          <li class="active" data-step="1"><span>1</span>Service</li>
-          <li data-step="2"><span>2</span>Date & time</li>
-          <li data-step="3"><span>3</span>Your details</li>
-        </ol>
-
-        <!-- ===== STEP 1: SERVICE ===== -->
-        <div class="book__step active" data-step="1">
-          <h2>What service would you like?</h2>
-          <p>Pick the option that suits — you can change it later if needed.</p>
-
-          <div class="book__services" id="serviceGrid">
-            <!-- Populated by JS from services list -->
-          </div>
-
-          <div class="book__nav">
-            <span></span>
-            <button class="btn btn-primary btn-lg" id="toStep2" disabled>Next: pick a time</button>
-          </div>
-        </div>
-
-        <!-- ===== STEP 2: DATE & TIME ===== -->
-        <div class="book__step" data-step="2">
-          <h2>When suits you?</h2>
-          <p>We service Mon–Fri. Pick a date, then a window.</p>
-
-          <div class="book__calendar" id="calendar"></div>
-
-          <div class="book__slots" id="slots" hidden>
-            <h3>Available windows</h3>
-            <div class="book__slot-grid" id="slotGrid"></div>
-          </div>
-
-          <div class="book__nav">
-            <button class="btn btn-ghost" data-back="1">← Back</button>
-            <button class="btn btn-primary btn-lg" id="toStep3" disabled>Next: your details</button>
-          </div>
-        </div>
-
-        <!-- ===== STEP 3: DETAILS ===== -->
-        <div class="book__step" data-step="3">
-          <h2>Your details</h2>
-          <p>We'll send a confirmation email and SMS the day before your service.</p>
-
-          <form id="bookingForm">
-            <div class="book__form-grid">
-              <div class="field">
-                <label for="bk_name">Full name *</label>
-                <input id="bk_name" name="name" type="text" required>
-              </div>
-              <div class="field">
-                <label for="bk_email">Email *</label>
-                <input id="bk_email" name="email" type="email" required>
-              </div>
-              <div class="field">
-                <label for="bk_phone">Mobile *</label>
-                <input id="bk_phone" name="phone" type="tel" required placeholder="04XX XXX XXX">
-              </div>
-              <div class="field">
-                <label for="bk_address">Service address *</label>
-                <input id="bk_address" name="address" type="text" required placeholder="Street address, Townsville">
-              </div>
-              <div class="field" style="grid-column: 1 / -1;">
-                <label for="bk_pool">Pool details (optional)</label>
-                <textarea id="bk_pool" name="pool_notes" rows="3" placeholder="Approximate size, current condition, anything we should know..."></textarea>
-              </div>
-              <div class="field" style="grid-column: 1 / -1;">
-                <label for="bk_access">Access notes (optional)</label>
-                <input id="bk_access" name="access_notes" type="text" placeholder="Side gate code, dog name, where to park...">
-              </div>
-            </div>
-
-            <label class="book__check">
-              <input type="checkbox" id="bk_report" checked>
-              <span>Email me a full PDF report after each service ($3 / visit)</span>
-            </label>
-
-            <div class="book__nav">
-              <button type="button" class="btn btn-ghost" data-back="2">← Back</button>
-              <button type="submit" class="btn btn-accent btn-lg">Continue to payment</button>
-            </div>
-          </form>
-        </div>
-
-      </div>
-
-      <!-- ============ SUMMARY SIDE ============ -->
-      <aside class="book__summary" id="summary">
-        <h3>Your booking</h3>
-        <dl>
-          <dt>Service</dt>
-          <dd id="sumService">—</dd>
-          <dt>Date</dt>
-          <dd id="sumDate">—</dd>
-          <dt>Window</dt>
-          <dd id="sumSlot">—</dd>
-          <dt>Report</dt>
-          <dd id="sumReport">Included</dd>
-        </dl>
-        <div class="book__total">
-          <span>Total today</span>
-          <strong id="sumTotal">$0.00</strong>
-        </div>
-        <p class="book__small">Secure card payment via Stripe. You'll only be charged after confirming on the next page.</p>
-      </aside>
-
+    <div class="page-hero__inner">
+      <span class="eyebrow reveal">Book online</span>
+      <h1 class="reveal" style="transition-delay:.1s">
+        <span class="hero__line">Lock in your visit</span>
+        <span class="hero__accent">in under a minute.</span>
+      </h1>
+      <p class="page-hero__lede reveal" style="transition-delay:.2s">
+        Pick your service, send us a photo of the pool, and a preferred time —
+        we'll confirm within a business day and arrive ready to work.
+      </p>
     </div>
   </div>
 </section>
+<!-- ============ FLUENT BOOKING — SERVICE PICKER + INLINE CALENDAR ============ -->
+<section class="book-form" id="book-now">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Pick a service</span>
+      <h2>Live availability — book in under a minute.</h2>
+      <p>Pick a service, choose any available slot, upload a pool photo. The Consultation is paid up-front via Stripe ($35); the Basic Pool Service is invoiced after we confirm pool size on arrival.</p>
+    </div>
 
+    <div class="book-tabs reveal" role="tablist">
+      <button type="button" class="book-tab is-active" data-tab="consultation" role="tab" aria-controls="tab-consultation" aria-selected="true">
+        <strong>Consultation</strong>
+        <span>$35 &middot; 30 min &middot; paid at booking</span>
+      </button>
+      <button type="button" class="book-tab" data-tab="service" role="tab" aria-controls="tab-service" aria-selected="false">
+        <strong>Basic Pool Service</strong>
+        <span>From $75 &middot; priced by pool size &middot; invoiced after visit</span>
+      </button>
+    </div>
+
+    <!-- Consultation panel -->
+    <div class="book-tab__panel is-active" id="tab-consultation" role="tabpanel">
+      <div class="book-form__shell reveal">
+        <div class="book-cal" aria-label="Booking calendar preview">
+          <div class="book-cal__head">
+            <strong>Live calendar &amp; Stripe payment</strong>
+            <span class="book-cal__badge">Production-only</span>
+          </div>
+          <p class="book-cal__note">
+            On the live site this panel is a live calendar synced with Ben's
+            schedule — you'd see this week's open slots, pick one, upload a
+            pool photo, and pay $35 via Stripe inline. Confirmation email +
+            QuickBooks sales receipt are created automatically.
+          </p>
+          <ol class="book-cal__steps">
+            <li><strong>1.</strong> Pick an available slot from the calendar</li>
+            <li><strong>2.</strong> Upload a clear photo of your pool</li>
+            <li><strong>3.</strong> Pay $35 inline via Stripe</li>
+            <li><strong>4.</strong> Instant confirmation + 24 h reminder by SMS &amp; email</li>
+          </ol>
+          <p class="book-cal__fallback">
+            Preview-only — send a booking request via
+            <a href="/contact.html">the contact form</a> or call
+            <a data-tq-href="phone-tel" href="tel:+61488355111"><span data-tq="phone-display">0488 355 111</span></a>.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Basic Pool Service panel -->
+    <div class="book-tab__panel" id="tab-service" role="tabpanel" hidden>
+      <div class="book-form__shell reveal">
+        <div class="book-cal" aria-label="Booking calendar preview">
+          <div class="book-cal__head">
+            <strong>Live calendar &amp; QuickBooks invoice</strong>
+            <span class="book-cal__badge">Production-only</span>
+          </div>
+          <p class="book-cal__note">
+            On the live site this panel is a live calendar showing Ben's
+            available slots. Pick the slot, upload a pool photo, and lock the booking.
+            We confirm pool size on arrival and send a QuickBooks invoice with a
+            Stripe pay-link the same day — pay by clicking the link in the invoice email.
+          </p>
+          <ol class="book-cal__steps">
+            <li><strong>1.</strong> Pick an available slot from the calendar</li>
+            <li><strong>2.</strong> Upload a clear photo of your pool</li>
+            <li><strong>3.</strong> Slot locked — we email confirmation + 24 h reminder</li>
+            <li><strong>4.</strong> Pool size confirmed on arrival, QuickBooks invoice sent same day</li>
+          </ol>
+          <p class="book-cal__fallback">
+            Preview-only — send a booking request via
+            <a href="/contact.html">the contact form</a> or call
+            <a data-tq-href="phone-tel" href="tel:+61488355111"><span data-tq="phone-display">0488 355 111</span></a>.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <p class="book-form__expect">
+      <strong>What happens next:</strong> Consultations are confirmed and paid instantly via Stripe.
+      For a Basic Pool Service the slot is locked; we confirm pool size on arrival and email a
+      QuickBooks invoice with a Stripe pay-link the same day. Free reschedules up to 12 hours before
+      the visit.
+    </p>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
 <footer class="footer">
   <div class="container footer__grid">
     <div>
-      <h4>TQ Pool Services</h4>
-      <p style="color:var(--sand-300)">Mobile pool cleaning across Townsville.</p>
+      <h4 data-tq="business-name">TQ Pool Services</h4>
+      <p style="color:var(--sand-300); margin-bottom:var(--sp-4)">
+        Mobile pool cleaning and servicing across Townsville and North Queensland.
+      </p>
+      <p style="color:var(--sand-300); font-size:var(--fs-sm)">
+        <span data-tq="address-street">2 Allunga St</span>, <span data-tq="address-locality">Kelso</span> QLD <span data-tq="address-postcode">4815</span>
+      </p>
     </div>
     <div>
       <h4>Services</h4>
-      <a href="/services.html">View all services</a>
+      <a href="/pool-consultation-townsville.html">Consultation</a>
+      <a href="/pool-service-townsville.html">Basic pool service</a>
+      <a href="/services.html">All services &amp; prices</a>
     </div>
     <div>
       <h4>Company</h4>
       <a href="/">Home</a>
+      <a href="/services.html">Services &amp; prices</a>
+      <a href="/blog.html">Blog</a>
       <a href="/contact.html">Contact</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/book.html">Book online</a>
     </div>
     <div>
-      <h4>Contact</h4>
-      <a data-tq-href="phone-tel" href="tel:+61400000000"><span data-tq="phone-display">(07) XXXX XXXX</span></a>
-      <a data-tq-href="email-mailto" href="mailto:hello@tqpoolservices.com"><span data-tq="email">hello@tqpoolservices.com</span></a>
+      <h4>Get in touch</h4>
+      <a data-tq-href="phone-tel" href="tel:+61488355111"><span data-tq="phone-display">0488 355 111</span></a>
+      <a data-tq-href="email-mailto" href="mailto:info@tqpoolservices.com"><span data-tq="email">info@tqpoolservices.com</span></a>
+      <a href="https://www.facebook.com/profile.php?id=61588638005587" target="_blank" rel="noopener">Facebook</a>
     </div>
   </div>
   <div class="container footer__bottom">
-    <span>© <span id="year"></span> <span data-tq="business-name">TQ Pool Services</span>.</span>
+    <span>© <span id="year"></span> TQ Pool Services. All rights reserved.</span>
+    <span>Built locally · Townsville, QLD</span>
   </div>
 </footer>
+
+<div class="callbar">
+  <a data-tq-href="phone-tel" href="tel:+61488355111" class="call">Call us</a>
+  <a href="#book-now" class="book">Request booking</a>
+</div>
 
 <script src="/assets/js/supabase-config.js"></script>
 <script src="/assets/js/business-info.js"></script>
 <script src="/assets/js/main.js"></script>
-<script src="/assets/js/booking.js"></script>
-<script src="/assets/js/drop.js"></script>
-<script src="/assets/js/demo-banner.js"></script>
+<script>
+  // Tabs: Consultation / Basic Pool Service. On the live site each panel is
+  // replaced by the booking calendar that calls supabase/functions/booking-create.
+  (() => {
+    const tabs = document.querySelectorAll('.book-tab');
+    const panels = document.querySelectorAll('.book-tab__panel');
+    if (!tabs.length) return;
+    tabs.forEach(t => t.addEventListener('click', () => {
+      const target = t.dataset.tab;
+      tabs.forEach(b => {
+        const active = b === t;
+        b.classList.toggle('is-active', active);
+        b.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      panels.forEach(p => {
+        const match = p.id === 'tab-' + target;
+        p.classList.toggle('is-active', match);
+        p.hidden = !match;
+      });
+    }));
+  })();
+</script>
 </body>
 </html>
