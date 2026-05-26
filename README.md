@@ -5,7 +5,7 @@ Production-ready vanilla JS + Supabase build for a mobile pool service business.
 ## What's in this repo
 
 ```
-public/                 ← static frontend (upload this folder's contents to SiteGround)
+public/                 ← static frontend (Netlify publishes this folder)
 ├── index.html          ← home
 ├── services.html       ← services & prices
 ├── contact.html        ← contact form
@@ -38,7 +38,7 @@ supabase/
     └── calendar-feed         iCal subscribe URL for tech's calendar
 
 docs/
-├── DEPLOY.md           ← step-by-step deploy instructions (incl. SiteGround)
+├── DEPLOY.md           ← step-by-step deploy instructions (Netlify + Supabase)
 ├── BRAND.md            ← design tokens, colours, voice
 └── INTEGRATIONS.md     ← Stripe, QuickBooks, Resend, Maps, Notifyre, iCal
 ```
@@ -93,7 +93,7 @@ To switch from demo to live, replace the placeholders in
 | Layer        | Choice                                         |
 |--------------|------------------------------------------------|
 | Frontend     | Vanilla HTML + CSS + ES2022 JS, no build step  |
-| Hosting      | SiteGround (Apache + cPanel) — works on any static host |
+| Hosting      | Netlify (auto-deploy from `main`, free tier)   |
 | Database     | Supabase Postgres + Row Level Security         |
 | Auth         | Supabase Auth (admin only — public is anon)    |
 | Storage      | Supabase Storage (`public-images`, `product-images`) |
@@ -114,7 +114,7 @@ To switch from demo to live, replace the placeholders in
 | Google Maps        | Free tier   | $0 (28k/mo geocodes) |
 | QuickBooks Online  | existing sub | $35–55 AUD   |
 | Notifyre SMS       | per send    | 5–10¢ ea     |
-| SiteGround hosting | varies      | per their plan |
+| Netlify hosting    | free tier   | $0 (under 100 GB/mo) |
 | Domain             | annual      | ~$15 AUD/yr  |
 
 ## License
