@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Page not found — TQ Pool Services</title>
+  <meta name="robots" content="noindex,follow">
+  <meta name="theme-color" content="#1565C0">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/assets/css/tokens.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <style>
+    .nf {
+      min-height: calc(100vh - var(--nav-height));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--sp-8) var(--sp-4);
+      background:
+        radial-gradient(ellipse at 20% 30%, rgba(91, 188, 230, 0.18), transparent 55%),
+        linear-gradient(180deg, var(--white) 0%, var(--blue-50) 100%);
+    }
+    .nf__inner {
+      max-width: 640px;
+      text-align: center;
+    }
+    .nf__big {
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: clamp(6rem, 18vw, 12rem);
+      color: var(--blue-600);
+      line-height: 0.9;
+      letter-spacing: -0.05em;
+      margin: 0 0 var(--sp-4);
+      opacity: 0.85;
+    }
+    .nf h1 { font-size: var(--fs-3xl); margin-bottom: var(--sp-3); }
+    .nf p { color: var(--sand-700); max-width: 44ch; margin: 0 auto var(--sp-5); }
+    .nf__links { display: flex; gap: var(--sp-3); justify-content: center; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+<div class="tq-loader" id="tqLoader" aria-hidden="true"><div class="tq-loader__mark"><span>TQ</span></div><div class="tq-loader__wordmark" aria-label="TQ Pool Services"><span>T</span><span>Q</span><span class="gap"></span><span>P</span><span>O</span><span>O</span><span>L</span><span class="gap"></span><span>S</span><span>E</span><span>R</span><span>V</span><span>I</span><span>C</span><span>E</span><span>S</span></div></div>
+
+<header class="nav">
+  <div class="container nav__inner">
+    <a href="/" class="nav__logo"><span class="nav__logo-mark"></span>TQ Pool Services</a>
+    <nav>
+      <ul class="nav__links">
+        <li><a href="/">Home</a></li>
+        <li class="has-dropdown">
+          <a href="/services.html" aria-haspopup="true">Services &amp; prices</a>
+          <ul class="nav__dropdown">
+            <li><a href="/services.html"><strong>All services &amp; prices</strong><em>Overview, chemistry guide, FAQs</em></a></li>
+            <li><a href="/pool-consultation-townsville.html"><strong>Consultation</strong><em>30 min site visit</em></a></li>
+            <li><a href="/pool-service-townsville.html"><strong>Basic Pool Service</strong><em>Priced by pool size</em></a></li>
+          </ul>
+        </li>
+        <li><a href="/blog.html">Blog</a></li>
+        <li><a href="/contact.html">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="nav__cta">
+      <a href="tel:+61488355111" class="btn btn-ghost">Call us</a>
+      <a href="/book.html" class="btn btn-primary">Book online</a>
+    </div>
+  </div>
+</header>
+
+<section class="nf">
+  <div class="nf__inner">
+    <div class="nf__big">404</div>
+    <h1>Page took a swim.</h1>
+    <p>That URL doesn't lead anywhere on tqpoolservices.com. Could be a typo, an old link, or something we've moved. Try one of these:</p>
+    <div class="nf__links">
+      <a href="/" class="btn btn-primary btn-lg">Back to home</a>
+      <a href="/services.html" class="btn btn-ghost btn-lg">Services &amp; prices</a>
+      <a href="/book.html" class="btn btn-ghost btn-lg">Book online</a>
+    </div>
+    <p style="margin-top:var(--sp-6); font-size:var(--fs-sm); color:var(--sand-500);">
+      Still stuck? Call <a href="tel:+61488355111">0488 355 111</a> or email
+      <a href="mailto:info@tqpoolservices.com">info@tqpoolservices.com</a>.
+    </p>
+  </div>
+</section>
+
+<script src="/assets/js/supabase-config.js"></script>
+<script src="/assets/js/business-info.js"></script>
+<script src="/assets/js/main.js"></script>
+</body>
+</html>

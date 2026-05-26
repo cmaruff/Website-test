@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  TQ Pool Services — logo placeholder.
+  Designed to approximate the supplied brand mark (TQ + POOL SERVICES with
+  a pool-and-ladder icon, brand blue #1565C0 inside a rounded square). The
+  client's designer SVG/PNG can replace this file directly without any
+  other changes — anything that references /assets/img/brand/logo.svg
+  picks it up automatically.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 520" role="img" aria-label="TQ Pool Services">
+  <title>TQ Pool Services</title>
+
+  <!-- Rounded outline frame -->
+  <rect x="22" y="22" width="476" height="476" rx="64" ry="64"
+        fill="#FFFFFF" stroke="#1565C0" stroke-width="14"/>
+
+  <!-- TQ wordmark -->
+  <g fill="#1565C0" font-family="Inter Tight, system-ui, sans-serif" font-weight="900" letter-spacing="-2">
+    <text x="120" y="225" font-size="170">TQ</text>
+    <text x="120" y="305" font-size="58" letter-spacing="3">POOL</text>
+    <text x="120" y="360" font-size="58" letter-spacing="3">SERVICES</text>
+  </g>
+
+  <!-- Pool + ladder icon (right side) -->
+  <g fill="none" stroke="#1565C0" stroke-width="11" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Ladder rails -->
+    <line x1="335" y1="160" x2="335" y2="225"/>
+    <line x1="370" y1="160" x2="370" y2="225"/>
+    <path d="M335 160 q17 -10 35 0"/>
+    <path d="M335 178 h35"/>
+    <path d="M335 198 h35"/>
+    <!-- Pool basin -->
+    <path d="M310 235 q70 -25 130 0 q20 60 -65 70 q-85 -10 -65 -70 z"/>
+    <!-- Water waves inside basin -->
+    <path d="M320 270 q15 -10 30 0 t30 0 t30 0" stroke-width="9"/>
+    <path d="M325 290 q15 -10 30 0 t30 0 t25 0" stroke-width="9"/>
+  </g>
+</svg>

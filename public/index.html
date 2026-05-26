@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>TQ Pool Services — Townsville's Mobile Pool Service</title>
-  <meta name="description" content="Townsville's mobile pool service. Weekly, fortnightly, 4-weekly and one-off cleans, plus green pool recovery. Locally owned, photo and chemical report every visit. Book online in 90 seconds.">
-  <meta name="keywords" content="mobile pool service Townsville, Townsville pool service, pool cleaning Townsville, pool maintenance Townsville, green pool recovery Townsville">
-  <meta name="theme-color" content="#0E6E94">
+  <title>Mobile Pool Service Townsville — Pool Cleaning &amp; Maintenance | TQ Pool Services</title>
+  <meta name="description" content="Mobile pool service Townsville — pool cleaning, pool maintenance, equipment repair, water testing and supplies. Locally owned, transparent prices, online booking.">
+  <meta name="keywords" content="mobile pool service townsville, pool service townsville, pool cleaning townsville, pool maintenance townsville, swimming pool services townsville, pool repair townsville, pool service company">
+  <meta name="keywords" content="mobile pool service Townsville, Townsville pool service, pool cleaning Townsville, pool maintenance Townsville, pool products Townsville">
+  <meta name="theme-color" content="#1565C0">
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 
@@ -19,7 +20,7 @@
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="TQ Pool Services — Townsville's Mobile Pool Service">
-  <meta property="og:description" content="Townsville's mobile pool service team. Weekly through one-off, plus green pool recovery. Photo and chemical report every visit.">
+  <meta property="og:description" content="Townsville's mobile pool service. Pool cleaning, equipment maintenance and product supplies — request a booking through our online form.">
   <meta property="og:url" content="https://tqpoolservices.com/">
   <meta property="og:locale" content="en_AU">
   <meta property="og:site_name" content="TQ Pool Services">
@@ -28,7 +29,6 @@
   <link rel="stylesheet" href="/assets/css/tokens.css">
   <link rel="stylesheet" href="/assets/css/base.css">
   <link rel="stylesheet" href="/assets/css/home.css">
-  <link rel="stylesheet" href="/assets/css/drop.css">
 
   <!-- LocalBusiness structured data — Google's local pack relies on this -->
   <script type="application/ld+json">
@@ -38,16 +38,17 @@
     "@id": "https://tqpoolservices.com/#business",
     "name": "TQ Pool Services",
     "url": "https://tqpoolservices.com/",
-    "image": "https://tqpoolservices.com/og-image.jpg",
-    "description": "Mobile pool service across Townsville and North Queensland. Weekly, fortnightly, 4-weekly servicing, one-off cleans, green pool recovery, water testing.",
-    "telephone": "+61400000000",
-    "email": "hello@tqpoolservices.com",
+    "image": "https://tqpoolservices.com/assets/img/work/recent-aerial-clean.jpg",
+    "description": "Mobile pool service across Townsville and North Queensland. Pool cleaning, equipment maintenance, water testing, and pool product supplies. Quick online booking.",
+    "telephone": "+61488355111",
+    "email": "info@tqpoolservices.com",
     "priceRange": "$$",
     "address": {
       "@type": "PostalAddress",
-      "addressLocality": "Townsville",
+      "streetAddress": "2 Allunga St",
+      "addressLocality": "Kelso",
       "addressRegion": "QLD",
-      "postalCode": "4810",
+      "postalCode": "4815",
       "addressCountry": "AU"
     },
     "geo": {
@@ -78,37 +79,50 @@
       "@type": "OfferCatalog",
       "name": "Pool services",
       "itemListElement": [
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Weekly pool service" } },
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Fortnightly pool service" } },
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "4-weekly pool service" } },
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "One-off pool clean" } },
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Green pool recovery" } },
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Pool water testing and balancing" } }
+        {
+          "@type": "Offer",
+          "itemOffered": { "@type": "Service", "name": "Consultation", "description": "Site inspection — assessing pool equipment, maintenance and service or installation needs." },
+          "price": "35.00",
+          "priceCurrency": "AUD"
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": { "@type": "Service", "name": "Basic Pool Service", "description": "Water testing, chemical dosing, clean pool surfaces, clean filters, equipment inspection and report." }
+        },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Pool equipment maintenance and repair" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Pool product supply (chemicals, cartridges, parts)" } }
       ]
     }
   }
   </script>
 </head>
 <body>
+<div class="tq-loader" id="tqLoader" aria-hidden="true"><div class="tq-loader__mark"><span>TQ</span></div><div class="tq-loader__wordmark" aria-label="TQ Pool Services"><span>T</span><span>Q</span><span class="gap"></span><span>P</span><span>O</span><span>O</span><span>L</span><span class="gap"></span><span>S</span><span>E</span><span>R</span><span>V</span><span>I</span><span>C</span><span>E</span><span>S</span></div></div>
 
 <!-- ============ NAV ============ -->
 <header class="nav">
   <div class="container nav__inner">
     <a href="/" class="nav__logo">
       <span class="nav__logo-mark"></span>
-      TQ Pools
+      TQ Pool Services
     </a>
     <nav>
       <ul class="nav__links">
         <li><a href="/">Home</a></li>
-        <li><a href="/services.html">Services &amp; prices</a></li>
-        <li><a href="/products.html">Shop</a></li>
+        <li class="has-dropdown">
+          <a href="/services.html" aria-haspopup="true">Services &amp; prices</a>
+          <ul class="nav__dropdown">
+            <li><a href="/services.html"><strong>All services &amp; prices</strong><em>Overview, chemistry guide, FAQs</em></a></li>
+            <li><a href="/pool-consultation-townsville.html"><strong>Consultation</strong><em>30 min site visit</em></a></li>
+            <li><a href="/pool-service-townsville.html"><strong>Basic Pool Service</strong><em>Priced by pool size</em></a></li>
+          </ul>
+        </li>
         <li><a href="/blog.html">Blog</a></li>
         <li><a href="/contact.html">Contact</a></li>
       </ul>
     </nav>
     <div class="nav__cta">
-      <a data-tq-href="phone-tel" href="tel:+61400000000" class="btn btn-ghost">Call us</a>
+      <a data-tq-href="phone-tel" href="tel:+61488355111" class="btn btn-ghost">Call us</a>
       <a href="/book.html" class="btn btn-primary">Book online</a>
     </div>
     <button class="nav__burger" aria-label="Menu">
@@ -120,315 +134,212 @@
 <!-- ============ HERO ============ -->
 <section class="hero">
   <div class="hero__bg" aria-hidden="true">
-    <div class="hero__mesh"></div>
-    <div class="hero__caustic"></div>
-    <div class="hero__bubbles">
-      <span class="hero__bubble" style="--x:12%;--s:10px;--d:11s;--delay:0s"></span>
-      <span class="hero__bubble" style="--x:26%;--s:6px;--d:13s;--delay:3s"></span>
-      <span class="hero__bubble" style="--x:42%;--s:12px;--d:15s;--delay:6s"></span>
-      <span class="hero__bubble" style="--x:62%;--s:8px;--d:12s;--delay:2s"></span>
-      <span class="hero__bubble" style="--x:78%;--s:11px;--d:14s;--delay:5s"></span>
-      <span class="hero__bubble" style="--x:90%;--s:7px;--d:13s;--delay:8s"></span>
-    </div>
+    <div class="hero__photo"></div>
+    <div class="hero__shimmer"></div>
+    <div class="hero__scrim"></div>
     <svg class="hero__wave" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
       <path class="hero__wave-path hero__wave-path--back"
             d="M0,60 C240,100 480,20 720,60 C960,100 1200,20 1440,60 L1440,120 L0,120 Z"
-            fill="rgba(56,168,205,0.18)"/>
+            fill="rgba(21, 101, 192, 0.15)"/>
       <path class="hero__wave-path hero__wave-path--front"
             d="M0,80 C240,40 480,120 720,80 C960,40 1200,120 1440,80 L1440,120 L0,120 Z"
-            fill="rgba(168,219,234,0.55)"/>
+            fill="rgba(255, 255, 255, 0.85)"/>
     </svg>
   </div>
   <div class="container hero__inner">
-    <div class="hero__content reveal">
-      <span class="badge">Mobile pool service · Townsville</span>
+    <div class="hero__content">
+      <span class="badge reveal reveal--scale">Mobile pool service · Townsville</span>
       <h1>
-        Sparkling pools,<br>
-        <span class="hero__accent">zero hassle.</span>
+        <span class="hero__line reveal-words">Townsville pool service.</span>
+        <span class="hero__accent reveal-words" style="transition-delay:80ms">Done properly.</span>
       </h1>
-      <p class="hero__lede">
-        TQ Pool Services is Townsville's mobile pool team. Weekly, fortnightly,
-        4-weekly or one-off — we come to you, with a photo and chemical report
-        after every visit.
+      <p class="hero__lede reveal" style="transition-delay:.35s">
+        Mobile across Townsville and surrounds. Photo and chemical report
+        after every visit. Trusted Astralpool, Zodiac and Fluidra equipment.
       </p>
-      <div class="hero__cta">
-        <a href="/book.html" class="btn btn-accent btn-lg">Book a pool service</a>
-        <a href="/services.html" class="btn btn-ghost btn-lg">See services &amp; prices</a>
+
+      <div class="hero__price-strip reveal" style="transition-delay:.5s" aria-label="Pricing summary">
+        <div class="hero__price-item">
+          <strong>$35</strong>
+          <em>Consultation · 30 min</em>
+        </div>
+        <span class="hero__price-divider" aria-hidden="true"></span>
+        <div class="hero__price-item">
+          <strong>From $75</strong>
+          <em>Basic Pool Service</em>
+        </div>
+        <span class="hero__price-divider" aria-hidden="true"></span>
+        <div class="hero__price-item">
+          <strong>$0</strong>
+          <em>Travel — fully mobile</em>
+        </div>
       </div>
-      <ul class="hero__trust">
-        <li>✓ Mobile only — we travel</li>
-        <li>✓ Photo + chemical report each visit</li>
-        <li>✓ Locally owned, Townsville</li>
-      </ul>
+
+      <div class="hero__cta reveal-stagger" style="transition-delay:.65s">
+        <a href="/book.html" class="btn btn-accent btn-lg reveal reveal--scale">Book online</a>
+        <a href="/services.html" class="btn btn-ghost btn-lg reveal reveal--scale">See services &amp; prices</a>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ============ SERVICES PREVIEW ============ -->
+<!-- ============ TRUST BAND — Stacey review + brand marquee combined ============ -->
+<section class="trust-band">
+  <div class="container">
+    <div class="trust-band__quote reveal">
+      <svg class="proof__quote" viewBox="0 0 32 32" aria-hidden="true">
+        <path d="M9 6c-3 1-5 4-5 8v10h8V14H6c0-3 2-5 5-6V6zm14 0c-3 1-5 4-5 8v10h8V14h-6c0-3 2-5 5-6V6z" fill="currentColor"/>
+      </svg>
+      <blockquote class="trust-band__quote-text">
+        My pool filter died and upon turning it off my pool turned green!
+        Having been let down by another company I searched Facebook for
+        recommendations. Saw that people recommended TQ Pool Services. Ben
+        came out as arranged and fixed everything. Honestly, my pool has
+        never looked so good!
+      </blockquote>
+      <figcaption class="trust-band__cite">
+        <strong>Stacey Hughes</strong>
+        <span>Townsville · recommended via Facebook</span>
+        <a href="https://www.facebook.com/profile.php?id=61588638005587" target="_blank" rel="noopener">Read more recommendations →</a>
+      </figcaption>
+    </div>
+  </div>
+
+  <p class="trust-band__brands-label">Equipment we install &amp; service</p>
+  <div class="brand-marquee" aria-hidden="true">
+    <div class="brand-marquee__track">
+      <a class="brand-mark-link" href="https://www.astralpool.com.au/" target="_blank" rel="noopener" aria-label="Visit Astralpool website"><span class="brand-mark brand-mark--astralpool"><svg viewBox="0 0 24 24" class="brand-mark__icon" aria-hidden="true"><path d="M12 2 L8 10 L2 12 L8 14 L12 22 L16 14 L22 12 L16 10 Z" fill="currentColor" opacity="0.85"/></svg> ASTRALPOOL</span></a>
+      <a class="brand-mark-link" href="https://www.zodiac.com.au/" target="_blank" rel="noopener" aria-label="Visit Zodiac website"><span class="brand-mark brand-mark--zodiac"><svg viewBox="0 0 24 24" class="brand-mark__icon" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3 v18 M3 12 h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> ZODIAC</span></a>
+      <a class="brand-mark-link" href="https://www.magnapool.com.au/" target="_blank" rel="noopener" aria-label="Visit MagnaPool website"><span class="brand-mark brand-mark--magnapool"><svg viewBox="0 0 24 24" class="brand-mark__icon" aria-hidden="true"><path d="M12 2 C 8 9, 5 12, 5 16 a 7 7 0 0 0 14 0 C 19 12, 16 9, 12 2 Z" fill="currentColor" opacity="0.9"/><path d="M9 14 a 3 3 0 0 0 3 3" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"/></svg> MagnaPool<sup>™</sup></span></a>
+      <a class="brand-mark-link" href="https://www.astralpool.com.au/viron/" target="_blank" rel="noopener" aria-label="Visit Viron website"><span class="brand-mark brand-mark--viron"><svg viewBox="0 0 24 24" class="brand-mark__icon" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="3.5" fill="currentColor"/></svg> VIRON</span></a>
+      <a class="brand-mark-link" href="https://www.fluidra.com/au/" target="_blank" rel="noopener" aria-label="Visit Fluidra website"><span class="brand-mark brand-mark--fluidra">FLUIDRA<span class="brand-mark__dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span></span></a>
+      <a class="brand-mark-link" href="https://www.astralpool.com.au/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><span class="brand-mark brand-mark--astralpool"><svg viewBox="0 0 24 24" class="brand-mark__icon"><path d="M12 2 L8 10 L2 12 L8 14 L12 22 L16 14 L22 12 L16 10 Z" fill="currentColor" opacity="0.85"/></svg> ASTRALPOOL</span></a>
+      <a class="brand-mark-link" href="https://www.zodiac.com.au/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><span class="brand-mark brand-mark--zodiac"><svg viewBox="0 0 24 24" class="brand-mark__icon"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3 v18 M3 12 h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> ZODIAC</span></a>
+      <a class="brand-mark-link" href="https://www.magnapool.com.au/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><span class="brand-mark brand-mark--magnapool"><svg viewBox="0 0 24 24" class="brand-mark__icon"><path d="M12 2 C 8 9, 5 12, 5 16 a 7 7 0 0 0 14 0 C 19 12, 16 9, 12 2 Z" fill="currentColor" opacity="0.9"/><path d="M9 14 a 3 3 0 0 0 3 3" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"/></svg> MagnaPool<sup>™</sup></span></a>
+      <a class="brand-mark-link" href="https://www.astralpool.com.au/viron/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><span class="brand-mark brand-mark--viron"><svg viewBox="0 0 24 24" class="brand-mark__icon"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="3.5" fill="currentColor"/></svg> VIRON</span></a>
+      <a class="brand-mark-link" href="https://www.fluidra.com/au/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"><span class="brand-mark brand-mark--fluidra">FLUIDRA<span class="brand-mark__dots"><i></i><i></i><i></i><i></i></span></span></a>
+    </div>
+  </div>
+  <p class="sr-only">Brands we use and service: Astralpool, Zodiac, MagnaPool, Viron and Fluidra.</p>
+</section>
+
+<!-- ============ SERVICES PREVIEW — bookable vs supplementary differentiated ============ -->
 <section class="services-preview">
   <div class="container">
-    <div class="section-head reveal">
+    <div class="section-head section-head--start reveal">
       <span class="eyebrow">What we do</span>
-      <h2>On a schedule that suits you.</h2>
+      <h2>Pool service, priced clearly.</h2>
+      <p>Two bookable services and a handful of supporting jobs we handle on quote.</p>
     </div>
-    <div class="services-grid">
-      <article class="service-card reveal">
-        <span class="service-card__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 7h18M3 12h18M3 17h18"/><circle cx="7" cy="7" r="1.3"/><circle cx="13" cy="12" r="1.3"/><circle cx="9" cy="17" r="1.3"/>
-          </svg>
-        </span>
-        <h3>Regular pool servicing</h3>
-        <p>Weekly, fortnightly or 4-weekly visits. Full clean, chemical balance, equipment check, photo report.</p>
-        <span class="service-card__price">From $58</span>
-      </article>
-      <article class="service-card reveal" style="transition-delay:.1s">
-        <span class="service-card__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/>
-          </svg>
-        </span>
-        <h3>One-off pool clean</h3>
-        <p>Pool needs a refresh before guests arrive? We'll get it sparkling — no contract required.</p>
-        <span class="service-card__price">From $130</span>
-      </article>
-      <article class="service-card reveal" style="transition-delay:.2s">
-        <span class="service-card__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 3c4 4 6 7 6 11a6 6 0 1 1-12 0c0-4 2-7 6-11z"/><path d="M9 14a3 3 0 0 0 3 3"/>
-          </svg>
-        </span>
-        <h3>Green pool recovery</h3>
-        <p>Algae taken over? We'll bring your pool back to crystal clear with a tailored recovery plan.</p>
-        <span class="service-card__price">Quote on site</span>
-      </article>
-      <article class="service-card reveal" style="transition-delay:.3s">
-        <span class="service-card__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 3h6v5l4 8a3 3 0 0 1-3 4H8a3 3 0 0 1-3-4l4-8z"/><path d="M7 14h10"/>
-          </svg>
-        </span>
-        <h3>Pool water testing &amp; balancing</h3>
-        <p>Just need a chemical check? Quick visit, full water analysis, dosing recommendations.</p>
-        <span class="service-card__price">From $54</span>
-      </article>
-    </div>
-    <div class="text-center mt-6">
-      <a href="/services.html" class="btn btn-primary">View all services and prices</a>
-    </div>
-  </div>
-</section>
 
-<!-- ============ HOW IT WORKS ============ -->
-<section class="how" data-drop-tip="how-it-works">
-  <div class="container">
-    <div class="section-head reveal">
-      <span class="eyebrow">How it works</span>
-      <h2>Three steps. Then you swim.</h2>
+    <!-- 2 prominent bookable services — pills INSIDE the cards (no overflow clipping) -->
+    <div class="services-pair reveal-stagger">
+      <article class="svc-card svc-card--bookable reveal reveal--scale">
+        <header class="svc-card__top">
+          <span class="svc-card__pill">Bookable</span>
+          <span class="svc-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="6"/><path d="m20 20-4-4"/>
+            </svg>
+          </span>
+        </header>
+        <h3>Consultation</h3>
+        <p>Site inspection — we assess your pool equipment, maintenance and service needs. The right place to start if you're not sure what your pool needs.</p>
+        <div class="svc-card__foot">
+          <div class="svc-card__price">
+            <strong>$35</strong>
+            <em>30 min · on-site</em>
+          </div>
+          <a href="/pool-consultation-townsville.html" class="svc-card__cta">See full details →</a>
+        </div>
+      </article>
+
+      <article class="svc-card svc-card--featured reveal reveal--scale">
+        <header class="svc-card__top">
+          <span class="svc-card__pill svc-card__pill--accent">Most booked</span>
+          <span class="svc-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 7h18M3 12h18M3 17h18"/><circle cx="7" cy="7" r="1.3"/><circle cx="13" cy="12" r="1.3"/><circle cx="9" cy="17" r="1.3"/>
+            </svg>
+          </span>
+        </header>
+        <h3>Basic pool service</h3>
+        <p>Water testing, chemical dosing, full clean, equipment check, written report. The standard recurring visit — priced by pool size (35,000 / 65,000 / 100,000 L).</p>
+        <div class="svc-card__foot">
+          <div class="svc-card__price">
+            <strong>From $75</strong>
+            <em>1.5 hr+ · priced by size</em>
+          </div>
+          <a href="/pool-service-townsville.html" class="svc-card__cta">See full details →</a>
+        </div>
+      </article>
     </div>
-    <div class="how__steps">
-      <div class="how__step reveal">
-        <span class="how__num">01</span>
-        <h3>Book online</h3>
-        <p>Pick a service, pick a slot, pay your deposit. Whole thing takes about 90 seconds.</p>
-      </div>
-      <div class="how__step reveal" style="transition-delay:.15s">
-        <span class="how__num">02</span>
-        <h3>We come to you</h3>
-        <p>Mobile service — we bring everything. You'll get a confirmation SMS the day before.</p>
-      </div>
-      <div class="how__step reveal" style="transition-delay:.3s">
-        <span class="how__num">03</span>
-        <h3>Get your report</h3>
-        <p>Photos before & after, chemical readings, equipment notes — all delivered to your inbox.</p>
+
+    <!-- "Also handle" — supplementary services on quote -->
+    <div class="services-also reveal">
+      <span class="services-also__label">Also handle</span>
+      <div class="services-also__items">
+        <div class="services-also__item">
+          <h4>Equipment maintenance &amp; repair</h4>
+          <p>Pumps, filters, chlorinator cells, automatic cleaners. <a href="/contact.html">Get a quote →</a></p>
+        </div>
+        <div class="services-also__item">
+          <h4>Pool product supply</h4>
+          <p>Chemicals, cartridges, cleaners, replacement parts. <a href="/contact.html">Tell us what you need →</a></p>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ AREAS / MAP ============ -->
-<section class="trust" data-drop-stage="map-hop">
-  <div class="container split">
-    <div class="reveal">
-      <span class="eyebrow">Service area</span>
-      <h2>Where we go.</h2>
-      <p class="mb-4">
-        We cover residential and corporate pools across Townsville and the
-        surrounding suburbs. Outside the 50&nbsp;km radius? Get in touch — we
-        often travel further for corporate jobs.
-      </p>
-      <ul class="suburb-list">
-        <li>CBD</li><li>Kirwan</li><li>Annandale</li><li>North Ward</li>
-        <li>Idalia</li><li>Bushland Beach</li><li>+ surrounding suburbs</li>
-      </ul>
-      <a href="/contact.html" class="btn btn-primary">Get in touch</a>
-    </div>
-    <div class="reveal map-wrap" style="transition-delay:.15s">
-      <svg class="coast-map" viewBox="0 0 520 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Map of TQ Pool Services Townsville service area">
-        <defs>
-          <linearGradient id="mwater" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#D5EEF6"/>
-            <stop offset="1" stop-color="#A8DBEA"/>
-          </linearGradient>
-          <linearGradient id="mland" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#FBF9F5"/>
-            <stop offset="1" stop-color="#F4F0E8"/>
-          </linearGradient>
-        </defs>
-
-        <!-- Background ocean (Coral Sea, east) -->
-        <rect width="520" height="480" fill="url(#mwater)"/>
-
-        <!-- Mainland: NQ coast runs roughly N-S, Townsville on the bay.
-             Land occupies the western 65 % of the canvas with a soft
-             coastline curving in around Cleveland Bay. -->
-        <path d="
-          M 0 0
-          L 360 0
-          C 350 60, 340 100, 360 150
-          C 380 200, 365 240, 340 270
-          C 320 295, 315 330, 340 360
-          C 360 390, 360 430, 330 480
-          L 0 480 Z
-        " fill="url(#mland)" stroke="#E5DECF" stroke-width="1"/>
-
-        <!-- Ross River — winds from Mt Stuart area to the bay -->
-        <path d="M 90 410 Q 200 380, 250 340 T 320 295" fill="none" stroke="#A8DBEA" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
-
-        <!-- Magnetic Island (offshore NE) -->
-        <ellipse cx="450" cy="100" rx="38" ry="22" fill="url(#mland)" stroke="#E5DECF"/>
-        <text x="450" y="140" text-anchor="middle" font-size="10" fill="#6A6151" letter-spacing="0.1em">MAGNETIC IS.</text>
-
-        <!-- Compass -->
-        <g transform="translate(40,40)" fill="#0A5573" opacity="0.6">
-          <circle r="14" fill="none" stroke="#0A5573" stroke-width="0.8"/>
-          <path d="M 0 -10 L 3 0 L 0 10 L -3 0 Z" fill="#0E6E94"/>
-          <text y="-18" text-anchor="middle" font-size="9" font-weight="700">N</text>
-        </g>
-
-        <!-- 50 km service radius around Townsville CBD -->
-        <circle cx="310" cy="245" r="135" fill="rgba(20,135,178,0.10)" stroke="#1487B2" stroke-width="1.2" stroke-dasharray="4 4"/>
-        <text x="310" y="100" text-anchor="middle" font-size="10" fill="#0E6E94" letter-spacing="0.14em">50 KM SERVICE RADIUS</text>
-
-        <!-- Numbered pins (correct relative positions) -->
-        <g class="pin pin--cbd"><circle cx="310" cy="245" r="9" fill="#0E6E94"/><text x="310" y="249" text-anchor="middle" font-size="11" font-weight="800" fill="#FFFFFF">1</text></g>
-
-        <g class="pin"><circle cx="318" cy="218" r="8" fill="#1487B2"/><text x="318" y="222" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">2</text></g>
-        <g class="pin"><circle cx="280" cy="245" r="8" fill="#1487B2"/><text x="280" y="249" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">3</text></g>
-        <g class="pin"><circle cx="295" cy="278" r="8" fill="#1487B2"/><text x="295" y="282" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">4</text></g>
-        <g class="pin"><circle cx="305" cy="310" r="8" fill="#1487B2"/><text x="305" y="314" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">5</text></g>
-        <g class="pin"><circle cx="345" cy="288" r="8" fill="#1487B2"/><text x="345" y="292" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">6</text></g>
-        <g class="pin"><circle cx="262" cy="270" r="8" fill="#1487B2"/><text x="262" y="274" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">7</text></g>
-        <g class="pin"><circle cx="240" cy="298" r="8" fill="#1487B2"/><text x="240" y="302" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">8</text></g>
-        <g class="pin"><circle cx="240" cy="200" r="8" fill="#1487B2"/><text x="240" y="204" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">9</text></g>
-        <g class="pin"><circle cx="180" cy="335" r="8" fill="#1487B2"/><text x="180" y="339" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">10</text></g>
-        <g class="pin"><circle cx="220" cy="100" r="8" fill="#1487B2"/><text x="220" y="104" text-anchor="middle" font-size="10" font-weight="700" fill="#FFFFFF">11</text></g>
-      </svg>
-      <ol class="map-key">
-        <li><span>1</span>Townsville CBD</li>
-        <li><span>2</span>North Ward</li>
-        <li><span>3</span>Hyde Park</li>
-        <li><span>4</span>Hermit Park</li>
-        <li><span>5</span>Annandale</li>
-        <li><span>6</span>Idalia</li>
-        <li><span>7</span>Mundingburra</li>
-        <li><span>8</span>Aitkenvale</li>
-        <li><span>9</span>Mt Louisa</li>
-        <li><span>10</span>Kirwan</li>
-        <li><span>11</span>Bushland Beach</li>
-      </ol>
-    </div>
-  </div>
-</section>
-
-<!-- ============ TRUST STRIP ============ -->
-<section class="strip">
-  <div class="container strip__row">
-    <div class="strip__item reveal">
-      <span class="strip__num">100%</span>
-      <span class="strip__label">Mobile service</span>
-    </div>
-    <span class="strip__sep" aria-hidden="true"></span>
-    <div class="strip__item reveal" style="transition-delay:.05s">
-      <span class="strip__num">11</span>
-      <span class="strip__label">Suburbs we cover</span>
-    </div>
-    <span class="strip__sep" aria-hidden="true"></span>
-    <div class="strip__item reveal" style="transition-delay:.1s">
-      <span class="strip__num">24h</span>
-      <span class="strip__label">Reply window</span>
-    </div>
-    <span class="strip__sep" aria-hidden="true"></span>
-    <div class="strip__item reveal" style="transition-delay:.15s">
-      <span class="strip__num">Photo</span>
-      <span class="strip__label">Report each visit</span>
-    </div>
-  </div>
-</section>
-
-<!-- ============ RECENT WORK ============ -->
-<section class="work" data-drop-tip="photo-grid">
+<!-- ============ MEET BEN + RECENT POOLS — editorial split ============ -->
+<section class="meet">
   <div class="container">
-    <div class="section-head section-head--start reveal">
-      <span class="eyebrow">Recent visits</span>
-      <h2>What a service actually looks like.</h2>
-      <p>Real before/after from a fortnight rotation. Photos land in your inbox after every visit so you know exactly what was done.</p>
+    <div class="meet__inner">
+      <div class="meet__body reveal">
+        <span class="eyebrow">Founded in Townsville</span>
+        <h2>Standards that don't drift.</h2>
+        <p>
+          TQ Pool Services is Townsville's mobile pool team. Founded by Ben
+          Farrugia, we look after residential and corporate pools across the
+          city — full cleans, chemical balance, equipment checks, with photos
+          and a written report by email after every visit.
+        </p>
+        <ul class="meet__points">
+          <li><svg class="ic-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5 6.2 11.7 13 5"/></svg>Mobile-only — the van comes to you, every time</li>
+          <li><svg class="ic-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5 6.2 11.7 13 5"/></svg>Photo + chemical report after every visit, no exceptions</li>
+          <li><svg class="ic-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5 6.2 11.7 13 5"/></svg>Trusted Astralpool, Zodiac, MagnaPool, Viron &amp; Fluidra parts</li>
+          <li><svg class="ic-check" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5 6.2 11.7 13 5"/></svg>Residential and corporate pools across Townsville</li>
+        </ul>
+        <div class="meet__actions">
+          <a href="/contact.html" class="btn btn-ghost">Get in touch</a>
+          <a href="/book.html" class="btn btn-primary">Book online</a>
+        </div>
+      </div>
+
+      <div class="meet__photos reveal reveal--scale">
+        <figure class="meet__photo meet__photo--main">
+          <img src="/assets/img/work/hero-consultation.jpg" alt="Crystal-clear backyard pool after a TQ Pool Services visit in Townsville" loading="lazy">
+          <figcaption class="meet__stamp">
+            <strong>Mobile across Townsville</strong>
+            <span>CBD · Kirwan · Idalia · Kelso · 9 more</span>
+          </figcaption>
+        </figure>
+        <div class="meet__photos-sub">
+          <figure class="meet__photo meet__photo--sub">
+            <img src="/assets/img/work/hero-townsville.jpg" alt="Crystal-clear fibreglass pool in Kelso after service" loading="lazy">
+            <figcaption>Kelso · serviced</figcaption>
+          </figure>
+          <figure class="meet__photo meet__photo--sub">
+            <img src="/assets/img/work/after-kidney-clean.jpg" alt="Tiled lap pool in Idalia, freshly cleaned" loading="lazy">
+            <figcaption>Idalia · lap pool</figcaption>
+          </figure>
+        </div>
+      </div>
     </div>
-    <div class="work__grid">
-      <figure class="work__tile reveal" data-shade="1">
-        <div class="work__media work__media--green" aria-hidden="true"></div>
-        <figcaption><span class="work__chip">Before</span> Hyde Park, post-storm</figcaption>
-      </figure>
-      <figure class="work__tile reveal" style="transition-delay:.05s" data-shade="2">
-        <div class="work__media work__media--clear" aria-hidden="true"></div>
-        <figcaption><span class="work__chip work__chip--ok">After</span> Hyde Park, +48 hrs</figcaption>
-      </figure>
-      <figure class="work__tile reveal" style="transition-delay:.1s" data-shade="3">
-        <div class="work__media work__media--haze" aria-hidden="true"></div>
-        <figcaption><span class="work__chip">Before</span> Annandale family pool</figcaption>
-      </figure>
-      <figure class="work__tile reveal" style="transition-delay:.15s" data-shade="4">
-        <div class="work__media work__media--bright" aria-hidden="true"></div>
-        <figcaption><span class="work__chip work__chip--ok">After</span> Annandale, regular fortnightly</figcaption>
-      </figure>
-    </div>
-    <p class="work__note">Photos shown are illustrative. Real before/after shots replace these once we've got your permission.</p>
   </div>
 </section>
 
-<!-- ============ TESTIMONIALS ============ -->
-<section class="reviews" data-drop-tip="testimonials">
-  <div class="container">
-    <div class="section-head section-head--start reveal">
-      <span class="eyebrow">What clients say</span>
-      <h2>In their own words.</h2>
-    </div>
-    <div class="reviews__grid">
-      <figure class="quote reveal">
-        <blockquote>Pool was knee-deep in palm fronds after the last cyclone. They came out the next morning, sent before/after photos, and we were swimming by Friday.</blockquote>
-        <figcaption>
-          <strong>Kelly A.</strong>
-          <span>Mt Louisa · fortnightly</span>
-        </figcaption>
-      </figure>
-      <figure class="quote quote--accent reveal" style="transition-delay:.08s">
-        <blockquote>Honest pricing, no upselling. They flagged the chlorinator cell needed replacing months before it failed and saved us a green pool over Christmas.</blockquote>
-        <figcaption>
-          <strong>Marcus W.</strong>
-          <span>Kirwan · weekly</span>
-        </figcaption>
-      </figure>
-      <figure class="quote reveal" style="transition-delay:.16s">
-        <blockquote>The chemical reports they email after each visit are gold. We can see at a glance whether anything's drifting and act on it.</blockquote>
-        <figcaption>
-          <strong>Priya P.</strong>
-          <span>Idalia · 4-weekly</span>
-        </figcaption>
-      </figure>
-    </div>
-    <p class="reviews__note">Demo testimonials — replace with real ones in <code>index.html</code> once you've collected reviews.</p>
-  </div>
-</section>
 
 <!-- ============ FINAL CTA ============ -->
 <section class="cta-final">
@@ -438,7 +349,7 @@
       <p>Book online in under two minutes — or call us if you'd rather chat.</p>
       <div class="hero__cta">
         <a href="/book.html" class="btn btn-accent btn-lg">Book online</a>
-        <a data-tq-href="phone-tel" href="tel:+61400000000" class="btn btn-ghost btn-lg">Call <span data-tq="phone-display">(07) XXXX XXXX</span></a>
+        <a data-tq-href="phone-tel" href="tel:+61488355111" class="btn btn-ghost btn-lg">Call <span data-tq="phone-display">0488 355 111</span></a>
       </div>
     </div>
   </div>
@@ -456,10 +367,10 @@
     </div>
     <div>
       <h4>Services</h4>
-      <a href="/services.html">Regular servicing</a>
-      <a href="/services.html">One-off cleans</a>
-      <a href="/services.html">Green pool recovery</a>
-      <a href="/services.html">Test &amp; balance</a>
+      <a href="/services.html">Consultation</a>
+      <a href="/services.html">Basic pool service</a>
+      <a href="/services.html">Equipment maintenance</a>
+      <a href="/services.html">Pool products</a>
     </div>
     <div>
       <h4>Company</h4>
@@ -467,13 +378,14 @@
       <a href="/services.html">Services &amp; prices</a>
       <a href="/blog.html">Blog</a>
       <a href="/contact.html">Contact</a>
+      <a href="/privacy.html">Privacy</a>
       <a href="/book.html">Book online</a>
     </div>
     <div>
       <h4>Get in touch</h4>
-      <a data-tq-href="phone-tel" href="tel:+61400000000"><span data-tq="phone-display">(07) XXXX XXXX</span></a>
-      <a data-tq-href="email-mailto" href="mailto:hello@tqpoolservices.com"><span data-tq="email">hello@tqpoolservices.com</span></a>
-      <a data-tq-href="facebook" href="https://facebook.com/">Facebook</a>
+      <a data-tq-href="phone-tel" href="tel:+61488355111"><span data-tq="phone-display">0488 355 111</span></a>
+      <a data-tq-href="email-mailto" href="mailto:info@tqpoolservices.com"><span data-tq="email">info@tqpoolservices.com</span></a>
+      <a data-tq-href="facebook" href="https://www.facebook.com/profile.php?id=61588638005587">Facebook</a>
     </div>
   </div>
   <div class="container footer__bottom">
@@ -484,15 +396,12 @@
 
 <!-- Sticky mobile call bar -->
 <div class="callbar">
-  <a data-tq-href="phone-tel" href="tel:+61400000000" class="call">Call us</a>
+  <a data-tq-href="phone-tel" href="tel:+61488355111" class="call">Call us</a>
   <a href="/book.html" class="book">Book online</a>
 </div>
 
 <script src="/assets/js/supabase-config.js"></script>
 <script src="/assets/js/business-info.js"></script>
 <script src="/assets/js/main.js"></script>
-<script src="/assets/js/hero-ripple.js"></script>
-<script src="/assets/js/drop.js"></script>
-<script src="/assets/js/demo-banner.js"></script>
 </body>
 </html>

@@ -2,7 +2,7 @@
 // BUSINESS INFO — propagates TQ_CONFIG values into the DOM.
 //
 // Use any of these on any element:
-//   <span data-tq="phone-display">(07) XXXX XXXX</span>
+//   <span data-tq="phone-display">0488 355 111</span>
 //   <a   data-tq-href="phone-tel">Call us</a>
 //   <a   data-tq-href="email-mailto">Email us</a>
 //   <a   data-tq-href="facebook">Facebook</a>

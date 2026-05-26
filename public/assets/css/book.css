@@ -4,6 +4,445 @@
 
 .book { background: var(--sand-50); padding-top: var(--sp-7); }
 
+/* ============================================================
+   BOOK LANDING (Stripe Checkout via Supabase edge function)
+   ============================================================ */
+
+.book-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  justify-content: center;
+  margin-top: var(--sp-6);
+}
+
+.book-services { background: var(--sand-50); }
+.book-services__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-5);
+  margin-top: var(--sp-6);
+}
+@media (max-width: 720px) { .book-services__grid { grid-template-columns: 1fr; } }
+
+.book-svc {
+  position: relative;
+  background: var(--white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--r-asym-3);
+  padding: var(--sp-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  transition: transform var(--dur-med) var(--ease-out), box-shadow var(--dur-med), border-color var(--dur-med);
+}
+.book-services__grid > .book-svc:nth-child(even) { border-radius: var(--r-asym-4); }
+.book-svc:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--sh-lg);
+  border-color: var(--blue-200);
+}
+.book-svc--featured {
+  background: linear-gradient(160deg, var(--white) 0%, var(--blue-50) 100%);
+  border-color: var(--blue-300);
+  box-shadow: 0 0 0 4px rgba(255, 208, 87, 0.18);
+}
+
+.book-svc__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+}
+.book-svc__head h3 { margin: 0; }
+.book-svc__price {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--fs-3xl);
+  color: var(--blue-700);
+  line-height: 1;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.book-svc__price em {
+  font-style: normal;
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  color: var(--sand-500);
+}
+
+.book-svc__meta {
+  font-size: var(--fs-sm);
+  color: var(--sand-500);
+  margin: 0;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+}
+.book-svc p {
+  margin: 0;
+  color: var(--sand-700);
+}
+.book-svc__note {
+  font-size: var(--fs-sm);
+  color: var(--sand-500);
+  background: var(--sand-100);
+  border-left: 3px solid var(--sun-500);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: 4px 14px 14px 4px;
+  margin-top: var(--sp-2) !important;
+}
+
+.book-svc__tag {
+  position: absolute;
+  top: -10px;
+  right: var(--sp-5);
+  background: var(--sun-500);
+  color: var(--blue-900);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  box-shadow: var(--sh-sm);
+}
+
+.book-svc__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  color: var(--blue-700);
+  font-weight: 600;
+  margin-top: var(--sp-2);
+  align-self: flex-start;
+  transition: gap var(--dur-fast) var(--ease-out), color var(--dur-fast);
+}
+.book-svc__cta:hover { gap: 0.7em; color: var(--blue-900); }
+
+/* Pool-size pricing tiers shown inside the Basic Pool Service card */
+.book-svc__tiers {
+  list-style: none;
+  margin: var(--sp-3) 0 0;
+  padding: 0;
+  background: var(--white);
+  border: 1px solid var(--blue-100);
+  border-radius: var(--r-asym-1);
+  overflow: hidden;
+}
+.book-svc__tiers li {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  align-items: baseline;
+  border-bottom: 1px solid rgba(21, 101, 192, 0.06);
+  font-size: var(--fs-sm);
+}
+.book-svc__tiers li:last-child { border-bottom: none; }
+.book-svc__tier-name { color: var(--blue-900); font-weight: 500; }
+.book-svc__tier-price {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-lg);
+  color: var(--blue-700);
+  font-variant-numeric: tabular-nums;
+}
+.book-svc__tier-time {
+  font-size: var(--fs-xs);
+  color: var(--sand-500);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+@media (max-width: 540px) {
+  .book-svc__tiers li {
+    grid-template-columns: 1fr auto;
+    row-gap: 2px;
+  }
+  .book-svc__tier-time { grid-column: 2; }
+  .book-svc__tier-name { grid-column: 1 / -1; }
+  .book-svc__tier-price { grid-column: 1; }
+}
+
+/* 4-column how-it-works variant — used on book.html */
+.how__steps--4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+@media (max-width: 980px) {
+  .how__steps--4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 540px) {
+  .how__steps--4 { grid-template-columns: 1fr; }
+}
+
+/* ---------- Booking lead form (interim — pre-Stripe) ---------- */
+.book-form {
+  background: linear-gradient(180deg, var(--white) 0%, var(--blue-50) 100%);
+  scroll-margin-top: calc(var(--nav-height) + var(--sp-3));
+}
+.book-form__shell {
+  max-width: 720px;
+  margin: var(--sp-6) auto 0;
+  background: var(--white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--r-asym-5);
+  padding: clamp(var(--sp-5), 4vw, var(--sp-7));
+  box-shadow: var(--sh-lg);
+}
+.book-form__group {
+  border: 0;
+  padding: 0;
+  margin: 0 0 var(--sp-5);
+}
+.book-form__group legend {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-lg);
+  color: var(--blue-900);
+  margin-bottom: var(--sp-3);
+  padding: 0;
+}
+.book-form__hint {
+  margin: -8px 0 var(--sp-3);
+  font-size: var(--fs-sm);
+  color: var(--sand-500);
+}
+.book-form__radio {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--r-asym-1);
+  cursor: pointer;
+  margin-bottom: var(--sp-2);
+  transition: border-color var(--dur-fast), background var(--dur-fast);
+}
+.book-form__radio:nth-of-type(even) { border-radius: var(--r-asym-2); }
+.book-form__radio:hover { border-color: var(--blue-300); background: var(--blue-50); }
+.book-form__radio input { margin-top: 4px; accent-color: var(--blue-600); }
+.book-form__radio:has(input:checked) {
+  border-color: var(--blue-500);
+  background: var(--blue-50);
+  box-shadow: var(--sh-glow);
+}
+.book-form__radio span { display: flex; flex-direction: column; gap: 2px; }
+.book-form__radio strong { color: var(--blue-900); font-size: var(--fs-base); }
+.book-form__radio em {
+  font-style: normal;
+  color: var(--sand-500);
+  font-size: var(--fs-sm);
+}
+
+.book-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-4);
+}
+@media (max-width: 540px) { .book-form__row { grid-template-columns: 1fr; } }
+
+.book-form__shell .field { margin-bottom: var(--sp-4); }
+.book-form__shell .field > span {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-fg);
+  margin-bottom: var(--sp-2);
+}
+.book-form__shell .field > span em {
+  font-style: normal;
+  font-weight: 500;
+  color: var(--sand-500);
+}
+.book-form__shell .field input,
+.book-form__shell .field select,
+.book-form__shell .field textarea {
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  padding: 0.85rem 1rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--r-md);
+  background: var(--white);
+  color: var(--color-fg);
+  width: 100%;
+  transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
+}
+.book-form__shell .field input:focus,
+.book-form__shell .field select:focus,
+.book-form__shell .field textarea:focus {
+  outline: none;
+  border-color: var(--blue-500);
+  box-shadow: var(--sh-glow);
+}
+.book-form__shell input[type="file"] {
+  padding: var(--sp-3);
+  background: var(--blue-50);
+  cursor: pointer;
+}
+
+/* Honeypot — visually hidden, not display:none (bots check that) */
+.book-form__honeypot {
+  position: absolute !important;
+  left: -10000px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden;
+  opacity: 0;
+}
+
+/* File upload — custom label hides the native button, shows a brand
+   tile with icon. When a photo is picked the label hides and the image
+   preview takes its place. */
+.book-form__file {
+  display: block;
+  margin-top: var(--sp-2);
+  cursor: pointer;
+}
+.book-form__file input[type="file"] {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}
+.book-form__file-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-3);
+  padding: var(--sp-5);
+  background: var(--blue-50);
+  border: 2px dashed var(--blue-300);
+  border-radius: var(--r-asym-1);
+  color: var(--blue-700);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  transition: background var(--dur-fast), border-color var(--dur-fast);
+}
+.book-form__file:hover .book-form__file-label {
+  background: var(--white);
+  border-color: var(--blue-500);
+}
+.book-form__file input:focus-visible + .book-form__file-label {
+  border-style: solid;
+  box-shadow: var(--sh-glow);
+}
+.book-form__file-preview {
+  display: block;
+  width: 100%;
+  max-height: 320px;
+  object-fit: cover;
+  border-radius: var(--r-asym-1);
+  margin-top: var(--sp-2);
+  border: 1px solid var(--blue-200);
+}
+
+.field__hint {
+  display: block;
+  margin-top: var(--sp-2);
+  font-size: var(--fs-sm);
+  color: var(--sand-500);
+  line-height: 1.5;
+}
+
+.book-form__policy {
+  background: var(--blue-50);
+  border-left: 3px solid var(--blue-500);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: 4px 14px 14px 4px;
+  font-size: var(--fs-sm);
+  color: var(--blue-900);
+  margin: var(--sp-4) 0;
+}
+.book-form__policy strong { color: var(--blue-700); }
+
+/* Inline variant — sits right under the date picker so the policy is
+   adjacent to the field it applies to. Smaller, single line on desktop. */
+.book-form__policy--inline {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: calc(var(--sp-4) * -1) 0 var(--sp-4);
+  padding: var(--sp-3);
+  font-size: var(--fs-sm);
+  border-radius: var(--r-md);
+}
+
+/* Expectation-setter — sits right before the submit button. Lowers
+   anxiety by stating what happens after they hit submit. */
+.book-form__expect {
+  background: var(--sand-50);
+  border: 1px solid var(--color-border);
+  border-radius: var(--r-asym-1);
+  padding: var(--sp-4) var(--sp-5);
+  font-size: var(--fs-sm);
+  color: var(--sand-700);
+  line-height: 1.55;
+  margin: var(--sp-5) 0 var(--sp-3);
+}
+.book-form__expect strong { color: var(--blue-900); }
+.book-form__expect a { font-weight: 600; }
+
+.book-form__actions {
+  display: flex;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  margin-top: var(--sp-5);
+}
+.book-form__actions .btn { flex: 1; justify-content: center; min-width: 200px; }
+
+.book-form__success {
+  margin-top: var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+  background: rgba(46, 140, 90, 0.1);
+  border: 1px solid var(--color-success);
+  border-radius: 14px 4px 14px 4px;
+  color: var(--color-success);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+}
+.book-form__success .ic-check { width: 18px; height: 18px; }
+
+/* ---------- (Legacy embed CSS kept for backwards compat; safe to remove later) ---------- */
+.book-embed {
+  background: linear-gradient(180deg, var(--white) 0%, var(--blue-50) 100%);
+  scroll-margin-top: calc(var(--nav-height) + var(--sp-3));
+}
+.book-embed__frame {
+  margin-top: var(--sp-6);
+  border-radius: var(--r-asym-5);
+  overflow: hidden;
+  background: var(--white);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--sh-lg);
+  position: relative;
+  /* Booking flow needs vertical breathing room — phones especially */
+  min-height: 720px;
+}
+.book-embed__frame iframe {
+  display: block;
+  width: 100%;
+  height: 820px;
+  border: 0;
+  background: var(--white);
+}
+@media (max-width: 720px) {
+  .book-embed__frame iframe { height: 760px; }
+  .book-embed__frame { border-radius: var(--r-asym-3); }
+}
+
+.book-embed__fallback {
+  margin: var(--sp-4) auto 0;
+  text-align: center;
+  font-size: var(--fs-sm);
+  color: var(--sand-500);
+  max-width: 60ch;
+}
+.book-embed__fallback a {
+  font-weight: 600;
+}
+
 .book__layout {
   display: grid;
   grid-template-columns: 1.6fr 1fr;
@@ -14,7 +453,7 @@
 
 .book__main {
   background: var(--white);
-  border-radius: var(--r-lg);
+  border-radius: var(--r-asym-5);
   border: 1px solid var(--color-border);
   padding: var(--sp-6);
   box-shadow: var(--sh-md);
@@ -248,7 +687,7 @@
 .book__summary {
   background: var(--blue-900);
   color: var(--sand-50);
-  border-radius: var(--r-lg);
+  border-radius: var(--r-asym-6);
   padding: var(--sp-5);
   position: sticky;
   top: calc(var(--nav-height) + 1rem);
@@ -296,4 +735,133 @@
   color: var(--sand-300);
   line-height: 1.5;
   margin-top: var(--sp-3);
+}
+
+/* ============================================================
+   FLUENT BOOKING — tabbed service picker + calendar panel
+   ============================================================ */
+.book-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+  margin: var(--sp-5) 0 var(--sp-5);
+}
+.book-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--white);
+  border: 1.5px solid var(--sand-200);
+  border-radius: var(--r-asym-1);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color .2s, transform .2s, box-shadow .2s;
+}
+.book-tab:nth-child(2) { border-radius: var(--r-asym-4); }
+.book-tab:hover { transform: translateY(-2px); border-color: var(--blue-300); }
+.book-tab.is-active {
+  border-color: var(--blue-600);
+  box-shadow: 0 10px 24px -12px rgba(21,101,192,0.32);
+}
+.book-tab strong {
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  color: var(--blue-900);
+}
+.book-tab span {
+  font-size: var(--fs-sm);
+  color: var(--sand-600);
+}
+
+.book-tab__panel { display: none; }
+.book-tab__panel.is-active { display: block; }
+
+/* Calendar preview placeholder — Production-only badge */
+.book-cal {
+  background: linear-gradient(155deg, var(--blue-50), var(--white) 70%);
+  border: 1px solid var(--blue-200);
+  border-radius: var(--r-asym-1);
+  padding: var(--sp-6);
+}
+.book-cal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
+  flex-wrap: wrap;
+}
+.book-cal__head strong {
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  color: var(--blue-900);
+}
+.book-cal__badge {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--blue-700);
+  background: var(--white);
+  border: 1px solid var(--blue-200);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+.book-cal__note {
+  color: var(--sand-700);
+  margin-bottom: var(--sp-4);
+  line-height: 1.55;
+}
+.book-cal__steps {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--sp-4);
+  display: grid;
+  gap: 8px;
+}
+.book-cal__steps li {
+  display: flex;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--white);
+  border: 1px solid var(--sand-200);
+  border-radius: 10px;
+  color: var(--sand-700);
+  font-size: var(--fs-sm);
+}
+.book-cal__steps strong {
+  color: var(--blue-700);
+  flex-shrink: 0;
+}
+.book-cal__fallback {
+  font-size: var(--fs-sm);
+  color: var(--sand-600);
+  padding-top: var(--sp-3);
+  border-top: 1px dashed var(--sand-200);
+  margin: 0;
+}
+.book-cal__fallback a { color: var(--blue-700); font-weight: 600; }
+
+/* WordPress Fluent Booking output overrides — match brand */
+.book-form__shell .fluent_booking_wrapper,
+.book-form__shell .fluentform {
+  --fb-primary: var(--blue-600);
+  --fb-primary-hover: var(--blue-700);
+  background: var(--white);
+  border-radius: var(--r-asym-1);
+  padding: var(--sp-5);
+  border: 1px solid var(--sand-200);
+}
+
+.book-form__fallback {
+  text-align: center;
+  color: var(--sand-600);
+  padding: var(--sp-6);
+}
+.book-form__fallback a { color: var(--blue-700); font-weight: 600; }
+
+@media (max-width: 720px) {
+  .book-tabs { grid-template-columns: 1fr; }
+  .book-cal { padding: var(--sp-4); }
 }

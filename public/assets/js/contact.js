@@ -1,34 +1,22 @@
-// Contact form submission
+// Contact form behaviour (Phase 1).
+//
+// On the live WordPress site, this <form> is replaced by a Fluent Forms
+// shortcode (page-contact.php). The plugin handles email + entry log.
+//
+// In the static HTML preview this is just visual feedback — submit shows
+// the success state without sending anything.
 const form = document.getElementById('contactForm');
 const success = document.getElementById('contactSuccess');
 
 if (form) {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (!form.reportValidity()) return;
     const submitBtn = form.querySelector('button[type=submit]');
     submitBtn.disabled = true;
     submitBtn.textContent = 'Sending…';
-
-    const fd = new FormData(form);
-    const data = Object.fromEntries(fd.entries());
-
-    try {
-      if (!window.IS_DEMO && window.TQ_CONFIG) {
-        await window.tqFetch('/rest/v1/contact_submissions', {
-          method: 'POST',
-          headers: { 'Prefer': 'return=minimal' },
-          body: JSON.stringify(data),
-        });
-      } else {
-        // Brief delay so the "Sending…" state is visible.
-        await new Promise(r => setTimeout(r, 500));
-      }
-      form.hidden = true;
-      success.hidden = false;
-    } catch (err) {
-      alert('Sorry — couldn\'t send right now. Please call us instead. ' + err.message);
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Send message →';
-    }
+    await new Promise(r => setTimeout(r, 400));
+    form.hidden = true;
+    success.hidden = false;
   });
 }

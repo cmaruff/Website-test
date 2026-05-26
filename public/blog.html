@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Pool Care Blog — TQ Pool Services Townsville</title>
-  <meta name="description" content="Pool care guides for Townsville and North Queensland. Tips on water chemistry, equipment, green pool recovery, and getting the most from your tropical pool.">
+  <title>Pool Care Blog Townsville — Cleaning, Maintenance &amp; Chemistry | TQ Pool Services</title>
+  <meta name="description" content="Pool care blog for Townsville pool owners — pool cleaning tips, pool maintenance schedules, water chemistry guides, equipment know-how and green pool recovery for tropical North Queensland.">
+  <meta name="keywords" content="pool care townsville, pool cleaning townsville, pool maintenance townsville, pool service townsville, swimming pool services townsville, pool chemistry townsville, green pool recovery townsville">
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="canonical" href="https://tqpoolservices.com/blog">
@@ -20,45 +21,61 @@
   <link rel="stylesheet" href="/assets/css/tokens.css">
   <link rel="stylesheet" href="/assets/css/base.css">
   <link rel="stylesheet" href="/assets/css/blog.css">
-  <link rel="stylesheet" href="/assets/css/drop.css">
 </head>
 <body>
+<div class="tq-loader" id="tqLoader" aria-hidden="true"><div class="tq-loader__mark"><span>TQ</span></div><div class="tq-loader__wordmark" aria-label="TQ Pool Services"><span>T</span><span>Q</span><span class="gap"></span><span>P</span><span>O</span><span>O</span><span>L</span><span class="gap"></span><span>S</span><span>E</span><span>R</span><span>V</span><span>I</span><span>C</span><span>E</span><span>S</span></div></div>
 
 <header class="nav">
   <div class="container nav__inner">
-    <a href="/" class="nav__logo"><span class="nav__logo-mark"></span>TQ Pools</a>
+    <a href="/" class="nav__logo"><span class="nav__logo-mark"></span>TQ Pool Services</a>
     <nav>
       <ul class="nav__links">
         <li><a href="/">Home</a></li>
-        <li><a href="/services.html">Services &amp; prices</a></li>
-        <li><a href="/products.html">Shop</a></li>
+        <li class="has-dropdown">
+          <a href="/services.html" aria-haspopup="true">Services &amp; prices</a>
+          <ul class="nav__dropdown">
+            <li><a href="/services.html"><strong>All services &amp; prices</strong><em>Overview, chemistry guide, FAQs</em></a></li>
+            <li><a href="/pool-consultation-townsville.html"><strong>Consultation</strong><em>30 min site visit</em></a></li>
+            <li><a href="/pool-service-townsville.html"><strong>Basic Pool Service</strong><em>Priced by pool size</em></a></li>
+          </ul>
+        </li>
         <li><a href="/blog.html">Blog</a></li>
         <li><a href="/contact.html">Contact</a></li>
       </ul>
     </nav>
     <div class="nav__cta">
-      <a data-tq-href="phone-tel" href="tel:+61400000000" class="btn btn-ghost">Call us</a>
+      <a data-tq-href="phone-tel" href="tel:+61488355111" class="btn btn-ghost">Call us</a>
       <a href="/book.html" class="btn btn-primary">Book online</a>
     </div>
     <button class="nav__burger"><span></span><span></span><span></span></button>
   </div>
 </header>
 
-<section class="page-head">
+<section class="page-hero">
+  <div class="page-hero__photo" style="background-image: url('/assets/img/heros/blog.jpg')"></div>
+  <div class="page-hero__shimmer"></div>
+  <div class="page-hero__scrim"></div>
   <div class="container">
-    <span class="eyebrow reveal">Blog</span>
-    <h1 class="reveal" id="blogHeading" style="transition-delay:.1s">Notes from the pool team.</h1>
-    <p class="page-head__lede reveal" id="blogSubhead" style="transition-delay:.2s">
-      Locally-relevant guides on water chemistry, equipment, and getting the most
-      from a tropical North Queensland pool.
-    </p>
+    <div class="page-hero__inner">
+      <span class="eyebrow reveal">Blog</span>
+      <h1 class="reveal" id="blogHeading" style="transition-delay:.1s">Notes from the pool team.</h1>
+      <p class="page-hero__lede reveal" id="blogSubhead" style="transition-delay:.2s">
+        Locally-relevant guides on water chemistry, equipment, and getting the most
+        from a tropical North Queensland pool.
+      </p>
+    </div>
   </div>
 </section>
 
 <main class="blog">
   <div class="container">
     <div id="blogContent" class="blog__content">
-      <div class="blog__loading">Loading…</div>
+      <div class="blog__empty">
+        <p>Weekly pool tips, equipment guides and North Queensland-specific water-chemistry advice land here.</p>
+        <p>The first posts are on their way — check back soon, or
+          <a href="https://www.facebook.com/profile.php?id=61588638005587">follow on Facebook</a>
+          to catch new ones as they go up.</p>
+      </div>
     </div>
   </div>
 </main>
@@ -79,11 +96,12 @@
       <a href="/services.html">Services &amp; prices</a>
       <a href="/blog.html">Blog</a>
       <a href="/contact.html">Contact</a>
+      <a href="/privacy.html">Privacy</a>
     </div>
     <div>
       <h4>Contact</h4>
-      <a data-tq-href="phone-tel" href="tel:+61400000000"><span data-tq="phone-display">(07) XXXX XXXX</span></a>
-      <a data-tq-href="email-mailto" href="mailto:hello@tqpoolservices.com"><span data-tq="email">hello@tqpoolservices.com</span></a>
+      <a data-tq-href="phone-tel" href="tel:+61488355111"><span data-tq="phone-display">0488 355 111</span></a>
+      <a data-tq-href="email-mailto" href="mailto:info@tqpoolservices.com"><span data-tq="email">info@tqpoolservices.com</span></a>
     </div>
   </div>
   <div class="container footer__bottom">
@@ -92,16 +110,13 @@
 </footer>
 
 <div class="callbar">
-  <a data-tq-href="phone-tel" href="tel:+61400000000" class="call">Call us</a>
+  <a data-tq-href="phone-tel" href="tel:+61488355111" class="call">Call us</a>
   <a href="/book.html" class="book">Book online</a>
 </div>
 
 <script src="/assets/js/supabase-config.js"></script>
 <script src="/assets/js/business-info.js"></script>
-<script src="/assets/js/mock-supabase.js"></script>
 <script src="/assets/js/main.js"></script>
 <script src="/assets/js/blog.js"></script>
-<script src="/assets/js/drop.js"></script>
-<script src="/assets/js/demo-banner.js"></script>
 </body>
 </html>
