@@ -14,11 +14,14 @@
 /*.html
   Cache-Control: public, max-age=0, must-revalidate
 
-# CSS / JS — 7 days. Bust by renaming the file when you ship breaking changes.
+# CSS / JS — always revalidate. Netlify returns 304 Not Modified in
+# ~10ms when files haven't changed, so cost is negligible, but visitors
+# never see stale styles after a deploy. (We don't content-hash filenames
+# because there's no build step — must-revalidate is the safe trade.)
 /*.css
-  Cache-Control: public, max-age=604800
+  Cache-Control: public, max-age=0, must-revalidate
 /*.js
-  Cache-Control: public, max-age=604800
+  Cache-Control: public, max-age=0, must-revalidate
 
 # Images, icons, fonts — 30 days.
 /*.png
