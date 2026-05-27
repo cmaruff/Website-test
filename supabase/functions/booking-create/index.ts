@@ -31,6 +31,22 @@ const ONGOING_CADENCES = new Set(["weekly", "fortnightly", "4weekly"]);
 // the invoice is sent by admin after the visit.
 const INVOICE_AFTER_VISIT = new Set(["basic-pool-service"]);
 
+// Pool size tiers (from the public booking form) → consecutive 2-hour
+// windows needed. Anything > 1 inserts blocker rows for the trailing
+// windows so a second customer can't book over the same time.
+const TIER_SLOT_COUNT: Record<string, number> = {
+  "Up to 35,000 L":     1,
+  "35,000–65,000 L":    1,
+  "65,000–100,000 L":   2,
+  "Green recovery":     2,
+  "Not sure":           2,   // conservative default
+};
+
+// How long a Stripe Checkout reservation is held before the slot
+// frees up. Long enough for a customer to enter card details, short
+// enough not to camp on a window forever.
+const PENDING_RESERVATION_MIN = 30;
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -41,6 +57,13 @@ Deno.serve(async (req) => {
     if (!service_code || !service_date || !slot || !customer?.email) {
       return json({ error: "Missing required fields" }, 400);
     }
+
+    // Compute how many consecutive windows this booking needs. Consultation
+    // is always 30 min so it fits in one window; Basic Pool Service depends
+    // on the pool size the customer picked.
+    const slotCount = service_code === "basic-pool-service"
+      ? (TIER_SLOT_COUNT[customer?.pool_size as string] ?? 2)
+      : 1;
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -98,34 +121,46 @@ Deno.serve(async (req) => {
         .eq("id", customerId);
     }
 
-    // 3. Create the booking row.
-    // Invoice-after-visit services lock the slot at 'scheduled' (no payment
-    // outstanding from the customer side). Everything else stays 'pending'
-    // until the Stripe webhook flips it to 'confirmed'.
+    // 3. Atomically claim the slot(s) via the book_slot Postgres function.
+    // The function: lazily expires stale pendings, inserts the primary
+    // booking row, then inserts blocker rows for trailing windows for
+    // multi-window bookings (e.g. 4-hour green recovery). The whole
+    // thing runs in one transaction; ANY unique-index conflict on any
+    // of the inserts rolls back the whole booking so the customer sees
+    // a clean 409 and we never leave half-claimed slots in the DB.
     const initialStatus = invoiceAfterVisit ? "scheduled" : "pending";
-    const { data: booking, error: bErr } = await supabase
-      .from("bookings")
-      .insert({
-        customer_id: customerId,
-        service_id: svc.id,
-        service_code,
-        service_date,
-        slot,
-        report_included: report_included ?? false,
-        amount_cents: computedTotal,
-        status: initialStatus,
-        pool_notes: customer.pool_notes,
-        access_notes: customer.access_notes,
-        report_url: customer.photo_url ?? null,
-      })
-      .select("id")
-      .single();
+    const expiresAt = invoiceAfterVisit
+      ? null
+      : new Date(Date.now() + PENDING_RESERVATION_MIN * 60 * 1000).toISOString();
+
+    const { data: bookingId, error: bErr } = await supabase.rpc("book_slot", {
+      p_customer_id:   customerId,
+      p_service_id:    svc.id,
+      p_service_code:  service_code,
+      p_service_date:  service_date,
+      p_start_slot:    slot,
+      p_slot_count:    slotCount,
+      p_amount_cents:  computedTotal,
+      p_status:        initialStatus,
+      p_pool_notes:    customer.pool_notes,
+      p_access_notes:  customer.access_notes,
+      p_photo_url:     customer.photo_url ?? null,
+      p_expires_at:    expiresAt,
+    });
     if (bErr) {
-      if (bErr.code === "23505") {
-        return json({ error: "That slot was just taken — please pick another." }, 409);
+      const msg = (bErr as { message?: string }).message ?? "";
+      if (msg.includes("23505") || msg.toLowerCase().includes("duplicate")) {
+        return json({ error: "That window was just taken — please pick another." }, 409);
+      }
+      if (msg.includes("past_business_hours")) {
+        return json({ error: "This pool size needs more time than that window allows. Pick an earlier start." }, 422);
+      }
+      if (msg.includes("invalid_slot")) {
+        return json({ error: "Invalid time window." }, 400);
       }
       throw bErr;
     }
+    const booking = { id: bookingId as unknown as string };
 
     // Invoice-after-visit path: no Stripe Checkout needed. Slot is locked,
     // customer goes straight to the success page, admin handles invoicing.
