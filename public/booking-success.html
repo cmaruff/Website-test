@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Booking request received — TQ Pool Services</title>
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="/assets/css/tokens.css?v=20260526">
-  <link rel="stylesheet" href="/assets/css/base.css?v=20260526">
+  <link rel="stylesheet" href="/assets/css/tokens.css?v=20260527">
+  <link rel="stylesheet" href="/assets/css/base.css?v=20260527">
   <style>
     .success-wrap {
       min-height: calc(100vh - var(--nav-height));
@@ -84,6 +84,31 @@
       color: var(--sand-500);
     }
     .success-aside a { font-weight: 600; }
+    .success-ref {
+      font-family: var(--font-body);
+      font-size: var(--fs-sm);
+      color: var(--sand-500);
+      margin: -8px 0 var(--sp-4);
+    }
+    .success-ref code {
+      background: var(--sand-100);
+      color: var(--blue-900);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.9em;
+    }
+    .success-demo {
+      display: inline-block;
+      background: var(--blue-50);
+      color: var(--blue-700);
+      border: 1px dashed var(--blue-300);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: var(--fs-xs);
+      font-weight: 600;
+      margin-bottom: var(--sp-3);
+    }
   </style>
 </head>
 <body>
@@ -113,25 +138,26 @@
 <div class="success-wrap">
   <div class="success-card">
     <span class="success-tick" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5 10 17.5 19 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-    <h1>Thanks for your request.</h1>
-    <p class="lede">
-      We've got your booking details and your pool photo. We'll be in touch
-      by phone or email within one business day to lock in the slot.
+    <h1 id="successHeadline">You're booked in.</h1>
+    <p class="lede" id="successLede">
+      Your slot is locked. We've emailed a confirmation — check spam if it
+      doesn't land in the next few minutes.
     </p>
+    <p class="success-ref" id="successRef" hidden></p>
 
-    <ol class="success-next">
+    <ol class="success-next" id="successSteps">
       <li>
         <span class="step">1</span>
         <div>
-          <strong>We confirm your slot</strong>
-          A quick call or email back to confirm the date, time and what we'll bring.
+          <strong>Confirmation email</strong>
+          Lands within a few minutes. Reply to that thread if you need to add anything.
         </div>
       </li>
       <li>
         <span class="step">2</span>
         <div>
-          <strong>Invoice via QuickBooks</strong>
-          You'll get a proper invoice with a "Pay now" button to settle when ready.
+          <strong>Reminder 24 hours before</strong>
+          We send a text + email so the slot doesn't sneak up on you.
         </div>
       </li>
       <li>
@@ -157,8 +183,34 @@
   </div>
 </div>
 
-<script src="/assets/js/supabase-config.js?v=20260526"></script>
-<script src="/assets/js/business-info.js?v=20260526"></script>
-<script src="/assets/js/main.js?v=20260526"></script>
+<script src="/assets/js/supabase-config.js?v=20260527"></script>
+<script src="/assets/js/business-info.js?v=20260527"></script>
+<script src="/assets/js/main.js?v=20260527"></script>
+<script>
+  // Booking ref + path-aware copy.
+  // URL params:
+  //   ?b=<booking_id>   set by booking-create or Stripe success_url
+  //   ?demo=1           added in demo mode
+  (() => {
+    const p = new URLSearchParams(location.search);
+    const id = p.get('b');
+    const demo = p.get('demo') === '1';
+    const card = document.querySelector('.success-card');
+
+    if (demo) {
+      const badge = document.createElement('span');
+      badge.className = 'success-demo';
+      badge.textContent = 'Demo mode · not a real booking';
+      card.insertBefore(badge, card.firstChild.nextSibling);
+    }
+
+    if (id) {
+      const ref = document.getElementById('successRef');
+      ref.hidden = false;
+      const short = id.length > 8 ? id.slice(0, 8) : id;
+      ref.innerHTML = `Booking reference <code>${short}</code>${id.length > 8 ? ' (full id in the confirmation email)' : ''}`;
+    }
+  })();
+</script>
 </body>
 </html>

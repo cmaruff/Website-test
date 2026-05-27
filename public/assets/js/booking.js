@@ -1,352 +1,428 @@
 // ============================================================
-// BOOKING FLOW
+// BOOKING — drives the 3-step form on /book.html
+// Two service modes, shared form, one shared submit path.
+//   Consultation:        $35 paid up-front via Stripe Checkout
+//   Basic Pool Service:  $0 at booking, invoiced after on-site
+//
+// On submit:
+//   1. (Optional) Photo uploads to Supabase Storage `booking-photos`.
+//   2. POST { service_code, service_date, slot, customer } → booking-create.
+//   3. Server returns either { checkout_url } (Stripe) or { success_url }
+//      (invoice-after path). Browser redirects to whichever came back.
 // ============================================================
 
-// ----- SERVICES (fallback if Supabase unreachable) -----
-// price = WITHOUT report; +$3 surcharge added if report selected
-const FALLBACK_SERVICES = [
-  { code: 'weekly',      name: 'Weekly Service',          desc: 'Regular cleaning & servicing',     price: 5800, duration_min: 45 },
-  { code: 'fortnightly', name: 'Fortnightly Service',     desc: 'Most popular regular service',     price: 6800, duration_min: 50 },
-  { code: '4weekly',     name: '4-Weekly Service',        desc: 'Regular cleaning & servicing',     price: 8150, duration_min: 60 },
-  { code: 'oneoff',      name: 'One-Off Full Service',    desc: 'Casual clean — no contract',       price: 13000, duration_min: 75 },
-  { code: 'test',        name: 'Test & Balance',          desc: 'Chemical check only',              price: 5400, duration_min: 25 },
-];
+(function () {
+  const form        = document.getElementById('bookingForm');
+  if (!form) return;
+  const root        = document.getElementById('book-now');
+  const calEl       = document.getElementById('bookCalendar');
+  const slotsWrap   = document.getElementById('bookSlots');
+  const slotGrid    = document.getElementById('bookSlotGrid');
+  const submitBtn   = document.getElementById('bookSubmit');
+  const submitText  = document.getElementById('bookSubmitText');
+  const totalLabel  = document.getElementById('bookTotalLabel');
+  const totalAmount = document.getElementById('bookTotalAmount');
+  const totalNote   = document.getElementById('bookTotalNote');
+  const errorBox    = document.getElementById('bookError');
+  const photoInput  = document.getElementById('bk_photo');
+  const photoLabel  = document.getElementById('bookPhotoLabel');
+  const photoPreview= document.getElementById('bookPhotoPreview');
 
-const REPORT_SURCHARGE_CENTS = 300;
+  // ---------- Service config ----------
+  // Two services exposed by the new design. service_code values must match
+  // the rows seeded into public.services on the Supabase project.
+  const SERVICES = {
+    consultation: {
+      code: 'consultation',
+      label: 'Consultation',
+      priceCents: 3500,           // $35
+      payUpfront: true,
+      submitText: 'Book & pay $35',
+      totalLabel: 'Total today',
+      totalNote: "You'll be redirected to Stripe Checkout to pay $35. Slot is held while you check out.",
+    },
+    service: {
+      code: 'basic-pool-service',
+      label: 'Basic Pool Service',
+      priceCents: 7500,           // from $75 — quoted on arrival
+      payUpfront: false,
+      submitText: 'Lock in this slot',
+      totalLabel: 'Due today',
+      totalNote: 'Nothing charged now. Pool size is confirmed on arrival; QuickBooks invoice with a Stripe pay-link is emailed the same day.',
+    },
+  };
 
-// ----- STATE -----
-const state = {
-  step: 1,
-  service: null,
-  date: null,           // YYYY-MM-DD
-  slot: null,           // "08:00-10:00"
-  reportIncluded: true,
-  customer: null,
-  services: FALLBACK_SERVICES,
-  takenSlots: new Set(),// keys: `${date}|${slot}`
-};
+  // ---------- State ----------
+  const state = {
+    serviceKey: 'consultation',
+    date: null,
+    slot: null,
+    takenSlots: new Set(),
+    photoUrl: null,
+    submitting: false,
+  };
 
-// Pre-select from query string (?service=fortnightly)
-const urlSvc = new URLSearchParams(location.search).get('service');
+  const SLOT_WINDOWS = [
+    { code: '08:00-10:00', label: '8 – 10 AM' },
+    { code: '10:00-12:00', label: '10 AM – 12' },
+    { code: '12:00-14:00', label: '12 – 2 PM' },
+    { code: '14:00-16:00', label: '2 – 4 PM' },
+  ];
 
-// ============================================================
-// INIT
-// ============================================================
-document.addEventListener('DOMContentLoaded', async () => {
-  await loadServices();
-  renderServices();
-  renderCalendar();
-  attachStepNav();
-  attachReportToggle();
-  attachFormSubmit();
+  // ============================================================
+  // TABS — switch between Consultation and Basic Pool Service
+  // ============================================================
+  document.querySelectorAll('.book-tab').forEach(tab => {
+    tab.addEventListener('click', () => selectService(tab.dataset.tab));
+  });
 
-  // Pre-fill service from URL
-  if (urlSvc) {
-    const svc = state.services.find(s => s.code === urlSvc);
-    if (svc) selectService(svc);
-  }
-});
-
-// ============================================================
-// SERVICES (Supabase fetch, fallback to constant)
-// ============================================================
-async function loadServices() {
-  if (window.IS_DEMO) return;       // use FALLBACK_SERVICES
-  try {
-    const data = await window.tqFetch('/rest/v1/services?select=*&active=eq.true&order=display_order');
-    if (Array.isArray(data) && data.length) state.services = data;
-  } catch (e) {
-    console.warn('Falling back to static services list:', e);
-  }
-}
-
-function renderServices() {
-  const grid = document.getElementById('serviceGrid');
-  grid.innerHTML = state.services.map(s => `
-    <button class="book__svc" data-code="${s.code}">
-      <strong>${s.name}</strong>
-      <span>${s.desc ?? s.description ?? ''}</span>
-      <div class="price">$${(s.price / 100).toFixed(2)} <span style="font-size:var(--fs-xs); color:var(--sand-500); font-weight:400;">/ visit</span></div>
-    </button>
-  `).join('');
-
-  grid.querySelectorAll('.book__svc').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const svc = state.services.find(s => s.code === btn.dataset.code);
-      selectService(svc);
+  function selectService(key) {
+    if (!SERVICES[key]) return;
+    state.serviceKey = key;
+    document.querySelectorAll('.book-tab').forEach(t => {
+      const active = t.dataset.tab === key;
+      t.classList.toggle('is-active', active);
+      t.setAttribute('aria-selected', active ? 'true' : 'false');
     });
-  });
-}
-
-function selectService(svc) {
-  state.service = svc;
-  document.querySelectorAll('.book__svc').forEach(b => {
-    b.classList.toggle('selected', b.dataset.code === svc.code);
-  });
-  document.getElementById('toStep2').disabled = false;
-  updateSummary();
-}
-
-// ============================================================
-// CALENDAR
-// ============================================================
-let calMonth = new Date();
-calMonth.setDate(1);
-
-function renderCalendar() {
-  const cal = document.getElementById('calendar');
-  cal.innerHTML = '';
-
-  // Header (prev / month / next)
-  const head = document.createElement('div');
-  head.className = 'book__cal-nav';
-  const monthName = calMonth.toLocaleString('en-AU', { month: 'long', year: 'numeric' });
-  head.innerHTML = `
-    <button id="prevMonth" aria-label="Previous month">‹</button>
-    <strong>${monthName}</strong>
-    <button id="nextMonth" aria-label="Next month">›</button>
-  `;
-  cal.appendChild(head);
-
-  // Day-name row
-  ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d => {
-    const el = document.createElement('div');
-    el.className = 'day-name';
-    el.textContent = d;
-    cal.appendChild(el);
-  });
-
-  // Compute first cell offset (Mon-start)
-  const firstDay = new Date(calMonth);
-  let offset = (firstDay.getDay() + 6) % 7;
-  for (let i = 0; i < offset; i++) {
-    cal.appendChild(spacer());
+    root.dataset.mode = key;
+    const svc = SERVICES[key];
+    submitText.textContent = svc.submitText;
+    totalLabel.textContent = svc.totalLabel;
+    totalAmount.textContent = svc.payUpfront ? fmtCurrency(svc.priceCents) : 'On arrival';
+    totalNote.textContent = svc.totalNote;
   }
 
-  // Days
-  const today = new Date(); today.setHours(0,0,0,0);
-  const lastDay = new Date(calMonth.getFullYear(), calMonth.getMonth() + 1, 0).getDate();
-  for (let d = 1; d <= lastDay; d++) {
-    const date = new Date(calMonth.getFullYear(), calMonth.getMonth(), d);
-    const dow = date.getDay(); // 0 sun, 6 sat
-    const isPast = date < today;
-    const isWeekend = (dow === 0 || dow === 6);
-    const cell = document.createElement('button');
-    cell.className = 'book__day';
-    cell.innerHTML = `<span>${d}</span>`;
-    if (isPast || isWeekend) cell.classList.add('disabled');
-    else {
-      cell.addEventListener('click', () => selectDate(date));
+  selectService('consultation');
+
+  // ============================================================
+  // CALENDAR — next 14 working days (Mon–Fri)
+  // ============================================================
+  function workingDays(n) {
+    const out = [];
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    while (out.length < n) {
+      d.setDate(d.getDate() + 1);
+      const dow = d.getDay();
+      if (dow !== 0 && dow !== 6) out.push(new Date(d));
     }
-    if (state.date === fmtDate(date)) cell.classList.add('selected');
-    cal.appendChild(cell);
+    return out;
   }
 
-  document.getElementById('prevMonth').addEventListener('click', () => {
-    calMonth.setMonth(calMonth.getMonth() - 1);
-    renderCalendar();
-  });
-  document.getElementById('nextMonth').addEventListener('click', () => {
-    calMonth.setMonth(calMonth.getMonth() + 1);
-    renderCalendar();
-  });
-}
-
-function spacer() {
-  const s = document.createElement('div');
-  return s;
-}
-
-function fmtDate(d) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const da = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${da}`;
-}
-
-async function selectDate(date) {
-  state.date = fmtDate(date);
-  state.slot = null;
-  renderCalendar();
-  await loadTakenSlots(state.date);
-  renderSlots();
-  updateSummary();
-}
-
-// ============================================================
-// SLOTS
-// ============================================================
-const SLOT_WINDOWS = [
-  { code: '08:00-10:00', label: '8 – 10 AM' },
-  { code: '10:00-12:00', label: '10 AM – 12' },
-  { code: '12:00-14:00', label: '12 – 2 PM' },
-  { code: '14:00-16:00', label: '2 – 4 PM' },
-];
-
-async function loadTakenSlots(date) {
-  state.takenSlots.clear();
-  if (window.IS_DEMO) {
-    // Pre-mark a couple of slots as taken so the UX shows it.
-    const dow = new Date(date).getDay();
-    if (dow % 2 === 0) state.takenSlots.add(`${date}|10:00-12:00`);
-    if (dow === 3)     state.takenSlots.add(`${date}|14:00-16:00`);
-    return;
+  function fmtDate(d) {
+    return d.toISOString().slice(0, 10);
   }
-  try {
-    const rows = await window.tqFetch(
-      `/rest/v1/bookings?select=slot&service_date=eq.${date}&status=in.(confirmed,paid,scheduled)`
-    );
-    rows.forEach(r => state.takenSlots.add(`${date}|${r.slot}`));
-  } catch (e) {
-    console.warn('Could not fetch taken slots:', e);
-  }
-}
 
-function renderSlots() {
-  const wrap = document.getElementById('slots');
-  const grid = document.getElementById('slotGrid');
-  wrap.hidden = false;
-  grid.innerHTML = SLOT_WINDOWS.map(s => {
-    const taken = state.takenSlots.has(`${state.date}|${s.code}`);
-    const sel = state.slot === s.code ? 'selected' : '';
-    return `<button class="book__slot ${taken ? 'taken' : ''} ${sel}"
-              data-code="${s.code}" ${taken ? 'disabled' : ''}>
-              ${s.label}
-            </button>`;
-  }).join('');
-  grid.querySelectorAll('.book__slot:not(.taken)').forEach(btn => {
-    btn.addEventListener('click', () => {
-      state.slot = btn.dataset.code;
-      grid.querySelectorAll('.book__slot').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-      document.getElementById('toStep3').disabled = false;
-      updateSummary();
+  function renderCalendar() {
+    const days = workingDays(14);
+    calEl.innerHTML = days.map(d => {
+      const iso = fmtDate(d);
+      const weekday = d.toLocaleDateString('en-AU', { weekday: 'short' });
+      const day = d.getDate();
+      const month = d.toLocaleDateString('en-AU', { month: 'short' });
+      const isSelected = state.date === iso;
+      return `
+        <button type="button" class="book-day ${isSelected ? 'is-selected' : ''}" data-date="${iso}">
+          <span class="book-day__weekday">${weekday}</span>
+          <span class="book-day__num">${day}</span>
+          <span class="book-day__month">${month}</span>
+        </button>
+      `;
+    }).join('');
+    calEl.querySelectorAll('.book-day').forEach(b => {
+      b.addEventListener('click', () => selectDate(b.dataset.date));
     });
-  });
-}
+  }
+  renderCalendar();
 
-// ============================================================
-// STEP NAV
-// ============================================================
-function attachStepNav() {
-  document.getElementById('toStep2').addEventListener('click', () => goStep(2));
-  document.getElementById('toStep3').addEventListener('click', () => goStep(3));
-  document.querySelectorAll('[data-back]').forEach(b => {
-    b.addEventListener('click', () => goStep(parseInt(b.dataset.back)));
-  });
-}
+  async function selectDate(iso) {
+    state.date = iso;
+    state.slot = null;
+    calEl.querySelectorAll('.book-day').forEach(b => {
+      b.classList.toggle('is-selected', b.dataset.date === iso);
+    });
+    slotsWrap.hidden = false;
+    slotGrid.innerHTML = '<p class="book-slots__loading">Loading availability…</p>';
+    await loadTakenSlots(iso);
+    renderSlots();
+    refreshNextButton(1);
+  }
 
-function goStep(n) {
-  if (n === 2 && !state.service) return;
-  if (n === 3 && (!state.date || !state.slot)) return;
-  state.step = n;
-  document.querySelectorAll('.book__step').forEach(el => {
-    el.classList.toggle('active', parseInt(el.dataset.step) === n);
-  });
-  document.querySelectorAll('.book__steps li').forEach(el => {
-    const s = parseInt(el.dataset.step);
-    el.classList.toggle('active', s === n);
-    el.classList.toggle('done',   s < n);
-  });
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// ============================================================
-// REPORT TOGGLE
-// ============================================================
-function attachReportToggle() {
-  document.getElementById('bk_report').addEventListener('change', e => {
-    state.reportIncluded = e.target.checked;
-    updateSummary();
-  });
-}
-
-// ============================================================
-// SUMMARY
-// ============================================================
-function updateSummary() {
-  document.getElementById('sumService').textContent = state.service?.name || '—';
-  document.getElementById('sumDate').textContent = state.date
-    ? new Date(state.date).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' })
-    : '—';
-  const slotLabel = SLOT_WINDOWS.find(s => s.code === state.slot)?.label || '—';
-  document.getElementById('sumSlot').textContent = slotLabel;
-  document.getElementById('sumReport').textContent = state.reportIncluded ? 'Yes (+$3.00)' : 'No';
-
-  const base = state.service?.price || 0;
-  const total = base + (state.reportIncluded ? REPORT_SURCHARGE_CENTS : 0);
-  document.getElementById('sumTotal').textContent = `$${(total / 100).toFixed(2)}`;
-}
-
-// ============================================================
-// SUBMIT — distance check, then create booking, then Stripe
-// ============================================================
-function attachFormSubmit() {
-  document.getElementById('bookingForm').addEventListener('submit', async e => {
-    e.preventDefault();
-    const fd = new FormData(e.target);
-    state.customer = Object.fromEntries(fd.entries());
-
-    const submitBtn = e.target.querySelector('button[type=submit]');
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Checking address…';
-
-    // Demo mode: simulate the whole flow and land on the success page.
+  // ============================================================
+  // SLOTS — query Supabase for already-taken windows on the date
+  // ============================================================
+  async function loadTakenSlots(date) {
+    state.takenSlots.clear();
     if (window.IS_DEMO) {
-      submitBtn.textContent = 'Simulating payment…';
-      await new Promise(r => setTimeout(r, 700));
-      window.location.href = '/booking-success.html?demo=1';
+      const dow = new Date(date).getDay();
+      if (dow % 2 === 0) state.takenSlots.add(`${date}|10:00-12:00`);
+      if (dow === 3)     state.takenSlots.add(`${date}|14:00-16:00`);
+      return;
+    }
+    try {
+      const rows = await window.tqFetch(
+        `/rest/v1/bookings?select=slot&service_date=eq.${date}&status=in.(pending,confirmed,paid,scheduled,in_progress)`
+      );
+      (rows || []).forEach(r => state.takenSlots.add(`${date}|${r.slot}`));
+    } catch (e) {
+      console.warn('loadTakenSlots failed; treating all as available', e);
+    }
+  }
+
+  function renderSlots() {
+    slotGrid.innerHTML = SLOT_WINDOWS.map(s => {
+      const key = `${state.date}|${s.code}`;
+      const taken = state.takenSlots.has(key);
+      const selected = state.slot === s.code;
+      return `
+        <button type="button"
+                class="book-slot ${taken ? 'is-taken' : ''} ${selected ? 'is-selected' : ''}"
+                data-slot="${s.code}"
+                ${taken ? 'disabled aria-disabled="true"' : ''}>
+          <strong>${s.label}</strong>
+          <span>${taken ? 'Booked' : '2 hr window'}</span>
+        </button>
+      `;
+    }).join('');
+    slotGrid.querySelectorAll('.book-slot').forEach(b => {
+      if (b.disabled) return;
+      b.addEventListener('click', () => selectSlot(b.dataset.slot));
+    });
+  }
+
+  function selectSlot(code) {
+    state.slot = code;
+    slotGrid.querySelectorAll('.book-slot').forEach(b => {
+      b.classList.toggle('is-selected', b.dataset.slot === code);
+    });
+    refreshNextButton(1);
+  }
+
+  // ============================================================
+  // STEP NAVIGATION
+  // ============================================================
+  document.querySelectorAll('[data-step-next]').forEach(b => {
+    b.addEventListener('click', () => goToStep(Number(b.dataset.stepNext)));
+  });
+  document.querySelectorAll('[data-step-back]').forEach(b => {
+    b.addEventListener('click', () => goToStep(Number(b.dataset.stepBack)));
+  });
+
+  function goToStep(n) {
+    if (n === 2 && !(state.date && state.slot)) return;
+    if (n === 3 && !validateDetails()) return;
+    document.querySelectorAll('.book-step').forEach(s => {
+      s.classList.toggle('is-active', Number(s.dataset.step) === n);
+    });
+    document.querySelectorAll('.book-steps li').forEach(li => {
+      li.classList.toggle('is-active', Number(li.dataset.step) === n);
+      li.classList.toggle('is-done', Number(li.dataset.step) < n);
+    });
+    if (n === 3) updateReview();
+    document.getElementById('book-form-shell').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function refreshNextButton(stepNum) {
+    if (stepNum !== 1) return;
+    const btn = document.querySelector('[data-step-next="2"]');
+    if (btn) btn.disabled = !(state.date && state.slot);
+  }
+
+  // ============================================================
+  // PHOTO UPLOAD
+  // ============================================================
+  photoInput.addEventListener('change', async () => {
+    const file = photoInput.files?.[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      showError('Photo is over 10 MB. Pick a smaller one or skip the upload.');
+      photoInput.value = '';
+      return;
+    }
+    hideError();
+    photoLabel.textContent = `Uploading ${file.name}…`;
+
+    if (window.IS_DEMO) {
+      const url = URL.createObjectURL(file);
+      state.photoUrl = url;
+      showPhotoPreview(url, file.name + ' (demo)');
       return;
     }
 
     try {
-      // 1. Validate service area
-      const dist = await checkDistance(state.customer.address);
-      if (dist && dist.km > window.TQ_CONFIG.SERVICE_RADIUS_KM) {
-        alert(`That address looks like it's about ${dist.km.toFixed(0)}km from Townsville — outside our normal service area. Please call us on ${window.TQ_CONFIG.BUSINESS_PHONE} so we can chat about it.`);
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Continue to payment';
-        return;
-      }
-
-      // 2. Create booking + Stripe Checkout session
-      submitBtn.textContent = 'Redirecting to secure payment…';
-      const totalCents = (state.service.price) + (state.reportIncluded ? REPORT_SURCHARGE_CENTS : 0);
-      const payload = {
-        service_code: state.service.code,
-        service_date: state.date,
-        slot: state.slot,
-        report_included: state.reportIncluded,
-        amount_cents: totalCents,
-        customer: state.customer,
-      };
-      const result = await window.tqFetch(
-        '/functions/v1/booking-create',
-        { method: 'POST', body: JSON.stringify(payload) }
-      );
-      if (result.checkout_url) {
-        window.location.href = result.checkout_url;
-      } else {
-        throw new Error('No checkout URL returned');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Something went wrong creating your booking. Please call us — we\'ll sort it out. ' + err.message);
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Continue to payment';
+      const url = await uploadPhoto(file);
+      state.photoUrl = url;
+      showPhotoPreview(url, file.name);
+    } catch (e) {
+      console.error(e);
+      showError(`Couldn't upload the photo: ${e.message}. You can submit without it.`);
+      photoLabel.textContent = 'Upload a pool photo (optional)';
     }
   });
-}
 
-async function checkDistance(address) {
-  if (window.IS_DEMO) return null;
-  try {
-    return await window.tqFetch('/functions/v1/distance-check', {
+  async function uploadPhoto(file) {
+    if (!window.TQ_CONFIG?.SUPABASE_URL || !window.TQ_CONFIG?.SUPABASE_ANON_KEY) {
+      throw new Error('Supabase not configured');
+    }
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    const key = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const uploadUrl = `${window.TQ_CONFIG.SUPABASE_URL}/storage/v1/object/booking-photos/${key}`;
+    const res = await fetch(uploadUrl, {
       method: 'POST',
-      body: JSON.stringify({ address, type: 'service' })
+      headers: {
+        'Authorization': `Bearer ${window.TQ_CONFIG.SUPABASE_ANON_KEY}`,
+        'apikey': window.TQ_CONFIG.SUPABASE_ANON_KEY,
+        'Content-Type': file.type,
+        'x-upsert': 'false',
+      },
+      body: file,
     });
-  } catch (e) {
-    console.warn('Distance check failed (non-blocking):', e);
-    return null;
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(`Upload failed (${res.status}): ${txt.slice(0, 200)}`);
+    }
+    return `${window.TQ_CONFIG.SUPABASE_URL}/storage/v1/object/public/booking-photos/${key}`;
   }
-}
+
+  function showPhotoPreview(url, name) {
+    photoLabel.textContent = `Photo attached — ${name}`;
+    photoPreview.hidden = false;
+    photoPreview.innerHTML = `<img src="${url}" alt="Pool photo preview"><button type="button" class="book-photo__remove" id="bookPhotoRemove">Remove</button>`;
+    document.getElementById('bookPhotoRemove').addEventListener('click', () => {
+      state.photoUrl = null;
+      photoInput.value = '';
+      photoLabel.textContent = 'Upload a pool photo (optional)';
+      photoPreview.hidden = true;
+      photoPreview.innerHTML = '';
+    });
+  }
+
+  // ============================================================
+  // VALIDATION
+  // ============================================================
+  function validateDetails() {
+    const reqd = ['bk_name', 'bk_email', 'bk_phone', 'bk_address'];
+    let firstInvalid = null;
+    reqd.forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.toggle('is-invalid', !el.value.trim());
+      if (!el.value.trim() && !firstInvalid) firstInvalid = el;
+    });
+    const email = document.getElementById('bk_email');
+    if (email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+      email.classList.add('is-invalid');
+      if (!firstInvalid) firstInvalid = email;
+    }
+    if (firstInvalid) {
+      firstInvalid.focus();
+      return false;
+    }
+    return true;
+  }
+
+  // ============================================================
+  // REVIEW SUMMARY
+  // ============================================================
+  function updateReview() {
+    const svc = SERVICES[state.serviceKey];
+    document.getElementById('reviewService').textContent = svc.label;
+    document.getElementById('reviewDate').textContent = humanDate(state.date);
+    document.getElementById('reviewSlot').textContent = humanSlot(state.slot);
+    document.getElementById('reviewName').textContent = val('bk_name');
+    document.getElementById('reviewEmail').textContent = val('bk_email');
+    document.getElementById('reviewPhone').textContent = val('bk_phone');
+    document.getElementById('reviewAddress').textContent = val('bk_address');
+    document.getElementById('reviewPhotoRow').hidden = !state.photoUrl;
+  }
+
+  function val(id) { return (document.getElementById(id).value || '').trim() || '—'; }
+
+  function humanDate(iso) {
+    if (!iso) return '—';
+    const d = new Date(iso + 'T00:00:00');
+    return d.toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' });
+  }
+  function humanSlot(code) {
+    const s = SLOT_WINDOWS.find(x => x.code === code);
+    return s ? s.label : '—';
+  }
+
+  function fmtCurrency(cents) {
+    return new Intl.NumberFormat('en-AU', { style: 'currency', currency: 'AUD' }).format(cents / 100);
+  }
+
+  // ============================================================
+  // SUBMIT
+  // ============================================================
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (state.submitting) return;
+    if (!state.date || !state.slot || !validateDetails()) return;
+    hideError();
+    state.submitting = true;
+    submitBtn.disabled = true;
+    submitText.textContent = 'Booking…';
+
+    const svc = SERVICES[state.serviceKey];
+
+    // For Basic Pool Service we capture an approximate pool size tier into
+    // the pool_notes prefix so Ben sees it at-a-glance in admin without a
+    // schema change. Consultation doesn't need it.
+    const tierEl = document.querySelector('input[name="pool_size"]:checked');
+    const tier = (state.serviceKey === 'service' && tierEl) ? tierEl.value : null;
+    const userNotes = document.getElementById('bk_pool').value.trim();
+    const combinedNotes = tier
+      ? `Pool size: ${tier}.${userNotes ? '\n\n' + userNotes : ''}`
+      : (userNotes || null);
+
+    const payload = {
+      service_code: svc.code,
+      service_date: state.date,
+      slot: state.slot,
+      customer: {
+        name:         val('bk_name'),
+        email:        val('bk_email'),
+        phone:        val('bk_phone'),
+        address:      val('bk_address'),
+        pool_notes:   combinedNotes,
+        access_notes: document.getElementById('bk_access').value.trim() || null,
+        photo_url:    state.photoUrl,
+      },
+    };
+
+    if (window.IS_DEMO) {
+      await new Promise(r => setTimeout(r, 700));
+      window.location.href = `/booking-success.html?b=demo-${Date.now()}&demo=1`;
+      return;
+    }
+
+    try {
+      const res = await window.tqFetch('/functions/v1/booking-create', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+      if (res.checkout_url) {
+        window.location.href = res.checkout_url;
+      } else if (res.success_url) {
+        window.location.href = res.success_url;
+      } else {
+        throw new Error('Server returned no redirect URL');
+      }
+    } catch (err) {
+      state.submitting = false;
+      submitBtn.disabled = false;
+      submitText.textContent = svc.submitText;
+      const msg = (err && err.message) || 'Something went wrong. Please try again.';
+      showError(msg);
+    }
+  });
+
+  function showError(msg) {
+    errorBox.textContent = msg;
+    errorBox.hidden = false;
+  }
+  function hideError() {
+    errorBox.hidden = true;
+    errorBox.textContent = '';
+  }
+})();
