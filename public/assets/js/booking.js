@@ -63,11 +63,27 @@
   };
 
   const SLOT_WINDOWS = [
-    { code: '08:00-10:00', label: '8 – 10 AM' },
-    { code: '10:00-12:00', label: '10 AM – 12' },
-    { code: '12:00-14:00', label: '12 – 2 PM' },
-    { code: '14:00-16:00', label: '2 – 4 PM' },
+    { code: '08:00-10:00', label: '8 – 10 AM',  end: '10 AM' },
+    { code: '10:00-12:00', label: '10 AM – 12', end: '12 PM' },
+    { code: '12:00-14:00', label: '12 – 2 PM',  end: '2 PM' },
+    { code: '14:00-16:00', label: '2 – 4 PM',   end: '4 PM' },
   ];
+  // Mirror of TIER_SLOT_COUNT in supabase/functions/booking-create. Used
+  // client-side to filter the slot picker; the server re-derives this
+  // independently when actually booking, so a tampered client can't
+  // claim more slots than its tier allows.
+  const TIER_SLOT_COUNT = {
+    'Up to 35,000 L':     1,
+    '35,000–65,000 L':    1,
+    '65,000–100,000 L':   2,
+    'Green recovery':     2,
+    'Not sure':           2,
+  };
+  function currentSlotCount() {
+    if (state.serviceKey !== 'service') return 1;
+    const checked = document.querySelector('input[name="pool_size"]:checked');
+    return TIER_SLOT_COUNT[checked?.value ?? 'Not sure'] ?? 2;
+  }
 
   // ============================================================
   // TABS — switch between Consultation and Basic Pool Service
@@ -170,17 +186,33 @@
   }
 
   function renderSlots() {
-    slotGrid.innerHTML = SLOT_WINDOWS.map(s => {
-      const key = `${state.date}|${s.code}`;
-      const taken = state.takenSlots.has(key);
+    const n = currentSlotCount();
+    // For multi-window bookings: only window starts that have N-1 free
+    // consecutive trailing windows are valid choices. A 4-hour job
+    // (n=2) starting at 14:00 has no following window to occupy, so
+    // 14:00 is hidden entirely.
+    const last = SLOT_WINDOWS.length - n;
+    const candidates = SLOT_WINDOWS.slice(0, last + 1);
+    slotGrid.innerHTML = candidates.map(s => {
+      const startIdx = SLOT_WINDOWS.findIndex(x => x.code === s.code);
+      // Block whenever ANY of the N windows starting at this one is taken.
+      let taken = false;
+      for (let i = 0; i < n; i++) {
+        const key = `${state.date}|${SLOT_WINDOWS[startIdx + i].code}`;
+        if (state.takenSlots.has(key)) { taken = true; break; }
+      }
       const selected = state.slot === s.code;
+      const startLabel = s.label.split(' – ')[0];
+      const endLabel = SLOT_WINDOWS[startIdx + n - 1].end;
+      const displayLabel = n === 1 ? s.label : `${startLabel} – ${endLabel}`;
+      const subLabel = n === 1 ? '2 hr window' : `${n * 2} hr window`;
       return `
         <button type="button"
                 class="book-slot ${taken ? 'is-taken' : ''} ${selected ? 'is-selected' : ''}"
                 data-slot="${s.code}"
                 ${taken ? 'disabled aria-disabled="true"' : ''}>
-          <strong>${s.label}</strong>
-          <span>${taken ? 'Booked' : '2 hr window'}</span>
+          <strong>${displayLabel}</strong>
+          <span>${taken ? 'Booked' : subLabel}</span>
         </button>
       `;
     }).join('');
@@ -188,6 +220,11 @@
       if (b.disabled) return;
       b.addEventListener('click', () => selectSlot(b.dataset.slot));
     });
+    // Update the heading for context
+    const heading = document.getElementById('bookSlotsHeading');
+    if (heading) {
+      heading.textContent = n === 1 ? 'Available windows' : `Available ${n * 2}-hour windows`;
+    }
   }
 
   function selectSlot(code) {
@@ -195,7 +232,7 @@
     slotGrid.querySelectorAll('.book-slot').forEach(b => {
       b.classList.toggle('is-selected', b.dataset.slot === code);
     });
-    refreshNextButton(1);
+    refreshNextButton(2);
   }
 
   // ============================================================
@@ -209,8 +246,9 @@
   });
 
   function goToStep(n) {
-    if (n === 2 && !(state.date && state.slot)) return;
-    if (n === 3 && !validateDetails()) return;
+    // Step 2 (time) requires step 1 (details) to validate first.
+    if (n === 2 && !validateDetails()) return;
+    if (n === 3 && !(state.date && state.slot)) return;
     document.querySelectorAll('.book-step').forEach(s => {
       s.classList.toggle('is-active', Number(s.dataset.step) === n);
     });
@@ -218,13 +256,26 @@
       li.classList.toggle('is-active', Number(li.dataset.step) === n);
       li.classList.toggle('is-done', Number(li.dataset.step) < n);
     });
+    if (n === 2) {
+      // Re-render slots in case the tier (and therefore slot_count)
+      // changed since the last visit.
+      if (state.date) renderSlots();
+      // Update the lede with duration context.
+      const lede = document.getElementById('bookStep2Lede');
+      const count = currentSlotCount();
+      if (lede) {
+        lede.textContent = count === 1
+          ? 'Mon–Fri only. Click a date, then pick a 2-hour window.'
+          : `Mon–Fri only. This pool size needs a ${count * 2}-hour block — only start times with enough room are shown.`;
+      }
+    }
     if (n === 3) updateReview();
     document.getElementById('book-form-shell').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   function refreshNextButton(stepNum) {
-    if (stepNum !== 1) return;
-    const btn = document.querySelector('[data-step-next="2"]');
+    if (stepNum !== 2) return;
+    const btn = document.querySelector('[data-step-next="3"]');
     if (btn) btn.disabled = !(state.date && state.slot);
   }
 
@@ -327,12 +378,22 @@
     const svc = SERVICES[state.serviceKey];
     document.getElementById('reviewService').textContent = svc.label;
     document.getElementById('reviewDate').textContent = humanDate(state.date);
-    document.getElementById('reviewSlot').textContent = humanSlot(state.slot);
+    document.getElementById('reviewSlot').textContent = humanSlotRange(state.slot);
     document.getElementById('reviewName').textContent = val('bk_name');
     document.getElementById('reviewEmail').textContent = val('bk_email');
     document.getElementById('reviewPhone').textContent = val('bk_phone');
     document.getElementById('reviewAddress').textContent = val('bk_address');
     document.getElementById('reviewPhotoRow').hidden = !state.photoUrl;
+  }
+
+  function humanSlotRange(code) {
+    if (!code) return '—';
+    const startIdx = SLOT_WINDOWS.findIndex(x => x.code === code);
+    if (startIdx < 0) return '—';
+    const n = currentSlotCount();
+    const start = SLOT_WINDOWS[startIdx].label.split(' – ')[0];
+    const end = SLOT_WINDOWS[startIdx + n - 1].end;
+    return `${start} – ${end} (${n * 2} hr)`;
   }
 
   function val(id) { return (document.getElementById(id).value || '').trim() || '—'; }
@@ -387,6 +448,7 @@
         pool_notes:   combinedNotes,
         access_notes: document.getElementById('bk_access').value.trim() || null,
         photo_url:    state.photoUrl,
+        pool_size:    tier,
       },
     };
 

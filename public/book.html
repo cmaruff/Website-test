@@ -93,33 +93,17 @@
 
     <!-- =========== SHARED 3-STEP BOOKING SHELL =========== -->
     <div class="book-form__shell reveal" id="book-form-shell">
-      <!-- Step indicator -->
+      <!-- Step indicator. Pool details come first because the size picker
+           determines how many windows we need to lock for the booking. -->
       <ol class="book-steps" aria-label="Booking steps">
-        <li class="is-active" data-step="1"><span class="book-steps__num">1</span><span class="book-steps__label">Time</span></li>
-        <li data-step="2"><span class="book-steps__num">2</span><span class="book-steps__label">Photo &amp; details</span></li>
+        <li class="is-active" data-step="1"><span class="book-steps__num">1</span><span class="book-steps__label">Pool &amp; details</span></li>
+        <li data-step="2"><span class="book-steps__num">2</span><span class="book-steps__label">Time</span></li>
         <li data-step="3"><span class="book-steps__num">3</span><span class="book-steps__label">Review</span></li>
       </ol>
 
       <form id="bookingForm" novalidate>
-        <!-- =================== STEP 1: TIME =================== -->
+        <!-- =================== STEP 1: POOL + DETAILS =================== -->
         <div class="book-step is-active" data-step="1">
-          <div class="book-step__intro">
-            <h3>When suits you?</h3>
-            <p>Mon–Fri only. Click a date, then pick a 2-hour window.</p>
-          </div>
-          <div class="book-calendar" id="bookCalendar" aria-label="Available dates"></div>
-          <div class="book-slots" id="bookSlots" hidden>
-            <h4>Available windows</h4>
-            <div class="book-slots__grid" id="bookSlotGrid"></div>
-          </div>
-          <div class="book-nav">
-            <span></span>
-            <button type="button" class="btn btn-primary btn-lg" data-step-next="2" disabled>Next: photo &amp; details</button>
-          </div>
-        </div>
-
-        <!-- =================== STEP 2: PHOTO + DETAILS =================== -->
-        <div class="book-step" data-step="2">
           <div class="book-step__intro">
             <h3>About your pool</h3>
             <p>A photo helps us bring the right equipment. Skip it if you don't have one handy.</p>
@@ -198,8 +182,25 @@
           </div>
 
           <div class="book-nav">
+            <span></span>
+            <button type="button" class="btn btn-primary btn-lg" data-step-next="2">Next: pick a time</button>
+          </div>
+        </div>
+
+        <!-- =================== STEP 2: TIME =================== -->
+        <div class="book-step" data-step="2">
+          <div class="book-step__intro">
+            <h3>When suits you?</h3>
+            <p id="bookStep2Lede">Mon–Fri only. Click a date, then pick a 2-hour window.</p>
+          </div>
+          <div class="book-calendar" id="bookCalendar" aria-label="Available dates"></div>
+          <div class="book-slots" id="bookSlots" hidden>
+            <h4 id="bookSlotsHeading">Available windows</h4>
+            <div class="book-slots__grid" id="bookSlotGrid"></div>
+          </div>
+          <div class="book-nav">
             <button type="button" class="btn btn-ghost" data-step-back="1">← Back</button>
-            <button type="button" class="btn btn-primary btn-lg" data-step-next="3">Next: review</button>
+            <button type="button" class="btn btn-primary btn-lg" data-step-next="3" disabled>Next: review</button>
           </div>
         </div>
 
