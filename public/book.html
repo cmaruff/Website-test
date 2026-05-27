@@ -9,19 +9,19 @@
   <meta name="theme-color" content="#1565C0">
 
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="canonical" href="https://tqpoolservices.com/book">
+  <link rel="canonical" href="https://tqpoolservices.com.au/book">
 
   <meta property="og:type" content="website">
   <meta property="og:title" content="Book Mobile Pool Service Townsville — Online Booking">
   <meta property="og:description" content="Book a mobile pool service Townsville online. Pool cleaning, maintenance, or $35 consultation. Confirmed within one business day.">
-  <meta property="og:url" content="https://tqpoolservices.com/book">
-  <meta property="og:image" content="https://tqpoolservices.com/assets/img/work/hero-lap-pool.jpg">
+  <meta property="og:url" content="https://tqpoolservices.com.au/book">
+  <meta property="og:image" content="https://tqpoolservices.com.au/assets/img/work/hero-lap-pool.jpg">
   <meta property="og:locale" content="en_AU">
   <meta name="twitter:card" content="summary_large_image">
 
-  <link rel="stylesheet" href="/assets/css/tokens.css?v=20260526">
-  <link rel="stylesheet" href="/assets/css/base.css?v=20260526">
-  <link rel="stylesheet" href="/assets/css/book.css?v=20260526">
+  <link rel="stylesheet" href="/assets/css/tokens.css?v=20260527">
+  <link rel="stylesheet" href="/assets/css/base.css?v=20260527">
+  <link rel="stylesheet" href="/assets/css/book.css?v=20260527">
 </head>
 <body>
 <div class="tq-loader" id="tqLoader" aria-hidden="true"><div class="tq-loader__mark"><span>TQ</span></div><div class="tq-loader__wordmark" aria-label="TQ Pool Services"><span>T</span><span>Q</span><span class="gap"></span><span>P</span><span>O</span><span>O</span><span>L</span><span class="gap"></span><span>S</span><span>E</span><span>R</span><span>V</span><span>I</span><span>C</span><span>E</span><span>S</span></div></div>
@@ -70,8 +70,9 @@
     </div>
   </div>
 </section>
-<!-- ============ FLUENT BOOKING — SERVICE PICKER + INLINE CALENDAR ============ -->
-<section class="book-form" id="book-now">
+
+<!-- ============ BOOKING — SERVICE TABS + SHARED 3-STEP FORM ============ -->
+<section class="book-form" id="book-now" data-mode="consultation">
   <div class="container">
     <div class="section-head reveal">
       <span class="eyebrow">Pick a service</span>
@@ -80,72 +81,162 @@
     </div>
 
     <div class="book-tabs reveal" role="tablist">
-      <button type="button" class="book-tab is-active" data-tab="consultation" role="tab" aria-controls="tab-consultation" aria-selected="true">
+      <button type="button" class="book-tab is-active" data-tab="consultation" role="tab" aria-controls="book-form-shell" aria-selected="true">
         <strong>Consultation</strong>
         <span>$35 &middot; 30 min &middot; paid at booking</span>
       </button>
-      <button type="button" class="book-tab" data-tab="service" role="tab" aria-controls="tab-service" aria-selected="false">
+      <button type="button" class="book-tab" data-tab="service" role="tab" aria-controls="book-form-shell" aria-selected="false">
         <strong>Basic Pool Service</strong>
         <span>From $75 &middot; priced by pool size &middot; invoiced after visit</span>
       </button>
     </div>
 
-    <!-- Consultation panel -->
-    <div class="book-tab__panel is-active" id="tab-consultation" role="tabpanel">
-      <div class="book-form__shell reveal">
-        <div class="book-cal" aria-label="Booking calendar preview">
-          <div class="book-cal__head">
-            <strong>Live calendar &amp; Stripe payment</strong>
-            <span class="book-cal__badge">Production-only</span>
-          </div>
-          <p class="book-cal__note">
-            On the live site this panel is a live calendar synced with Ben's
-            schedule — you'd see this week's open slots, pick one, upload a
-            pool photo, and pay $35 via Stripe inline. Confirmation email +
-            QuickBooks sales receipt are created automatically.
-          </p>
-          <ol class="book-cal__steps">
-            <li><strong>1.</strong> Pick an available slot from the calendar</li>
-            <li><strong>2.</strong> Upload a clear photo of your pool</li>
-            <li><strong>3.</strong> Pay $35 inline via Stripe</li>
-            <li><strong>4.</strong> Instant confirmation + 24 h reminder by SMS &amp; email</li>
-          </ol>
-          <p class="book-cal__fallback">
-            Preview-only — send a booking request via
-            <a href="/contact.html">the contact form</a> or call
-            <a data-tq-href="phone-tel" href="tel:+61488355111"><span data-tq="phone-display">0488 355 111</span></a>.
-          </p>
-        </div>
-      </div>
-    </div>
+    <!-- =========== SHARED 3-STEP BOOKING SHELL =========== -->
+    <div class="book-form__shell reveal" id="book-form-shell">
+      <!-- Step indicator -->
+      <ol class="book-steps" aria-label="Booking steps">
+        <li class="is-active" data-step="1"><span class="book-steps__num">1</span><span class="book-steps__label">Time</span></li>
+        <li data-step="2"><span class="book-steps__num">2</span><span class="book-steps__label">Photo &amp; details</span></li>
+        <li data-step="3"><span class="book-steps__num">3</span><span class="book-steps__label">Review</span></li>
+      </ol>
 
-    <!-- Basic Pool Service panel -->
-    <div class="book-tab__panel" id="tab-service" role="tabpanel" hidden>
-      <div class="book-form__shell reveal">
-        <div class="book-cal" aria-label="Booking calendar preview">
-          <div class="book-cal__head">
-            <strong>Live calendar &amp; QuickBooks invoice</strong>
-            <span class="book-cal__badge">Production-only</span>
+      <form id="bookingForm" novalidate>
+        <!-- =================== STEP 1: TIME =================== -->
+        <div class="book-step is-active" data-step="1">
+          <div class="book-step__intro">
+            <h3>When suits you?</h3>
+            <p>Mon–Fri only. Click a date, then pick a 2-hour window.</p>
           </div>
-          <p class="book-cal__note">
-            On the live site this panel is a live calendar showing Ben's
-            available slots. Pick the slot, upload a pool photo, and lock the booking.
-            We confirm pool size on arrival and send a QuickBooks invoice with a
-            Stripe pay-link the same day — pay by clicking the link in the invoice email.
-          </p>
-          <ol class="book-cal__steps">
-            <li><strong>1.</strong> Pick an available slot from the calendar</li>
-            <li><strong>2.</strong> Upload a clear photo of your pool</li>
-            <li><strong>3.</strong> Slot locked — we email confirmation + 24 h reminder</li>
-            <li><strong>4.</strong> Pool size confirmed on arrival, QuickBooks invoice sent same day</li>
-          </ol>
-          <p class="book-cal__fallback">
-            Preview-only — send a booking request via
-            <a href="/contact.html">the contact form</a> or call
-            <a data-tq-href="phone-tel" href="tel:+61488355111"><span data-tq="phone-display">0488 355 111</span></a>.
-          </p>
+          <div class="book-calendar" id="bookCalendar" aria-label="Available dates"></div>
+          <div class="book-slots" id="bookSlots" hidden>
+            <h4>Available windows</h4>
+            <div class="book-slots__grid" id="bookSlotGrid"></div>
+          </div>
+          <div class="book-nav">
+            <span></span>
+            <button type="button" class="btn btn-primary btn-lg" data-step-next="2" disabled>Next: photo &amp; details</button>
+          </div>
         </div>
-      </div>
+
+        <!-- =================== STEP 2: PHOTO + DETAILS =================== -->
+        <div class="book-step" data-step="2">
+          <div class="book-step__intro">
+            <h3>About your pool</h3>
+            <p>A photo helps us bring the right equipment. Skip it if you don't have one handy.</p>
+          </div>
+
+          <!-- Pool size tier — only shown for Basic Pool Service. Final price
+               is confirmed on arrival; this is so Ben knows what to bring. -->
+          <fieldset class="book-tiers" id="bookTiers">
+            <legend>Approximate pool size</legend>
+            <div class="book-tiers__grid">
+              <label class="book-tier">
+                <input type="radio" name="pool_size" value="Up to 35,000 L">
+                <span><strong>Up to 35,000 L</strong><em>Small fibreglass / plunge</em></span>
+              </label>
+              <label class="book-tier">
+                <input type="radio" name="pool_size" value="35,000–65,000 L">
+                <span><strong>35,000–65,000 L</strong><em>Typical residential</em></span>
+              </label>
+              <label class="book-tier">
+                <input type="radio" name="pool_size" value="65,000–100,000 L">
+                <span><strong>65,000–100,000 L</strong><em>Large family / lap pool</em></span>
+              </label>
+              <label class="book-tier">
+                <input type="radio" name="pool_size" value="Green recovery">
+                <span><strong>Green recovery</strong><em>Cloudy / algae bloom</em></span>
+              </label>
+              <label class="book-tier">
+                <input type="radio" name="pool_size" value="Not sure" checked>
+                <span><strong>Not sure</strong><em>Ben will confirm on arrival</em></span>
+              </label>
+            </div>
+            <p class="book-tiers__note">Final price is set on arrival once Ben confirms the volume. This picker just lets him bring the right chemicals + filter pack.</p>
+          </fieldset>
+
+          <!-- Photo upload -->
+          <label class="book-photo" for="bk_photo">
+            <div class="book-photo__inner">
+              <span class="book-photo__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h3l2-3h8l2 3h3v13H3z"/><circle cx="12" cy="13" r="4"/></svg>
+              </span>
+              <span class="book-photo__label">
+                <strong id="bookPhotoLabel">Upload a pool photo (optional)</strong>
+                <em>JPEG or PNG, up to 10 MB</em>
+              </span>
+            </div>
+            <input id="bk_photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp,image/heic" hidden>
+          </label>
+          <div class="book-photo__preview" id="bookPhotoPreview" hidden></div>
+
+          <!-- Customer details -->
+          <div class="book-grid">
+            <div class="field">
+              <label for="bk_name">Full name *</label>
+              <input id="bk_name" name="name" type="text" required autocomplete="name">
+            </div>
+            <div class="field">
+              <label for="bk_email">Email *</label>
+              <input id="bk_email" name="email" type="email" required autocomplete="email">
+            </div>
+            <div class="field">
+              <label for="bk_phone">Mobile *</label>
+              <input id="bk_phone" name="phone" type="tel" required autocomplete="tel" placeholder="04XX XXX XXX">
+            </div>
+            <div class="field">
+              <label for="bk_address">Pool address *</label>
+              <input id="bk_address" name="address" type="text" required autocomplete="street-address" placeholder="Street address, Townsville">
+            </div>
+            <div class="field field--full">
+              <label for="bk_pool">Pool notes (optional)</label>
+              <textarea id="bk_pool" name="pool_notes" rows="3" placeholder="Approximate size, current condition, anything we should know..."></textarea>
+            </div>
+            <div class="field field--full">
+              <label for="bk_access">Access notes (optional)</label>
+              <input id="bk_access" name="access_notes" type="text" placeholder="Side gate code, dog name, where to park...">
+            </div>
+          </div>
+
+          <div class="book-nav">
+            <button type="button" class="btn btn-ghost" data-step-back="1">← Back</button>
+            <button type="button" class="btn btn-primary btn-lg" data-step-next="3">Next: review</button>
+          </div>
+        </div>
+
+        <!-- =================== STEP 3: REVIEW + SUBMIT =================== -->
+        <div class="book-step" data-step="3">
+          <div class="book-step__intro">
+            <h3>Looks right?</h3>
+            <p>Check the summary, then we'll lock the slot.</p>
+          </div>
+
+          <dl class="book-review">
+            <div><dt>Service</dt><dd id="reviewService">—</dd></div>
+            <div><dt>Date</dt><dd id="reviewDate">—</dd></div>
+            <div><dt>Window</dt><dd id="reviewSlot">—</dd></div>
+            <div><dt>Customer</dt><dd id="reviewName">—</dd></div>
+            <div><dt>Email</dt><dd id="reviewEmail">—</dd></div>
+            <div><dt>Mobile</dt><dd id="reviewPhone">—</dd></div>
+            <div><dt>Pool address</dt><dd id="reviewAddress">—</dd></div>
+            <div id="reviewPhotoRow" hidden><dt>Photo</dt><dd>Attached</dd></div>
+          </dl>
+
+          <div class="book-total">
+            <span id="bookTotalLabel">Total today</span>
+            <strong id="bookTotalAmount">$0.00</strong>
+          </div>
+          <p class="book-total__note" id="bookTotalNote"></p>
+
+          <div class="book-error" id="bookError" hidden role="alert"></div>
+
+          <div class="book-nav">
+            <button type="button" class="btn btn-ghost" data-step-back="2">← Back</button>
+            <button type="submit" class="btn btn-accent btn-lg" id="bookSubmit">
+              <span id="bookSubmitText">Book &amp; pay $35</span>
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
 
     <p class="book-form__expect">
@@ -202,30 +293,9 @@
   <a href="#book-now" class="book">Request booking</a>
 </div>
 
-<script src="/assets/js/supabase-config.js?v=20260526"></script>
-<script src="/assets/js/business-info.js?v=20260526"></script>
-<script src="/assets/js/main.js?v=20260526"></script>
-<script>
-  // Tabs: Consultation / Basic Pool Service. On the live site each panel is
-  // replaced by the booking calendar that calls supabase/functions/booking-create.
-  (() => {
-    const tabs = document.querySelectorAll('.book-tab');
-    const panels = document.querySelectorAll('.book-tab__panel');
-    if (!tabs.length) return;
-    tabs.forEach(t => t.addEventListener('click', () => {
-      const target = t.dataset.tab;
-      tabs.forEach(b => {
-        const active = b === t;
-        b.classList.toggle('is-active', active);
-        b.setAttribute('aria-selected', active ? 'true' : 'false');
-      });
-      panels.forEach(p => {
-        const match = p.id === 'tab-' + target;
-        p.classList.toggle('is-active', match);
-        p.hidden = !match;
-      });
-    }));
-  })();
-</script>
+<script src="/assets/js/supabase-config.js?v=20260527"></script>
+<script src="/assets/js/business-info.js?v=20260527"></script>
+<script src="/assets/js/main.js?v=20260527"></script>
+<script src="/assets/js/booking.js?v=20260527"></script>
 </body>
 </html>

@@ -26,6 +26,11 @@ const corsHeaders = {
 
 const ONGOING_CADENCES = new Set(["weekly", "fortnightly", "4weekly"]);
 
+// Services where price is determined on-site (e.g. Basic Pool Service —
+// pool size confirmed on arrival). The booking just locks the slot;
+// the invoice is sent by admin after the visit.
+const INVOICE_AFTER_VISIT = new Set(["basic-pool-service"]);
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -52,7 +57,12 @@ Deno.serve(async (req) => {
     if (svcErr || !svc) return json({ error: "Service not found" }, 404);
 
     const REPORT_SURCHARGE = 300;
-    const computedTotal = svc.price + (report_included ? REPORT_SURCHARGE : 0);
+    const invoiceAfterVisit = INVOICE_AFTER_VISIT.has(service_code);
+    // Invoice-after services: lock the slot at $0; admin fills the amount
+    // on-site, then sends a Stripe pay-link via QBO.
+    const computedTotal = invoiceAfterVisit
+      ? 0
+      : svc.price + (report_included ? REPORT_SURCHARGE : 0);
 
     // 2. Upsert customer by email
     const { data: existing } = await supabase
@@ -88,7 +98,11 @@ Deno.serve(async (req) => {
         .eq("id", customerId);
     }
 
-    // 3. Create the booking row (status pending)
+    // 3. Create the booking row.
+    // Invoice-after-visit services lock the slot at 'scheduled' (no payment
+    // outstanding from the customer side). Everything else stays 'pending'
+    // until the Stripe webhook flips it to 'confirmed'.
+    const initialStatus = invoiceAfterVisit ? "scheduled" : "pending";
     const { data: booking, error: bErr } = await supabase
       .from("bookings")
       .insert({
@@ -97,11 +111,12 @@ Deno.serve(async (req) => {
         service_code,
         service_date,
         slot,
-        report_included,
+        report_included: report_included ?? false,
         amount_cents: computedTotal,
-        status: "pending",
+        status: initialStatus,
         pool_notes: customer.pool_notes,
         access_notes: customer.access_notes,
+        report_url: customer.photo_url ?? null,
       })
       .select("id")
       .single();
@@ -110,6 +125,18 @@ Deno.serve(async (req) => {
         return json({ error: "That slot was just taken — please pick another." }, 409);
       }
       throw bErr;
+    }
+
+    // Invoice-after-visit path: no Stripe Checkout needed. Slot is locked,
+    // customer goes straight to the success page, admin handles invoicing.
+    if (invoiceAfterVisit) {
+      const siteUrl = Deno.env.get("PUBLIC_SITE_URL") ?? "https://tqpoolservices.com.au";
+      // Fire-and-forget confirmation email so the customer has it in writing.
+      invoke("send-confirmation", { booking_id: booking.id });
+      return json({
+        booking_id: booking.id,
+        success_url: `${siteUrl}/booking-success.html?b=${booking.id}`,
+      });
     }
 
     // 4. Create Stripe customer if we don't have one yet (lets us save the
@@ -131,7 +158,7 @@ Deno.serve(async (req) => {
 
     // 5. Create Stripe Checkout Session. For ongoing cadences we attach
     //    setup_future_usage so the card is saved off-session for rebills.
-    const siteUrl = Deno.env.get("PUBLIC_SITE_URL") ?? "https://tqpoolservices.com";
+    const siteUrl = Deno.env.get("PUBLIC_SITE_URL") ?? "https://tqpoolservices.com.au";
     const isOngoing = ONGOING_CADENCES.has(service_code);
 
     const session = await stripe.checkout.sessions.create({
@@ -184,4 +211,15 @@ function json(data: unknown, status = 200) {
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
+}
+
+function invoke(fn: string, body: unknown) {
+  fetch(`${Deno.env.get("SUPABASE_URL")!}/functions/v1/${fn}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!}`,
+    },
+    body: JSON.stringify(body),
+  }).catch((e) => console.error(`invoke ${fn} failed:`, e));
 }
