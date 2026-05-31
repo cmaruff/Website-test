@@ -6,4 +6,4 @@ Allow: /
 Disallow: /admin/
 Disallow: /booking-success.html
 
-Sitemap: https://tqpoolservices.com/sitemap.xml
+Sitemap: https://tqpoolservices.au/sitemap.xml

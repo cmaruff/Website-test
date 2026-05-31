@@ -66,7 +66,7 @@ once and forget; QuickBooks tokens are written by the OAuth flow itself.
 | `QBO_CLIENT_SECRET`              | from your Intuit app                            | QuickBooks |
 | `QBO_ENV`                        | `production` (default) or `sandbox`             | QuickBooks |
 | `NOTIFYRE_API_KEY`               | from notifyre.com                               | SMS reminders |
-| `PUBLIC_SITE_URL`                | `https://tqpoolservices.com`                    | redirects, OAuth callbacks |
+| `PUBLIC_SITE_URL`                | `https://tqpoolservices.au`                    | redirects, OAuth callbacks |
 
 `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are auto-injected.
 
@@ -171,10 +171,10 @@ and cache headers. No build step — Netlify just uploads what's in `public/`.
 3. Click **Deploy site**. First deploy lands in ~30 seconds. The site is
    reachable at the auto-generated `*.netlify.app` URL.
 4. **Site settings → Domain management → Add custom domain** → enter
-   `tqpoolservices.com.au`. Netlify gives you DNS records (A record and a
+   `tqpoolservices.au`. Netlify gives you DNS records (A record and a
    CNAME for `www`). Paste those into your registrar.
 5. Repeat for `tqpoolservices.com` and set it to redirect to
-   `tqpoolservices.com.au` (Netlify does this automatically once both
+   `tqpoolservices.au` (Netlify does this automatically once both
    domains are attached and one is marked primary).
 6. **HTTPS** auto-provisions in ~5 min via Let's Encrypt; nothing to do.
 
@@ -204,17 +204,17 @@ pool service site will use. Cost stays at $0 unless traffic explodes.
 
 ## 11. Domain & DNS
 
-Both `tqpoolservices.com.au` (canonical) and `tqpoolservices.com` (redirect
+Both `tqpoolservices.au` (canonical) and `tqpoolservices.com` (redirect
 target) point at Netlify:
 
 1. In Netlify → Domain management → add both domains.
-2. Mark `tqpoolservices.com.au` as the **primary domain**. Netlify
-   auto-301s `tqpoolservices.com` → `tqpoolservices.com.au`.
+2. Mark `tqpoolservices.au` as the **primary domain**. Netlify
+   auto-301s `tqpoolservices.com` → `tqpoolservices.au`.
 3. In your registrar, set:
-   - `tqpoolservices.com.au` A record → `75.2.60.5`
-   - `tqpoolservices.com.au` AAAA record → `2600:1f18:3fff:c001::5`
+   - `tqpoolservices.au` A record → `75.2.60.5`
+   - `tqpoolservices.au` AAAA record → `2600:1f18:3fff:c001::5`
      (Netlify's load balancer; check Netlify dashboard for the current IPs)
-   - `www.tqpoolservices.com.au` CNAME → `<your-site>.netlify.app`
+   - `www.tqpoolservices.au` CNAME → `<your-site>.netlify.app`
    - Repeat A + CNAME for `tqpoolservices.com` and `www.tqpoolservices.com`
 4. Propagation usually finishes in 5–60 min. HTTPS provisions automatically
    once Netlify verifies the A record.
@@ -225,7 +225,7 @@ Once the site is reachable on the production domain over HTTPS:
 
 ### a. Update placeholder URLs
 
-The repo ships with `https://tqpoolservices.com` baked into the SEO files.
+The repo ships with `https://tqpoolservices.au` baked into the SEO files.
 If your live domain is different, do a global find-and-replace before
 deploy:
 
@@ -242,7 +242,7 @@ public/book.html          (canonical, og:url)
 
 1. Open <https://search.google.com/search-console> → **Add property**
 2. Choose **URL prefix** (simpler than Domain — no DNS edit needed)
-3. Enter your full domain, e.g. `https://tqpoolservices.com`
+3. Enter your full domain, e.g. `https://tqpoolservices.au`
 4. In the verification options, expand **HTML tag**. Google gives you a
    single-line `<meta name="google-site-verification" content="abc123…">`
 5. Copy the `content="..."` value (just the token, not the whole tag).

@@ -165,7 +165,7 @@ Deno.serve(async (req) => {
     // Invoice-after-visit path: no Stripe Checkout needed. Slot is locked,
     // customer goes straight to the success page, admin handles invoicing.
     if (invoiceAfterVisit) {
-      const siteUrl = Deno.env.get("PUBLIC_SITE_URL") ?? "https://tqpoolservices.com.au";
+      const siteUrl = Deno.env.get("PUBLIC_SITE_URL") ?? "https://tqpoolservices.au";
       // Fire-and-forget confirmation email so the customer has it in writing.
       invoke("send-confirmation", { booking_id: booking.id });
       return json({
@@ -193,7 +193,7 @@ Deno.serve(async (req) => {
 
     // 5. Create Stripe Checkout Session. For ongoing cadences we attach
     //    setup_future_usage so the card is saved off-session for rebills.
-    const siteUrl = Deno.env.get("PUBLIC_SITE_URL") ?? "https://tqpoolservices.com.au";
+    const siteUrl = Deno.env.get("PUBLIC_SITE_URL") ?? "https://tqpoolservices.au";
     const isOngoing = ONGOING_CADENCES.has(service_code);
 
     const session = await stripe.checkout.sessions.create({
