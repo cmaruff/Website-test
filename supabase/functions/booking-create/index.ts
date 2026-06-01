@@ -166,8 +166,15 @@ Deno.serve(async (req) => {
     // customer goes straight to the success page, admin handles invoicing.
     if (invoiceAfterVisit) {
       const siteUrl = Deno.env.get("PUBLIC_SITE_URL") ?? "https://tqpoolservices.au";
-      // Fire-and-forget confirmation email so the customer has it in writing.
+      // Fire-and-forget downstream side effects so the customer's HTTP
+      // response isn't blocked by slow QBO/Resend calls.
       invoke("send-confirmation", { booking_id: booking.id });
+      // The whole point of this build: every Basic Pool Service booking
+      // immediately materialises as a Customer + draft Estimate in Ben's
+      // QuickBooks. Ben opens QBO, sees the draft sitting there, edits the
+      // final amount on arrival, hits Send. Zero re-typing of customer
+      // details.
+      invoke("qbo-sync", { booking_id: booking.id });
       return json({
         booking_id: booking.id,
         success_url: `${siteUrl}/booking-success.html?b=${booking.id}`,
