@@ -109,33 +109,56 @@
             <p>A photo helps us bring the right equipment. Skip it if you don't have one handy.</p>
           </div>
 
-          <!-- Pool size tier — only shown for Basic Pool Service. Final price
-               is confirmed on arrival; this is so Ben knows what to bring. -->
+          <!-- Pool size tier — only shown for Basic Pool Service. Tier names
+               and prices match /pool-service-townsville. Final price is
+               still confirmed on arrival; the tier picker is so customers
+               see what they're roughly committing to AND so Ben knows what
+               chemicals + filter pack to bring. -->
           <fieldset class="book-tiers" id="bookTiers">
-            <legend>Approximate pool size</legend>
+            <legend>Pool size</legend>
             <div class="book-tiers__grid">
               <label class="book-tier">
                 <input type="radio" name="pool_size" value="Up to 35,000 L">
-                <span><strong>Up to 35,000 L</strong><em>Small fibreglass / plunge</em></span>
+                <span>
+                  <strong>Up to 35,000 L</strong>
+                  <em>Small fibreglass / plunge</em>
+                  <strong class="book-tier__price">$75</strong>
+                </span>
               </label>
               <label class="book-tier">
-                <input type="radio" name="pool_size" value="35,000–65,000 L">
-                <span><strong>35,000–65,000 L</strong><em>Typical residential</em></span>
+                <input type="radio" name="pool_size" value="Up to 65,000 L">
+                <span>
+                  <strong>Up to 65,000 L <small class="book-tier__tag">Most booked</small></strong>
+                  <em>Typical residential</em>
+                  <strong class="book-tier__price">$140</strong>
+                </span>
               </label>
               <label class="book-tier">
-                <input type="radio" name="pool_size" value="65,000–100,000 L">
-                <span><strong>65,000–100,000 L</strong><em>Large family / lap pool</em></span>
+                <input type="radio" name="pool_size" value="Up to 100,000 L">
+                <span>
+                  <strong>Up to 100,000 L</strong>
+                  <em>Large family / lap pool</em>
+                  <strong class="book-tier__price">$300</strong>
+                </span>
               </label>
               <label class="book-tier">
                 <input type="radio" name="pool_size" value="Green recovery">
-                <span><strong>Green recovery</strong><em>Cloudy / algae bloom</em></span>
+                <span>
+                  <strong>Green recovery</strong>
+                  <em>Cloudy / algae bloom (up to 65,000 L)</em>
+                  <strong class="book-tier__price">$300</strong>
+                </span>
               </label>
               <label class="book-tier">
                 <input type="radio" name="pool_size" value="Not sure" checked>
-                <span><strong>Not sure</strong><em>Ben will confirm on arrival</em></span>
+                <span>
+                  <strong>Not sure</strong>
+                  <em>Ben will confirm on arrival</em>
+                  <strong class="book-tier__price">—</strong>
+                </span>
               </label>
             </div>
-            <p class="book-tiers__note">Final price is set on arrival once Ben confirms the volume. This picker just lets him bring the right chemicals + filter pack.</p>
+            <p class="book-tiers__note">Prices are guides for the most common cases — Ben confirms the final amount on arrival once he sees the pool. Larger or unusual setups may differ.</p>
           </fieldset>
 
           <!-- Photo upload -->

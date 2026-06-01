@@ -74,8 +74,8 @@
   // claim more slots than its tier allows.
   const TIER_SLOT_COUNT = {
     'Up to 35,000 L':     1,
-    '35,000–65,000 L':    1,
-    '65,000–100,000 L':   2,
+    'Up to 65,000 L':     1,
+    'Up to 100,000 L':    2,
     'Green recovery':     2,
     'Not sure':           2,
   };
