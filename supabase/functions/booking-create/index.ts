@@ -36,8 +36,8 @@ const INVOICE_AFTER_VISIT = new Set(["basic-pool-service"]);
 // windows so a second customer can't book over the same time.
 const TIER_SLOT_COUNT: Record<string, number> = {
   "Up to 35,000 L":     1,
-  "35,000–65,000 L":    1,
-  "65,000–100,000 L":   2,
+  "Up to 65,000 L":     1,
+  "Up to 100,000 L":    2,
   "Green recovery":     2,
   "Not sure":           2,   // conservative default
 };
