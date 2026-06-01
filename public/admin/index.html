@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin · TQ Pools</title>
   <meta name="robots" content="noindex,nofollow">
-  <link rel="stylesheet" href="/assets/css/tokens.css?v=20260526">
-  <link rel="stylesheet" href="/assets/css/base.css?v=20260526">
+  <link rel="stylesheet" href="/assets/css/tokens.css?v=20260601">
+  <link rel="stylesheet" href="/assets/css/base.css?v=20260601">
   <link rel="stylesheet" href="/admin/css/admin.css">
 </head>
 <body class="admin">
@@ -16,15 +16,17 @@
     <span class="nav__logo-mark"></span>
     <strong>TQ Pools</strong>
   </a>
+  <!--
+    Trimmed admin. Bookings, customers and invoicing live in QuickBooks
+    via the booking-create → qbo-sync auto-population flow; no need to
+    duplicate them here. This dashboard is for what Ben actually edits
+    himself: prices, blog posts, business info, and the contact inbox.
+  -->
   <nav class="adm-nav">
     <a href="#/" data-route="dashboard" class="active">📊 Dashboard</a>
-    <a href="#/bookings" data-route="bookings">📅 Bookings</a>
-    <a href="#/customers" data-route="customers">👥 Customers</a>
-    <a href="#/services" data-route="services">🧰 Services</a>
-    <a href="#/products" data-route="products">📦 Products</a>
-    <a href="#/posts" data-route="posts">✍️ SEO Posts</a>
-    <a href="#/images" data-route="images">🖼️ Images</a>
-    <a href="#/contacts" data-route="contacts">💬 Enquiries</a>
+    <a href="#/services" data-route="services">🧰 Services &amp; prices</a>
+    <a href="#/posts" data-route="posts">✍️ Blog</a>
+    <a href="#/contacts" data-route="contacts">💬 Inbox</a>
     <a href="#/settings" data-route="settings">⚙️ Settings</a>
   </nav>
   <div class="adm-side__foot">
@@ -49,8 +51,7 @@
 <!-- Toast container -->
 <div id="toast" class="toast" hidden></div>
 
-<script src="/assets/js/supabase-config.js?v=20260526"></script>
-<script src="/assets/js/mock-supabase.js?v=20260526"></script>
-<script type="module" src="/admin/js/admin.js"></script>
+<script src="/assets/js/supabase-config.js?v=20260601"></script>
+<script type="module" src="/admin/js/admin.js?v=20260601"></script>
 </body>
 </html>
