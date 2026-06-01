@@ -1,18 +1,18 @@
 // ============================================================
 // SUPABASE CONFIG
-// Replace these placeholders with your project's values.
-// You can find them in: Supabase Dashboard → Project Settings → API
-//
-// While these placeholders are present the site runs in DEMO MODE:
-//   • booking flow uses a built-in service list and skips Stripe
-//   • contact form pretends to send
-//   • admin dashboard skips auth and uses seeded mock data
+// Live production values for the TQ Pool Services Supabase project.
+// The anon key is a JWT scoped to the 'anon' role — designed to be
+// embedded in browser code. RLS policies in the database enforce
+// what an anon client can actually do (read public services /
+// products / posts, insert contact_submissions, nothing else).
+// Anything stronger (booking creation, admin dashboard) goes through
+// edge functions that use the service-role key server-side.
 // ============================================================
 
 window.TQ_CONFIG = {
   // Public (anon) values — safe to expose to the browser
-  SUPABASE_URL: 'https://YOUR-PROJECT-REF.supabase.co',
-  SUPABASE_ANON_KEY: 'YOUR-ANON-KEY',
+  SUPABASE_URL: 'https://szkbwbtnznxshbeioryq.supabase.co',
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN6a2J3YnRuem54c2hiZWlvcnlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NTEzOTUsImV4cCI6MjA5NTMyNzM5NX0.ayUKk12KtPoyuXhLPIzunxOeYbHlTL0KFNj58mbd31I',
 
   // Edge Function endpoints
   FN_BOOKING_CREATE: '/functions/v1/booking-create',
