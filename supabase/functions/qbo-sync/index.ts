@@ -18,6 +18,7 @@
 // ============================================================
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { encryptToken, decryptToken } from "../_shared/token-crypto.ts";
 
 const QBO_ENV = Deno.env.get("QBO_ENV") ?? "production";
 const QBO_API_BASE = QBO_ENV === "sandbox"
@@ -109,10 +110,15 @@ Deno.serve(async (req) => {
 });
 
 // ----- token refresh -----
+// Tokens in the DB are AES-GCM encrypted (see _shared/token-crypto.ts).
+// We decrypt only inside this function — never log, never leak.
 async function ensureFreshToken(supabase: any, settings: any): Promise<string> {
   const expiresAt = settings.qbo_token_expires_at ? new Date(settings.qbo_token_expires_at).getTime() : 0;
-  if (settings.qbo_access_token && Date.now() < expiresAt) return settings.qbo_access_token;
+  if (settings.qbo_access_token && Date.now() < expiresAt) {
+    return await decryptToken(settings.qbo_access_token);
+  }
 
+  const refreshToken = await decryptToken(settings.qbo_refresh_token);
   const res = await fetch("https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer", {
     method: "POST",
     headers: {
@@ -124,15 +130,17 @@ async function ensureFreshToken(supabase: any, settings: any): Promise<string> {
     },
     body: new URLSearchParams({
       grant_type: "refresh_token",
-      refresh_token: settings.qbo_refresh_token,
+      refresh_token: refreshToken,
     }),
   });
   if (!res.ok) throw new Error("QBO refresh failed: " + (await res.text()));
   const tok = await res.json();
   const newExp = new Date(Date.now() + (tok.expires_in - 60) * 1000).toISOString();
+  // Re-encrypt before persisting. QBO rotates refresh tokens on every
+  // refresh, so the refresh_token here is new.
   await supabase.from("settings").update({
-    qbo_access_token: tok.access_token,
-    qbo_refresh_token: tok.refresh_token,    // QBO rotates refresh tokens
+    qbo_access_token: await encryptToken(tok.access_token),
+    qbo_refresh_token: await encryptToken(tok.refresh_token),
     qbo_token_expires_at: newExp,
   }).eq("id", 1);
   return tok.access_token;

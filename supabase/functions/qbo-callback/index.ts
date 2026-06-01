@@ -17,6 +17,25 @@
 // ============================================================
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { encryptToken } from "../_shared/token-crypto.ts";
+
+// Mirrors the allowlist in qbo-connect — defence-in-depth so an attacker
+// can't craft a malicious state value that bypasses validation here.
+const ALLOWED_RETURN_HOSTS = new Set([
+  "tqpoolservices.au",
+  "www.tqpoolservices.au",
+]);
+function safeReturnTo(raw: string): string {
+  const fallback = "https://tqpoolservices.au/admin/#/settings";
+  try {
+    const u = new URL(raw);
+    if (u.protocol === "https:" && ALLOWED_RETURN_HOSTS.has(u.host)) {
+      return u.toString();
+    }
+  } catch { /* not a URL */ }
+  if (raw.startsWith("/")) return `https://tqpoolservices.au${raw}`;
+  return fallback;
+}
 
 Deno.serve(async (req) => {
   const url = new URL(req.url);
@@ -55,14 +74,20 @@ Deno.serve(async (req) => {
   const tok = await tokenRes.json();
   const expiresAt = new Date(Date.now() + (tok.expires_in - 60) * 1000).toISOString();
 
-  // Persist
+  // Encrypt the OAuth tokens at the application layer before persisting.
+  // Supabase already encrypts the database at rest; this is the second
+  // layer required by Intuit's security policy ("encrypt with a symmetric
+  // algorithm, store the key in your app separate from the data").
+  const encryptedAccess = await encryptToken(tok.access_token);
+  const encryptedRefresh = await encryptToken(tok.refresh_token);
+
   const supabase = createClient(supaUrl, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   const { error } = await supabase
     .from("settings")
     .update({
       qbo_realm_id: realmId,
-      qbo_access_token: tok.access_token,
-      qbo_refresh_token: tok.refresh_token,
+      qbo_access_token: encryptedAccess,
+      qbo_refresh_token: encryptedRefresh,
       qbo_token_expires_at: expiresAt,
     })
     .eq("id", 1);
@@ -71,7 +96,9 @@ Deno.serve(async (req) => {
     return new Response("DB write failed", { status: 500 });
   }
 
-  // Bounce back to wherever the admin came from
-  const returnTo = decodeURIComponent(state.split("|")[1] ?? "/admin/#/settings");
-  return Response.redirect(returnTo, 302);
+  // Bounce back to wherever the admin came from — re-validated even
+  // though qbo-connect already checked, in case anything's been tampered
+  // with in transit.
+  const rawReturn = decodeURIComponent(state.split("|")[1] ?? "/admin/#/settings");
+  return Response.redirect(safeReturnTo(rawReturn), 302);
 });

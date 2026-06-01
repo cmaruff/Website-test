@@ -19,6 +19,29 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "GET, OPTIONS",
 };
 
+// Hosts the OAuth flow is allowed to redirect back to. Anything outside
+// this set is treated as an attacker-controlled open-redirect attempt
+// and quietly replaced with the safe default. Intuit's security review
+// requires "forwards or redirects in use have been validated".
+const ALLOWED_RETURN_HOSTS = new Set([
+  "tqpoolservices.au",
+  "www.tqpoolservices.au",
+]);
+
+function safeReturnTo(raw: string | null, fallback: string): string {
+  if (!raw) return fallback;
+  try {
+    const u = new URL(raw);
+    if (u.protocol !== "https:") return fallback;
+    if (!ALLOWED_RETURN_HOSTS.has(u.host)) return fallback;
+    return u.toString();
+  } catch {
+    // Not an absolute URL — accept relative paths on our domain only.
+    if (raw.startsWith("/")) return `https://tqpoolservices.au${raw}`;
+    return fallback;
+  }
+}
+
 Deno.serve((req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -28,10 +51,12 @@ Deno.serve((req) => {
   const supaUrl = Deno.env.get("SUPABASE_URL")!;
   const redirectUri = `${supaUrl}/functions/v1/qbo-callback`;
 
-  // OAuth state — random + return URL embedded so callback knows where to bounce back to
+  // OAuth state — random + validated return URL embedded so callback
+  // knows where to bounce back to. return_to is user-controlled, so we
+  // hard-validate against an allowlist before letting it into the state.
   const url = new URL(req.url);
-  const returnTo = url.searchParams.get("return_to")
-    ?? `${Deno.env.get("PUBLIC_SITE_URL") ?? ""}/admin/#/settings`;
+  const fallbackReturn = `${Deno.env.get("PUBLIC_SITE_URL") ?? "https://tqpoolservices.au"}/admin/#/settings`;
+  const returnTo = safeReturnTo(url.searchParams.get("return_to"), fallbackReturn);
   const state = `${crypto.randomUUID()}|${encodeURIComponent(returnTo)}`;
 
   const authBase = "https://appcenter.intuit.com/connect/oauth2";
