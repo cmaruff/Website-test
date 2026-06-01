@@ -168,11 +168,13 @@ Deno.serve(async (req) => {
 });
 
 function invoke(fn: string, body: unknown) {
+  const serviceRole = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   fetch(`${Deno.env.get("SUPABASE_URL")!}/functions/v1/${fn}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!}`,
+      "Authorization": `Bearer ${serviceRole}`,
+      "apikey": serviceRole,
     },
     body: JSON.stringify(body),
   }).catch((e) => console.error(`invoke ${fn} failed:`, e));

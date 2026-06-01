@@ -255,12 +255,19 @@ function json(data: unknown, status = 200) {
   });
 }
 
+// Service-to-service edge function call. Supabase's Functions Gateway
+// requires both 'Authorization' (Bearer JWT) AND the 'apikey' header
+// when calling another function that has verify_jwt: true. Service-role
+// key works for both. Without apikey the gateway returns 401 before
+// the target function even runs.
 function invoke(fn: string, body: unknown) {
+  const serviceRole = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   fetch(`${Deno.env.get("SUPABASE_URL")!}/functions/v1/${fn}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!}`,
+      "Authorization": `Bearer ${serviceRole}`,
+      "apikey": serviceRole,
     },
     body: JSON.stringify(body),
   }).catch((e) => console.error(`invoke ${fn} failed:`, e));
