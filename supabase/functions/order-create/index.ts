@@ -154,7 +154,7 @@ Deno.serve(async (req) => {
     );
 
     // 5. Stripe Checkout
-    const siteUrl = Deno.env.get("PUBLIC_SITE_URL") ?? "https://tqpoolservices.com";
+    const siteUrl = Deno.env.get("PUBLIC_SITE_URL") ?? "https://tqpoolservices.au";
     const stripeLineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = lines.map((l) => ({
       quantity: l.qty,
       price_data: {

@@ -84,7 +84,7 @@
       .forEach((m) => m.setAttribute('content', p.seo_description || (p.description || '').slice(0, 160)));
     document.querySelectorAll('meta[property="og:title"]').forEach((m) => m.setAttribute('content', p.name));
     const canon = document.querySelector('link[rel="canonical"]');
-    if (canon) canon.setAttribute('href', `https://tqpoolservices.com/products/${p.seo_slug || p.id}`);
+    if (canon) canon.setAttribute('href', `https://tqpoolservices.au/products/${p.seo_slug || p.id}`);
 
     const h = document.getElementById('productsHeading');
     const sub = document.getElementById('productsSubhead');
@@ -130,7 +130,7 @@
         priceCurrency: 'AUD',
         price: (p.price / 100).toFixed(2),
         availability: outOfStock ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock',
-        url: `https://tqpoolservices.com/products/${p.seo_slug || p.id}`,
+        url: `https://tqpoolservices.au/products/${p.seo_slug || p.id}`,
       },
     });
     document.head.appendChild(ld);
