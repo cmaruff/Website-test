@@ -36,6 +36,13 @@ window.TQ_CONFIG = {
   BUSINESS_ADDRESS_REGION:   'QLD',
   BUSINESS_ADDRESS_POSTCODE: '4815',
   BUSINESS_FACEBOOK: 'https://www.facebook.com/profile.php?id=61588638005587',
+
+  // ----- Analytics + SEO -----
+  // Google Analytics 4 measurement ID. Looks like 'G-XXXXXXXXXX'.
+  // analytics.js loads gtag and starts collecting once a real value
+  // lands here. Leave as the placeholder to disable tracking entirely
+  // (useful for staging / preview deploys).
+  GA4_ID: 'G-XXXXXXXXXX',
 };
 
 // ============================================================

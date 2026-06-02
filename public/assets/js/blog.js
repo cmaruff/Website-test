@@ -201,8 +201,19 @@
 
       injectMetaTags(post);
 
-      const marked = await loadMarked();
-      const bodyHtml = marked.parse(post.body_md ?? '');
+      // body_md may be either:
+      //   • HTML (from the Quill WYSIWYG editor — current authoring path), or
+      //   • Markdown (legacy posts written before the editor swap).
+      // Detect by looking for an HTML tag in the first non-whitespace position.
+      const raw = (post.body_md ?? '').trim();
+      const looksLikeHtml = /^<\w/.test(raw);
+      let bodyHtml;
+      if (looksLikeHtml) {
+        bodyHtml = raw;
+      } else {
+        const marked = await loadMarked();
+        bodyHtml = marked.parse(raw);
+      }
       const img = heroImageUrl(post);
 
       container.innerHTML = `
