@@ -242,28 +242,31 @@ async function editService(id) {
 }
 
 // ============================================================
-// VIEW: POSTS (SEO drafts)
+// VIEW: BLOG POSTS
 // ============================================================
 async function viewPosts(view) {
   const { data } = await supa.from("posts").select("*").order("created_at", { ascending: false });
 
   view.innerHTML = `
-    <p style="margin-bottom:var(--sp-4); color:var(--sand-500);">
-      Drafts are auto-generated monthly via <code>monthly-seo-post</code>. Review, edit, and publish from here.
-    </p>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--sp-4);">
+      <p style="color:var(--sand-500); margin:0;">
+        Write posts in Markdown. Drag images into the editor or click "Insert image" — they upload directly to the site.
+      </p>
+      <button class="btn btn-primary" id="newPost">+ New post</button>
+    </div>
     <div class="tbl-wrap">
       <table class="tbl">
         <thead><tr><th>Title</th><th>Status</th><th>Created</th><th>Published</th><th></th></tr></thead>
         <tbody>
           ${(data ?? []).map(p => `
             <tr>
-              <td><strong>${escape(p.title)}</strong><br><small>${escape(p.topic ?? "")}</small></td>
+              <td><strong>${escape(p.title)}</strong><br><small style="color:var(--sand-500)">/blog/${escape(p.slug)}</small></td>
               <td><span class="pill pill--${p.status}">${p.status}</span></td>
               <td>${fmtDate(p.created_at)}</td>
               <td>${fmtDate(p.published_at)}</td>
               <td><button class="btn btn-ghost btn-sm" data-post="${p.id}">Edit</button></td>
             </tr>
-          `).join("") || `<tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--sand-500)">No drafts yet — they'll appear monthly.</td></tr>`}
+          `).join("") || `<tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--sand-500)">No posts yet — click "+ New post" to write the first one.</td></tr>`}
         </tbody>
       </table>
     </div>
@@ -272,57 +275,222 @@ async function viewPosts(view) {
   view.querySelectorAll("[data-post]").forEach(b =>
     b.addEventListener("click", () => editPost(b.dataset.post))
   );
+  view.querySelector("#newPost").addEventListener("click", () => editPost(null));
+}
+
+// Auto-generate a URL-safe slug from a title.
+function slugify(s) {
+  return String(s ?? "")
+    .toLowerCase()
+    .normalize("NFD").replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 80);
+}
+
+// Upload a single image file to the `public-images` bucket, return the
+// storage path (relative). The public URL is then
+// `${SUPABASE_URL}/storage/v1/object/public/public-images/<path>`.
+async function uploadBlogImage(file) {
+  const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+  const path = `blog/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  const { error } = await supa.storage
+    .from("public-images")
+    .upload(path, file, { upsert: false, contentType: file.type });
+  if (error) throw new Error(error.message);
+  return path;
+}
+function publicUrlFor(path) {
+  if (!path) return "";
+  if (path.startsWith("http")) return path;
+  return `${window.TQ_CONFIG.SUPABASE_URL}/storage/v1/object/public/public-images/${path}`;
 }
 
 async function editPost(id) {
-  const { data: p } = await supa.from("posts").select("*").eq("id", id).single();
+  const isNew = !id;
+  const p = isNew
+    ? { id: null, title: "", slug: "", status: "draft", seo_description: "", body_md: "", hero_image_path: null, published_at: null }
+    : (await supa.from("posts").select("*").eq("id", id).single()).data;
+
+  const heroUrl = p.hero_image_path ? publicUrlFor(p.hero_image_path) : "";
 
   modal(`
-    <h2>Edit post</h2>
+    <h2>${isNew ? "New blog post" : "Edit post"}</h2>
     <div class="form-grid">
-      <div class="field field--full"><label>Title</label><input id="po_title" value="${escape(p.title)}"></div>
-      <div class="field"><label>Slug</label><input id="po_slug" value="${escape(p.slug)}"></div>
-      <div class="field"><label>Status</label>
+      <div class="field field--full">
+        <label for="po_title">Title</label>
+        <input id="po_title" value="${escape(p.title)}" placeholder="How to spot a leaking pool early">
+      </div>
+      <div class="field">
+        <label for="po_slug">URL slug</label>
+        <input id="po_slug" value="${escape(p.slug)}" placeholder="auto-generated from title">
+        <small style="color:var(--sand-500); font-size:11px;">Lives at /blog/&lt;slug&gt;</small>
+      </div>
+      <div class="field">
+        <label for="po_status">Status</label>
         <select id="po_status">
-          <option value="draft" ${p.status === "draft" ? "selected" : ""}>Draft</option>
-          <option value="published" ${p.status === "published" ? "selected" : ""}>Published</option>
+          <option value="draft" ${p.status === "draft" ? "selected" : ""}>Draft (hidden)</option>
+          <option value="published" ${p.status === "published" ? "selected" : ""}>Published (live)</option>
           <option value="archived" ${p.status === "archived" ? "selected" : ""}>Archived</option>
         </select>
       </div>
-      <div class="field field--full"><label>SEO description</label><textarea id="po_seo" rows="2">${escape(p.seo_description ?? "")}</textarea></div>
-      <div class="field field--full"><label>Body (Markdown)</label>
-        <textarea id="po_body" rows="14" style="font-family:var(--font-mono); font-size:13px;">${escape(p.body_md ?? "")}</textarea>
+
+      <div class="field field--full">
+        <label>Hero image (shown at the top of the post + on the blog index)</label>
+        <div class="po-hero" id="poHero" style="display:flex; gap:var(--sp-3); align-items:center;">
+          <div id="poHeroThumb" style="width:160px; height:100px; border-radius:8px; background:${heroUrl ? `url('${heroUrl}') center/cover` : 'var(--sand-100)'}; border:1px solid var(--color-border);"></div>
+          <div>
+            <button type="button" class="btn btn-ghost btn-sm" id="poHeroPick">${heroUrl ? "Replace image" : "Upload image"}</button>
+            ${heroUrl ? `<button type="button" class="btn btn-ghost btn-sm" id="poHeroRemove">Remove</button>` : ""}
+            <input id="poHeroFile" type="file" accept="image/*" hidden>
+          </div>
+        </div>
+      </div>
+
+      <div class="field field--full">
+        <label for="po_seo">SEO description</label>
+        <textarea id="po_seo" rows="2" placeholder="One-sentence summary for Google + social previews (~150 chars).">${escape(p.seo_description ?? "")}</textarea>
+      </div>
+
+      <div class="field field--full">
+        <label for="po_body">Post body (Markdown)</label>
+        <div style="display:flex; gap:var(--sp-2); margin-bottom:var(--sp-2);">
+          <button type="button" class="btn btn-ghost btn-sm" data-md="**" title="Bold (wraps selection)">B</button>
+          <button type="button" class="btn btn-ghost btn-sm" data-md="*"  title="Italic">I</button>
+          <button type="button" class="btn btn-ghost btn-sm" data-md-h2 title="Heading 2">H2</button>
+          <button type="button" class="btn btn-ghost btn-sm" data-md-link title="Link">🔗 Link</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="poInsertImg" title="Insert image">🖼️ Insert image</button>
+          <input id="poInlineImgFile" type="file" accept="image/*" hidden>
+        </div>
+        <textarea id="po_body" rows="18" style="font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:13px;" placeholder="Write in Markdown.&#10;&#10;## Section heading&#10;&#10;Paragraphs separated by blank lines.&#10;&#10;- Bullet&#10;- Bullet&#10;&#10;**Bold** and *italic*. [Link](https://example.com).&#10;&#10;![Caption](image-url-here.jpg)">${escape(p.body_md ?? "")}</textarea>
       </div>
     </div>
+
     <div class="btn-row">
-      <button class="btn btn-danger btn-sm" id="delPost">Delete</button>
+      ${isNew ? "" : `<button class="btn btn-danger btn-sm" id="delPost">Delete</button>`}
       <button class="btn btn-ghost" data-close>Cancel</button>
       <button class="btn btn-primary" id="savePost">Save</button>
     </div>
   `, (m, close) => {
+    let heroPath = p.hero_image_path;
+
     m.querySelector("[data-close]").addEventListener("click", close);
+
+    // Slug auto-fill from title if empty
+    const titleEl = m.querySelector("#po_title");
+    const slugEl  = m.querySelector("#po_slug");
+    titleEl.addEventListener("input", () => {
+      if (!slugEl.value || slugEl.dataset.auto === "1") {
+        slugEl.value = slugify(titleEl.value);
+        slugEl.dataset.auto = "1";
+      }
+    });
+    slugEl.addEventListener("input", () => { slugEl.dataset.auto = ""; });
+
+    // Hero image upload
+    const heroFile = m.querySelector("#poHeroFile");
+    const heroThumb = m.querySelector("#poHeroThumb");
+    m.querySelector("#poHeroPick").addEventListener("click", () => heroFile.click());
+    heroFile.addEventListener("change", async () => {
+      const f = heroFile.files?.[0];
+      if (!f) return;
+      toast("Uploading hero image…");
+      try {
+        heroPath = await uploadBlogImage(f);
+        heroThumb.style.background = `url('${publicUrlFor(heroPath)}') center/cover`;
+        toast("Hero image uploaded", "success");
+      } catch (err) { toast(err.message, "error"); }
+    });
+    m.querySelector("#poHeroRemove")?.addEventListener("click", () => {
+      heroPath = null;
+      heroThumb.style.background = "var(--sand-100)";
+      toast("Hero removed (save to confirm)");
+    });
+
+    // Markdown toolbar
+    const body = m.querySelector("#po_body");
+    function wrap(prefix, suffix) {
+      const s = body.selectionStart;
+      const e = body.selectionEnd;
+      const sel = body.value.slice(s, e) || "text";
+      const next = body.value.slice(0, s) + prefix + sel + (suffix ?? prefix) + body.value.slice(e);
+      body.value = next;
+      body.focus();
+      body.selectionStart = s + prefix.length;
+      body.selectionEnd = s + prefix.length + sel.length;
+    }
+    m.querySelectorAll("[data-md]").forEach(b => {
+      b.addEventListener("click", () => wrap(b.dataset.md));
+    });
+    m.querySelector("[data-md-h2]").addEventListener("click", () => {
+      const s = body.selectionStart;
+      const lineStart = body.value.lastIndexOf("\n", s - 1) + 1;
+      body.value = body.value.slice(0, lineStart) + "## " + body.value.slice(lineStart);
+      body.focus();
+    });
+    m.querySelector("[data-md-link]").addEventListener("click", () => {
+      const url = prompt("Link URL:");
+      if (!url) return;
+      wrap("[", `](${url})`);
+    });
+
+    // Insert image into body
+    const inlineFile = m.querySelector("#poInlineImgFile");
+    m.querySelector("#poInsertImg").addEventListener("click", () => inlineFile.click());
+    inlineFile.addEventListener("change", async () => {
+      const f = inlineFile.files?.[0];
+      if (!f) return;
+      toast("Uploading image…");
+      try {
+        const path = await uploadBlogImage(f);
+        const url = publicUrlFor(path);
+        const md = `\n\n![${f.name.replace(/\.[^.]+$/, "")}](${url})\n\n`;
+        const cursor = body.selectionStart;
+        body.value = body.value.slice(0, cursor) + md + body.value.slice(cursor);
+        body.focus();
+        body.selectionStart = body.selectionEnd = cursor + md.length;
+        toast("Image inserted", "success");
+      } catch (err) { toast(err.message, "error"); }
+    });
+
     m.querySelector("#savePost").addEventListener("click", async () => {
+      const title = titleEl.value.trim();
+      const slug  = (slugEl.value || slugify(title)).trim();
+      if (!title || !slug) return toast("Title + slug are required", "error");
+
       const status = m.querySelector("#po_status").value;
       const payload = {
-        title: m.querySelector("#po_title").value,
-        slug: m.querySelector("#po_slug").value,
-        seo_description: m.querySelector("#po_seo").value,
+        title,
+        slug,
+        seo_description: m.querySelector("#po_seo").value.trim() || null,
         body_md: m.querySelector("#po_body").value,
+        hero_image_path: heroPath,
         status,
         published_at: status === "published" && !p.published_at ? new Date().toISOString() : p.published_at,
       };
-      const { error } = await supa.from("posts").update(payload).eq("id", id);
-      if (error) return toast(error.message, "error");
-      toast("Saved", "success");
+
+      let res;
+      if (isNew) {
+        res = await supa.from("posts").insert(payload).select("id").single();
+      } else {
+        res = await supa.from("posts").update(payload).eq("id", id);
+      }
+      if (res.error) return toast(res.error.message, "error");
+      toast(isNew ? "Post created" : "Saved", "success");
       close(); route();
     });
-    m.querySelector("#delPost").addEventListener("click", async () => {
-      if (!confirm("Delete this post permanently?")) return;
-      const { error } = await supa.from("posts").delete().eq("id", id);
-      if (error) return toast(error.message, "error");
-      toast("Deleted", "success");
-      close(); route();
-    });
+
+    if (!isNew) {
+      m.querySelector("#delPost").addEventListener("click", async () => {
+        if (!confirm("Delete this post permanently?")) return;
+        const { error } = await supa.from("posts").delete().eq("id", id);
+        if (error) return toast(error.message, "error");
+        toast("Deleted", "success");
+        close(); route();
+      });
+    }
   });
 }
 
