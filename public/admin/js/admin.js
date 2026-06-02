@@ -308,6 +308,74 @@ function publicUrlFor(path) {
   return `${window.TQ_CONFIG.SUPABASE_URL}/storage/v1/object/public/public-images/${path}`;
 }
 
+// Quill 2 — lazy-loaded from CDN the first time the post editor opens.
+// Reused across edits within the same session (cached on window.Quill).
+let _quillReady = null;
+function loadQuill() {
+  if (window.Quill) return Promise.resolve(window.Quill);
+  if (_quillReady) return _quillReady;
+  _quillReady = new Promise((resolve, reject) => {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css";
+    document.head.appendChild(link);
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.min.js";
+    script.onload = () => resolve(window.Quill);
+    script.onerror = () => reject(new Error("Couldn't load editor (Quill)"));
+    document.head.appendChild(script);
+  });
+  return _quillReady;
+}
+
+async function initQuill(container, initialHtml) {
+  const Quill = await loadQuill();
+  const quill = new Quill(container, {
+    theme: "snow",
+    placeholder: "Start writing — use the toolbar above for headings, links, images and lists.",
+    modules: {
+      toolbar: {
+        container: [
+          [{ header: [2, 3, false] }],
+          ["bold", "italic"],
+          [{ list: "ordered" }, { list: "bullet" }],
+          ["blockquote", "link", "image"],
+          ["clean"],
+        ],
+        handlers: {
+          // Override Quill's default base64 image embed with a real upload
+          // to Supabase Storage. Public URL gets inserted at the cursor.
+          image: function () {
+            const editor = this.quill;
+            const input = document.createElement("input");
+            input.type = "file";
+            input.accept = "image/*";
+            input.click();
+            input.onchange = async () => {
+              const file = input.files?.[0];
+              if (!file) return;
+              try {
+                toast("Uploading image…");
+                const path = await uploadBlogImage(file);
+                const url = publicUrlFor(path);
+                const range = editor.getSelection(true) ?? { index: editor.getLength() };
+                editor.insertEmbed(range.index, "image", url, "user");
+                editor.setSelection(range.index + 1);
+                toast("Image inserted", "success");
+              } catch (err) {
+                toast(err.message, "error");
+              }
+            };
+          },
+        },
+      },
+    },
+  });
+  // Trusted authors only (admins); HTML straight in.
+  if (initialHtml) quill.root.innerHTML = initialHtml;
+  return quill;
+}
+
 async function editPost(id) {
   const isNew = !id;
   const p = isNew
@@ -355,16 +423,12 @@ async function editPost(id) {
       </div>
 
       <div class="field field--full">
-        <label for="po_body">Post body (Markdown)</label>
-        <div style="display:flex; gap:var(--sp-2); margin-bottom:var(--sp-2);">
-          <button type="button" class="btn btn-ghost btn-sm" data-md="**" title="Bold (wraps selection)">B</button>
-          <button type="button" class="btn btn-ghost btn-sm" data-md="*"  title="Italic">I</button>
-          <button type="button" class="btn btn-ghost btn-sm" data-md-h2 title="Heading 2">H2</button>
-          <button type="button" class="btn btn-ghost btn-sm" data-md-link title="Link">🔗 Link</button>
-          <button type="button" class="btn btn-ghost btn-sm" id="poInsertImg" title="Insert image">🖼️ Insert image</button>
-          <input id="poInlineImgFile" type="file" accept="image/*" hidden>
-        </div>
-        <textarea id="po_body" rows="18" style="font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:13px;" placeholder="Write in Markdown.&#10;&#10;## Section heading&#10;&#10;Paragraphs separated by blank lines.&#10;&#10;- Bullet&#10;- Bullet&#10;&#10;**Bold** and *italic*. [Link](https://example.com).&#10;&#10;![Caption](image-url-here.jpg)">${escape(p.body_md ?? "")}</textarea>
+        <label>Post body</label>
+        <p style="font-size:11px; color:var(--sand-500); margin:-4px 0 4px;">Write your post the way you'd write an email. Use the toolbar for formatting.</p>
+        <!-- Quill mounts here. Toolbar config + image handler set up in the
+             onMount callback below. The DB column body_md now stores HTML
+             (rendered straight by blog.js). -->
+        <div id="po_body_quill" style="min-height: 360px; background: var(--white);"></div>
       </div>
     </div>
 
@@ -409,51 +473,9 @@ async function editPost(id) {
       toast("Hero removed (save to confirm)");
     });
 
-    // Markdown toolbar
-    const body = m.querySelector("#po_body");
-    function wrap(prefix, suffix) {
-      const s = body.selectionStart;
-      const e = body.selectionEnd;
-      const sel = body.value.slice(s, e) || "text";
-      const next = body.value.slice(0, s) + prefix + sel + (suffix ?? prefix) + body.value.slice(e);
-      body.value = next;
-      body.focus();
-      body.selectionStart = s + prefix.length;
-      body.selectionEnd = s + prefix.length + sel.length;
-    }
-    m.querySelectorAll("[data-md]").forEach(b => {
-      b.addEventListener("click", () => wrap(b.dataset.md));
-    });
-    m.querySelector("[data-md-h2]").addEventListener("click", () => {
-      const s = body.selectionStart;
-      const lineStart = body.value.lastIndexOf("\n", s - 1) + 1;
-      body.value = body.value.slice(0, lineStart) + "## " + body.value.slice(lineStart);
-      body.focus();
-    });
-    m.querySelector("[data-md-link]").addEventListener("click", () => {
-      const url = prompt("Link URL:");
-      if (!url) return;
-      wrap("[", `](${url})`);
-    });
-
-    // Insert image into body
-    const inlineFile = m.querySelector("#poInlineImgFile");
-    m.querySelector("#poInsertImg").addEventListener("click", () => inlineFile.click());
-    inlineFile.addEventListener("change", async () => {
-      const f = inlineFile.files?.[0];
-      if (!f) return;
-      toast("Uploading image…");
-      try {
-        const path = await uploadBlogImage(f);
-        const url = publicUrlFor(path);
-        const md = `\n\n![${f.name.replace(/\.[^.]+$/, "")}](${url})\n\n`;
-        const cursor = body.selectionStart;
-        body.value = body.value.slice(0, cursor) + md + body.value.slice(cursor);
-        body.focus();
-        body.selectionStart = body.selectionEnd = cursor + md.length;
-        toast("Image inserted", "success");
-      } catch (err) { toast(err.message, "error"); }
-    });
+    // Quill WYSIWYG editor — booted lazily from CDN so we don't bloat
+    // the rest of admin.js. Outputs HTML straight into body_md.
+    const quill = await initQuill(m.querySelector("#po_body_quill"), p.body_md ?? "");
 
     m.querySelector("#savePost").addEventListener("click", async () => {
       const title = titleEl.value.trim();
@@ -465,7 +487,7 @@ async function editPost(id) {
         title,
         slug,
         seo_description: m.querySelector("#po_seo").value.trim() || null,
-        body_md: m.querySelector("#po_body").value,
+        body_md: quill.root.innerHTML,    // HTML — public blog.js renders directly
         hero_image_path: heroPath,
         status,
         published_at: status === "published" && !p.published_at ? new Date().toISOString() : p.published_at,
