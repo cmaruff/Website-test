@@ -1,0 +1,23 @@
+{
+  "name": "@tq/wp-mcp",
+  "version": "0.1.0",
+  "description": "Tiny WordPress MCP server. Talks to a self-hosted WP site via the core REST API + Application Password. No Jetpack, no wordpress.com.",
+  "type": "module",
+  "bin": { "wp-mcp": "./dist/index.js" },
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc -p .",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.0",
+    "typescript": "^5.4.0",
+    "@types/node": "^20.11.0"
+  },
+  "engines": { "node": ">=20" }
+}

@@ -1,0 +1,99 @@
+# Deploy content changes (page text, post text, Elementor templates) via the
+# WordPress REST API + Application Password.
+#
+# Drop this in `.github/workflows/` of a per-site repo, alongside deploy-files.yml.
+#
+# Required secrets:
+#   WP_URL            https://cairnsadvertising.com.au
+#   WP_USER           WP username or email
+#   WP_APP_PASSWORD   Application Password (spaces ok)
+#
+# Layout convention in the per-site repo:
+#   content/pages/<slug>.json     -> POST /wp-json/wp/v2/pages/<id> with { title, content, ... }
+#   content/posts/<slug>.json     -> POST /wp-json/wp/v2/posts/<id>
+#   content/elementor/<id>.json   -> POST /wp-json/elementor/v1/templates/<id> (Elementor Pro)
+#
+# Each JSON file must include the WP `id` field at the top level.
+
+name: Deploy content via WP REST
+
+on:
+  push:
+    branches: [main]
+    paths: ["content/**"]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-content
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v4
+        with: { node-version: "20" }
+
+      - name: Determine changed content files
+        id: diff
+        run: |
+          set -e
+          before='${{ github.event.before }}'
+          after='${{ github.sha }}'
+          if [ -z "$before" ] || [ "$before" = "0000000000000000000000000000000000000000" ]; then
+            git ls-files 'content/**/*.json' > changed.txt || true
+          else
+            git diff --name-only --diff-filter=AM "$before" "$after" -- 'content/**/*.json' > changed.txt || true
+          fi
+          echo "Changed files:"
+          cat changed.txt
+
+      - name: Push changes via WP REST
+        if: ${{ hashFiles('changed.txt') != '' }}
+        env:
+          WP_URL: ${{ secrets.WP_URL }}
+          WP_USER: ${{ secrets.WP_USER }}
+          WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
+        run: |
+          node <<'JS'
+          import fs from "node:fs";
+          import path from "node:path";
+
+          const url = process.env.WP_URL.replace(/\/+$/, "");
+          const auth = "Basic " + Buffer.from(
+            `${process.env.WP_USER}:${process.env.WP_APP_PASSWORD.replace(/\s+/g, "")}`
+          ).toString("base64");
+
+          const lines = fs.readFileSync("changed.txt", "utf8").split("\n").filter(Boolean);
+
+          for (const file of lines) {
+            const json = JSON.parse(fs.readFileSync(file, "utf8"));
+            const { id, ...payload } = json;
+            if (!id) {
+              console.warn(`! ${file} has no id — skipping`);
+              continue;
+            }
+            let endpoint;
+            if (file.startsWith("content/pages/"))      endpoint = `/wp-json/wp/v2/pages/${id}`;
+            else if (file.startsWith("content/posts/")) endpoint = `/wp-json/wp/v2/posts/${id}`;
+            else if (file.startsWith("content/elementor/"))
+                                                       endpoint = `/wp-json/elementor/v1/templates/${id}`;
+            else { console.warn(`! ${file} unknown content type — skipping`); continue; }
+
+            const res = await fetch(url + endpoint, {
+              method: "POST",
+              headers: { "Content-Type": "application/json", Authorization: auth },
+              body: JSON.stringify(payload),
+            });
+            if (!res.ok) {
+              const body = await res.text();
+              console.error(`✗ ${file} -> ${res.status} ${res.statusText}\n${body.slice(0, 600)}`);
+              process.exit(1);
+            }
+            console.log(`✓ ${file} -> ${endpoint}`);
+          }
+          JS

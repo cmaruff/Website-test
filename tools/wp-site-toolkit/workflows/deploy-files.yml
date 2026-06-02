@@ -1,0 +1,74 @@
+# Deploy theme + custom plugin files to SiteGround on merge to main.
+# Drop this in `.github/workflows/` of a per-site repo.
+#
+# Required secrets:
+#   SITEGROUND_HOST       e.g. ssh.siteground.com (or the SFTP host SiteGround gives)
+#   SITEGROUND_PORT       e.g. 18765  (SiteGround uses non-standard SFTP ports)
+#   SITEGROUND_USER       SFTP username
+#   SITEGROUND_KEY        Private SSH key (preferred). Or use SITEGROUND_PASSWORD instead.
+#   SITEGROUND_REMOTE_PATH  e.g. /home/customer/www/cairnsadvertising.com.au/public_html
+#
+# Layout convention in the per-site repo:
+#   theme/<theme-slug>/...      -> /wp-content/themes/<theme-slug>/
+#   plugins/<plugin-slug>/...   -> /wp-content/plugins/<plugin-slug>/
+#   mu-plugins/...              -> /wp-content/mu-plugins/
+# Anything else is left alone.
+
+name: Deploy files to SiteGround
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-files
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SITEGROUND_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -p ${{ secrets.SITEGROUND_PORT }} -H ${{ secrets.SITEGROUND_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Sync theme/
+        if: ${{ hashFiles('theme/**') != '' }}
+        run: |
+          set -e
+          for d in theme/*/; do
+            slug="$(basename "$d")"
+            echo "Syncing theme: $slug"
+            rsync -avz --delete \
+              -e "ssh -i ~/.ssh/id_ed25519 -p ${{ secrets.SITEGROUND_PORT }}" \
+              "$d" \
+              "${{ secrets.SITEGROUND_USER }}@${{ secrets.SITEGROUND_HOST }}:${{ secrets.SITEGROUND_REMOTE_PATH }}/wp-content/themes/$slug/"
+          done
+
+      - name: Sync plugins/
+        if: ${{ hashFiles('plugins/**') != '' }}
+        run: |
+          set -e
+          for d in plugins/*/; do
+            slug="$(basename "$d")"
+            echo "Syncing plugin: $slug"
+            rsync -avz --delete \
+              -e "ssh -i ~/.ssh/id_ed25519 -p ${{ secrets.SITEGROUND_PORT }}" \
+              "$d" \
+              "${{ secrets.SITEGROUND_USER }}@${{ secrets.SITEGROUND_HOST }}:${{ secrets.SITEGROUND_REMOTE_PATH }}/wp-content/plugins/$slug/"
+          done
+
+      - name: Sync mu-plugins/
+        if: ${{ hashFiles('mu-plugins/**') != '' }}
+        run: |
+          set -e
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/id_ed25519 -p ${{ secrets.SITEGROUND_PORT }}" \
+            mu-plugins/ \
+            "${{ secrets.SITEGROUND_USER }}@${{ secrets.SITEGROUND_HOST }}:${{ secrets.SITEGROUND_REMOTE_PATH }}/wp-content/mu-plugins/"
